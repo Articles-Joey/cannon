@@ -10,7 +10,10 @@ import useFullscreen from '@/hooks/useFullScreen';
 import { useControllerStore } from '@/hooks/useControllerStore';
 
 import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
-import LeftPanelContent from '@/components/UI/LeftPanel';
+
+// import LeftPanelContent from '@/components/UI/LeftPanel';
+import LeftPanelContent from '@/components/Game/LeftPanel';
+
 import { useSocketStore } from '@/hooks/useSocketStore';
 import { useCannonStore } from '@/hooks/useCannonStore';
 import generateRandomInteger from '@/util/generateRandomInteger';

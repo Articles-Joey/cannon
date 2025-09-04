@@ -2,9 +2,9 @@ import Link from "next/link";
 
 import { Dropdown, DropdownButton } from "react-bootstrap";
 
-import ROUTES from '@/components/constants/routes';
+// import ROUTES from '@/components/constants/routes';
 // import { useGameStore } from "../hooks/useGameStore";
-import ArticlesButton from "@/components/Articles/Button";
+import ArticlesButton from "@/components/UI/Button";
 
 import ControllerPreview from "@/components/ControllerPreview";
 
@@ -88,7 +88,7 @@ export default function LeftPanelContent(props) {
                     <div className="d-flex flex-wrap">
 
                         <Link
-                            href={ROUTES.GAME_CANNON}
+                            href={'/'}
                             className='w-50'
                         >
                             <ArticlesButton
