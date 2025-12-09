@@ -442,7 +442,6 @@ function Projectile({ position, velocity, item }) {
 
 const context = createContext()
 
-Circle.displayName = 'Circle'
 const Circle = forwardRef(({ children, opacity = 1, radius = 0.05, segments = 32, color = '#ff1050', ...props }, ref) => (
     <mesh ref={ref} {...props}>
         <circleGeometry args={[radius, segments]} />
@@ -450,6 +449,7 @@ const Circle = forwardRef(({ children, opacity = 1, radius = 0.05, segments = 32
         {children}
     </mesh>
 ))
+Circle.displayName = 'Circle'
 
 export function Nodes({ children }) {
     const group = useRef()
@@ -484,7 +484,6 @@ export function Nodes({ children }) {
     )
 }
 
-Node.displayName = 'Node'
 export const Node = forwardRef(({ color = 'black', name, connectedTo = [], position = [0, 0, 0], ...props }, ref) => {
     const set = useContext(context)
     const { size, camera } = useThree()
@@ -518,3 +517,4 @@ export const Node = forwardRef(({ color = 'black', name, connectedTo = [], posit
         </Circle>
     )
 })
+Node.displayName = 'Node'
