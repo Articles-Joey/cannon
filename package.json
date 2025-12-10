@@ -11,10 +11,10 @@
       "url": "https://github.com/Articles-Joey"
     }
   ],
-  "private": true,
+  "private": false,
   "scripts": {
     "dev": "next dev --webpack -p 3026",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start",
     "lint": "next lint"
   },
