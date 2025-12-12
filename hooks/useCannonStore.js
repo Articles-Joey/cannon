@@ -4,8 +4,8 @@ import { createWithEqualityFn as create } from 'zustand/traditional'
 // import { nanoid } from 'nanoid'
 import { degToRad } from 'three/src/math/MathUtils'
 
-const getLocalStorage = (key) => JSON.parse(window.localStorage.getItem(key))
-const setLocalStorage = (key, value) => window.localStorage.setItem(key, JSON.stringify(value))
+// const getLocalStorage = (key) => JSON.parse(window.localStorage.getItem(key))
+// const setLocalStorage = (key, value) => window.localStorage.setItem(key, JSON.stringify(value))
 
 export const useCannonStore = create((set) => ({
 
@@ -55,6 +55,13 @@ export const useCannonStore = create((set) => ({
     setPlayerRotation: (newValue) => {
         set((prev) => ({
             playerRotation: newValue
+        }))
+    },
+
+    cameraFollowsProjectile: true,
+    setCameraFollowsProjectile: (newValue) => {
+        set((prev) => ({
+            cameraFollowsProjectile: newValue
         }))
     },
 

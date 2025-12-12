@@ -1,6 +1,8 @@
 import { useCannonStore } from "@/hooks/useCannonStore";
 import { useSphere } from "@react-three/cannon";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { useFrame, useThree } from "@react-three/fiber";
+import { Vector3 } from "three";
 
 export default function Projectiles() {
 
@@ -35,19 +37,40 @@ export default function Projectiles() {
 
 function Projectile({ position, velocity, item }) {
 
-    // const {
-    //     projectiles,
-    //     setProjectiles,
-    // } = useCannonStore(state => ({
-    //     projectiles: state.projectiles,
-    //     setProjectiles: state.setProjectiles,
-    // }));
+    const { camera, controls } = useThree();
+    const projectiles = useCannonStore(state => state.projectiles);
+    const cameraFollowsProjectile = useCannonStore(state => state.cameraFollowsProjectile);
+    
+    const isLatest = projectiles[projectiles.length - 1]?.id === item.id;
+    const positionRef = useRef(position);
 
     const [ref, api] = useSphere(() => ({
         mass: 1, // Give the projectile some mass
         position: position, // Initial spawn position
         args: [0.5], // Sphere radius
     }));
+
+    useEffect(() => {
+        const unsubscribe = api.position.subscribe((v) => (positionRef.current = v));
+        return unsubscribe;
+    }, [api.position]);
+
+    useFrame(() => {
+        if (cameraFollowsProjectile && isLatest) {
+            const [x, y, z] = positionRef.current;
+            
+            // Update controls target to look at the projectile
+            if (controls) {
+                controls.target.set(x, y, z);
+                controls.update();
+            }
+            
+            // Simple 3rd person follow (offset)
+            camera.position.set(x, y + 6, z + 12);
+        }
+    });
+
+    // Set initial velocity after the sphere is created
 
     // Set initial velocity after the sphere is created
     // useRef(() => {
@@ -64,7 +87,7 @@ function Projectile({ position, velocity, item }) {
     useEffect(() => {
 
         const unsubscribe = api.position.subscribe(([x, y, z]) => {
-            if (y < -10) {
+            if (y < -5) {
 
                 console.log("Remove this projectile", item)
 

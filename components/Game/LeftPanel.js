@@ -339,6 +339,9 @@ function DebugControls({
     const playerRotation = useCannonStore(state => state.playerRotation);
     const setProjectiles = useCannonStore(state => state.setProjectiles);
 
+    const cameraFollowsProjectile = useCannonStore(state => state.cameraFollowsProjectile);
+    const setCameraFollowsProjectile = useCannonStore(state => state.setCameraFollowsProjectile);
+
     return (
         <>
             {/* Debug Controls */}
@@ -388,6 +391,24 @@ function DebugControls({
                             >
                                 <i className="fad fa-redo"></i>
                                 Reset Camera
+                            </ArticlesButton>
+
+                            <ArticlesButton
+                                size="sm"
+                                className="w-50"
+                                onClick={() => {
+                                    setCameraFollowsProjectile(!cameraFollowsProjectile)
+                                }}
+                                active={cameraFollowsProjectile}
+                            >
+                                {/* <i className="fad fa-redo"></i> */}
+                                <span
+                                // style={{
+                                //     fontSize: '0.52rem',
+                                // }}
+                                >
+                                    Follow Projectile
+                                </span>
                             </ArticlesButton>
                         </div>
 

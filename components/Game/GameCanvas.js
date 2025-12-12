@@ -69,6 +69,7 @@ function GameCanvas(props) {
         <Canvas camera={{ position: [0, 40, 90], fov: 50 }}>
 
             <OrbitControls
+                makeDefault
             // autoRotate={gameState?.status == 'In Lobby'}
             />
 
