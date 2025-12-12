@@ -1,5 +1,9 @@
 import Link from "next/link";
 
+import { memo } from "react";
+
+import { useSearchParams } from "next/navigation";
+
 import { Dropdown, DropdownButton } from "react-bootstrap";
 
 // import ROUTES from '@/components/constants/routes';
@@ -10,8 +14,13 @@ import ControllerPreview from "@/components/ControllerPreview";
 
 import { useSocketStore } from "@/hooks/useSocketStore";
 import { useCannonStore } from "@/hooks/useCannonStore";
+import useFullscreen from "@/hooks/useFullScreen";
 
-export default function LeftPanelContent(props) {
+function LeftPanelContent(props) {
+
+    const searchParams = useSearchParams()
+    const searchParamsObject = Object.fromEntries(searchParams.entries());
+    const { server_type } = searchParamsObject
 
     const {
         socket
@@ -19,23 +28,12 @@ export default function LeftPanelContent(props) {
         socket: state.socket
     }));
 
-    const {
-        playerRotation,
-        projectiles,
-        setProjectiles,
-        setDebug,
-        debug,
-        cameraMode,
-        setCameraMode
-    } = useCannonStore(state => ({
-        playerRotation: state.playerRotation,
-        projectiles: state.projectiles,
-        setProjectiles: state.setProjectiles,
-        setDebug: state.setDebug,
-        debug: state.debug,
-        cameraMode: state.cameraMode,
-        setCameraMode: state.setCameraMode,
-    }));
+    const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
+
+    const setDebug = useCannonStore(state => state.setDebug);
+    const debug = useCannonStore(state => state.debug);
+    const cameraMode = useCannonStore(state => state.cameraMode);
+    const setCameraMode = useCannonStore(state => state.setCameraMode);
 
     const {
         server,
@@ -44,9 +42,9 @@ export default function LeftPanelContent(props) {
         setTouchControlsEnabled,
         reloadScene,
         controllerState,
-        isFullscreen,
-        requestFullscreen,
-        exitFullscreen,
+        // isFullscreen,
+        // requestFullscreen,
+        // exitFullscreen,
         setShowMenu
     } = props;
 
@@ -57,15 +55,21 @@ export default function LeftPanelContent(props) {
 
                 <div className="card-body">
 
-                    <div className='flex-header'>
-                        <div>Server: {server}</div>
-                        <div>Players: {0}/4</div>
-                    </div>
-
-                    {!socket?.connected &&
+                    {
+                        (
+                            server_type.includes("socket")
+                            &&
+                            !socket?.connected
+                        )
+                        &&
                         <div
                             className=""
                         >
+
+                            <div className='flex-header'>
+                                <div>Server: {server}</div>
+                                <div>Players: {0}/4</div>
+                            </div>
 
                             <div className="">
 
@@ -76,6 +80,8 @@ export default function LeftPanelContent(props) {
                                         console.log("Reconnect")
                                         socket.connect()
                                     }}
+                                    small
+                                    className='w-100 mb-3'
                                 >
                                     Reconnect!
                                 </ArticlesButton>
@@ -99,7 +105,7 @@ export default function LeftPanelContent(props) {
                                 <span>Leave Game</span>
                             </ArticlesButton>
                         </Link>
-    
+
                         <ArticlesButton
                             small
                             className="w-50"
@@ -116,7 +122,7 @@ export default function LeftPanelContent(props) {
                             {!isFullscreen && <span><i className='fad fa-expand'></i></span>}
                             <span>Fullscreen</span>
                         </ArticlesButton>
-    
+
                         <div className='w-50'>
                             <DropdownButton
                                 variant="articles w-100"
@@ -130,9 +136,9 @@ export default function LeftPanelContent(props) {
                                     </span>
                                 }
                             >
-    
+
                                 <div style={{ maxHeight: '600px', overflowY: 'auto', width: '200px' }}>
-    
+
                                     {[
                                         {
                                             name: 'Free',
@@ -155,12 +161,12 @@ export default function LeftPanelContent(props) {
                                                 {location.name}
                                             </Dropdown.Item>
                                         )}
-    
+
                                 </div>
-    
+
                             </DropdownButton>
                         </div>
-    
+
                         <div className='w-50'>
                             <DropdownButton
                                 variant="articles w-100"
@@ -175,9 +181,9 @@ export default function LeftPanelContent(props) {
                                     </span>
                                 }
                             >
-    
+
                                 <div style={{ maxHeight: '600px', overflowY: 'auto', width: '200px' }}>
-    
+
                                     {[
                                         false,
                                         true
@@ -194,12 +200,12 @@ export default function LeftPanelContent(props) {
                                                 {location ? 'True' : 'False'}
                                             </Dropdown.Item>
                                         )}
-    
+
                                 </div>
-    
+
                             </DropdownButton>
                         </div>
-                        
+
                     </div>
 
                 </div>
@@ -278,59 +284,9 @@ export default function LeftPanelContent(props) {
                 </div>
             </div>
 
-            {/* Debug Controls */}
-            <div
-                className="card card-articles card-sm"
-            >
-                <div className="card-body">
-
-                    <div className="small text-muted">Debug Controls</div>
-
-                    <div className="py-2">
-                        {JSON.stringify(playerRotation, null, 2)}
-                    </div>
-
-                    <div className="py-2">
-                        {JSON.stringify(projectiles, null, 2)}
-                    </div>
-
-                    <div className='d-flex flex-column'>
-
-                        <div>
-                            <ArticlesButton
-                                size="sm"
-                                className="w-50"
-                                onClick={() => {
-                                    setProjectiles([])
-                                }}
-                            >
-                                {/* <i className="fad fa-redo"></i> */}
-                                Reset Projectiles
-                            </ArticlesButton>
-
-                            <ArticlesButton
-                                size="sm"
-                                className="w-50"
-                                onClick={reloadScene}
-                            >
-                                <i className="fad fa-redo"></i>
-                                Reload Game
-                            </ArticlesButton>
-
-                            <ArticlesButton
-                                size="sm"
-                                className="w-50"
-                                onClick={reloadScene}
-                            >
-                                <i className="fad fa-redo"></i>
-                                Reset Camera
-                            </ArticlesButton>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
+            <DebugControls
+                reloadScene={reloadScene}
+            />
 
             {controllerState?.connected &&
                 <div className="panel-content-group p-0 text-dark">
@@ -371,4 +327,74 @@ export default function LeftPanelContent(props) {
         </div>
     )
 
+}
+
+export default memo(LeftPanelContent)
+
+function DebugControls({
+    reloadScene
+}) {
+
+    const projectiles = useCannonStore(state => state.projectiles);
+    const playerRotation = useCannonStore(state => state.playerRotation);
+    const setProjectiles = useCannonStore(state => state.setProjectiles);
+
+    return (
+        <>
+            {/* Debug Controls */}
+            <div
+                className="card card-articles card-sm"
+            >
+                <div className="card-body">
+
+                    <div className="small text-muted">Debug Controls</div>
+
+                    <div className="py-2">
+                        {JSON.stringify(playerRotation, null, 2)}
+                    </div>
+
+                    <div className="py-2">
+                        {/* {JSON.stringify(projectiles, null, 2)} */}
+                        {projectiles?.length || 0}
+                    </div>
+
+                    <div className='d-flex flex-column'>
+
+                        <div>
+                            <ArticlesButton
+                                size="sm"
+                                className="w-50"
+                                onClick={() => {
+                                    setProjectiles([])
+                                }}
+                            >
+                                {/* <i className="fad fa-redo"></i> */}
+                                Reset Projectiles
+                            </ArticlesButton>
+
+                            <ArticlesButton
+                                size="sm"
+                                className="w-50"
+                                onClick={reloadScene}
+                            >
+                                <i className="fad fa-redo"></i>
+                                Reload Game
+                            </ArticlesButton>
+
+                            <ArticlesButton
+                                size="sm"
+                                className="w-50"
+                                onClick={reloadScene}
+                            >
+                                <i className="fad fa-redo"></i>
+                                Reset Camera
+                            </ArticlesButton>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </>
+    )
 }

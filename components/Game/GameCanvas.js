@@ -16,6 +16,7 @@ import { useCannonStore } from "@/hooks/useCannonStore";
 import { Physics, useBox, useCylinder, useSphere } from "@react-three/cannon";
 import WaterPlane from "@/components/Game/WaterPlane";
 import { degToRad } from "three/src/math/MathUtils";
+import Projectiles from "./Projectiles";
 
 const texture = new TextureLoader().load(`${process.env.NEXT_PUBLIC_CDN}games/Race Game/grass.jpg`)
 
@@ -345,99 +346,6 @@ function PlayerProjectile() {
 
 }
 
-function Projectiles() {
-
-    const [ref, api] = useSphere(() => ({
-        mass: 1,
-        // type: 'Dynamic',
-        args: [1, 1, 1],
-        position: [-2, 5, 0],
-    }))
-
-    const {
-        projectiles,
-    } = useCannonStore(state => ({
-        projectiles: state.projectiles,
-    }));
-
-    return (
-        <group>
-            {projectiles.map((item, item_i) => {
-                return <Projectile
-                    key={item_i}
-                    velocity={[
-                        -1.5,
-                        26,
-                        -10
-                    ]}
-                    // position={[-43, 1, 43]}
-                    position={[5, 0, 43]}
-                    item={item}
-                />
-            })}
-        </group>
-    )
-
-}
-
-function Projectile({ position, velocity, item }) {
-
-    // const {
-    //     projectiles,
-    //     setProjectiles,
-    // } = useCannonStore(state => ({
-    //     projectiles: state.projectiles,
-    //     setProjectiles: state.setProjectiles,
-    // }));
-
-    const [ref, api] = useSphere(() => ({
-        mass: 1, // Give the projectile some mass
-        position: position, // Initial spawn position
-        args: [0.5], // Sphere radius
-    }));
-
-    // Set initial velocity after the sphere is created
-    // useRef(() => {
-    //     api.velocity.set(
-    //         // ...velocity
-    //         0, 500, 0
-    //     );
-    // }, [api, velocity]);
-
-    useEffect(() => {
-        api.velocity.set(...velocity); // Spread the velocity array
-    }, []);
-
-    useEffect(() => {
-
-        const unsubscribe = api.position.subscribe(([x, y, z]) => {
-            if (y < -10) {
-
-                console.log("Remove this projectile", item)
-
-                const projectilesCopy = useCannonStore.getState().projectiles;
-                const setProjectiles = useCannonStore.getState().setProjectiles;
-
-                // api.mass.set(0)
-
-                setProjectiles([
-                    ...projectilesCopy.filter(p_item => p_item.id !== item.id)
-                ])
-            }
-        });
-
-        return () => unsubscribe(); // Cleanup subscription
-
-    }, [api.position]);
-
-    return (
-        <mesh ref={ref} castShadow>
-            <sphereGeometry args={[0.5, 32, 32]} />
-            <meshStandardMaterial color="red" />
-        </mesh>
-    );
-
-}
 
 
 const context = createContext()

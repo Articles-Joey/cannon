@@ -1,6 +1,10 @@
 {
   "name": "cannon-game",
   "version": "0.1.0",
+  "homepage": "https://cannon.articles.media",
+  "engines": {
+    "node": "24"
+  },
   "contributors": [
     {
       "name": "Articles Media",
@@ -13,8 +17,8 @@
   ],
   "private": false,
   "scripts": {
-    "dev": "next dev --webpack -p 3026",
-    "build": "next build --webpack",
+    "dev": "next dev -p 3026",
+    "build": "next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -31,7 +35,7 @@
     "bootstrap": "^5.3.8",
     "classnames": "^2.5.1",
     "date-fns": "^4.1.0",
-    "next": "^16",
+    "next": "^15.5.9",
     "nipplejs": "^0.10.2",
     "react": "^19",
     "react-bootstrap": "^2.10.10",
@@ -40,13 +44,13 @@
     "react-hotkeys-hook": "^5.1.0",
     "sass": "^1.95.0",
     "socket.io-client": "^4.8.1",
-    "swr": "^2.3.4",
-    "three": "^0.178.0"
+    "swr": "^2.3.7",
+    "three": "^0.182.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint": "^9",
-    "eslint-config-next": "^16"
+    "eslint-config-next": "^15.5.9"
   }
 }

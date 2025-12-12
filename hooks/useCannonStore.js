@@ -64,5 +64,15 @@ export const useCannonStore = create((set) => ({
             projectiles: newValue
         }))
     },
+    addProjectile: (newProjectile) => {
+        set((prev) => ({
+            projectiles: [...prev.projectiles, newProjectile]
+        }))
+    },
+    removeProjectile: (id) => {
+        set((prev) => ({
+            projectiles: prev.projectiles.filter(p => p.id !== id)
+        }))
+    },
 
 }))

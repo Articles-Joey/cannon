@@ -15,6 +15,7 @@ import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
 import IsDev from '@/components/UI/IsDev';
 // import { ChromePicker } from 'react-color';
 import { useSocketStore } from '@/hooks/useSocketStore';
+import { useStore } from '@/hooks/useStore';
 
 // const Ad = dynamic(() => import('components/Ads/Ad'), {
 //     ssr: false,
@@ -51,7 +52,26 @@ export default function CannonGameLobbyPage() {
     // const userReduxState = useSelector((state) => state.auth.user_details)
     const userReduxState = false
 
-    const [nickname, setNickname] = useLocalStorageNew("game:nickname", userReduxState.display_name)
+    const nickname = useStore(state => state.nickname)
+    const _hasHydrated = useStore(state => state._hasHydrated)
+    const setNickname = useStore(state => state.setNickname)
+    const setRandomNickname = useStore(state => state.setRandomNickname)
+
+    // Only do once so user can set name from nothing without retriggering
+    const [initialRandomName, setInitialRandomName] = useState(false)
+    useEffect(() => {
+
+        if (!nickname && _hasHydrated && !initialRandomName) {
+            console.log("No nickname set, set a random!")
+            setRandomNickname()
+            setInitialRandomName(true)
+        }
+
+        if (nickname && _hasHydrated) {
+            setInitialRandomName(true)
+        }
+
+    }, [nickname, _hasHydrated])
 
     const [showInfoModal, setShowInfoModal] = useState(false)
     const [showSettingsModal, setShowSettingsModal] = useState(false)
@@ -163,14 +183,24 @@ export default function CannonGameLobbyPage() {
                                     setValue={setNickname}
                                     noMargin
                                 /> */}
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    id="nickname"
-                                    value={nickname}
-                                    onChange={(e) => setNickname(e.target.value)}
-                                    placeholder="Enter your nickname"
-                                />
+                                <div className='d-flex'>
+                                    <input
+                                        type="text"
+                                        className="form-control"
+                                        id="nickname"
+                                        value={nickname}
+                                        onChange={(e) => setNickname(e.target.value)}
+                                        placeholder="Enter your nickname"
+                                    />
+                                    <ArticlesButton
+                                        className=""
+                                        onClick={() => {
+                                            setRandomNickname()
+                                        }}
+                                    >
+                                        <i className='fas fa-redo me-0'></i>
+                                    </ArticlesButton>
+                                </div>
                             </div>
 
                             <div className='mt-1' style={{ fontSize: '0.8rem' }}>Visible to all players</div>
@@ -180,76 +210,99 @@ export default function CannonGameLobbyPage() {
 
                     <div className="card-body">
 
-                        <div className="fw-bold mb-1 small text-center">
-                            {lobbyDetails.players.length || 0} player{lobbyDetails.players.length > 1 && 's'} in the lobby.
-                        </div>
+                        <Link
+                            href={"/play?server_type=single-player"}
+                        >
+                            <ArticlesButton
+                                className="w-100 mb-2"
+                            >
+                                <i className='fas fa-play me-2'></i>
+                                Play Single Player
+                            </ArticlesButton>
+                        </Link>
 
-                        {/* <div className='small fw-bold'>Public Servers</div> */}
+                        <ArticlesButton
+                            className="w-100"
+                            disabled
+                        >
+                            <i className='fas fa-users me-2'></i>
+                            Multiplayer Coming Soon!
+                        </ArticlesButton>
 
-                        <div className="servers">
+                        <div
+                            className='d-none'
+                        >
+                            <div className="fw-bold mb-1 small text-center">
+                                {lobbyDetails.players.length || 0} player{lobbyDetails.players.length > 1 && 's'} in the lobby.
+                            </div>
 
-                            {[1, 2, 3, 4].map(id => {
+                            {/* <div className='small fw-bold'>Public Servers</div> */}
 
-                                let lobbyLookup = lobbyDetails?.fourFrogsGlobalState?.games?.find(lobby =>
-                                    parseInt(lobby.server_id) == id
-                                )
+                            <div className="servers">
 
-                                return (
-                                    <div key={id} className="server">
+                                {[1, 2, 3, 4].map(id => {
 
-                                        <div className='d-flex justify-content-between align-items-center w-100 mb-2'>
-                                            <div className="mb-0" style={{ fontSize: '0.9rem' }}><b>Server {id}</b></div>
-                                            <div className='mb-0'>{lobbyLookup?.players?.length || 0}/4</div>
-                                        </div>
+                                    let lobbyLookup = lobbyDetails?.fourFrogsGlobalState?.games?.find(lobby =>
+                                        parseInt(lobby.server_id) == id
+                                    )
 
-                                        <div className='d-flex justify-content-around w-100 mb-1'>
-                                            {[1, 2, 3, 4].map(player_count => {
+                                    return (
+                                        <div key={id} className="server">
 
-                                                let playerLookup = false
+                                            <div className='d-flex justify-content-between align-items-center w-100 mb-2'>
+                                                <div className="mb-0" style={{ fontSize: '0.9rem' }}><b>Server {id}</b></div>
+                                                <div className='mb-0'>{lobbyLookup?.players?.length || 0}/4</div>
+                                            </div>
 
-                                                if (lobbyLookup?.players?.length >= player_count) playerLookup = true
+                                            <div className='d-flex justify-content-around w-100 mb-1'>
+                                                {[1, 2, 3, 4].map(player_count => {
 
-                                                return (
-                                                    <div key={player_count} className="icon" style={{
-                                                        width: '20px',
-                                                        height: '20px',
-                                                        ...(playerLookup ? {
-                                                            backgroundColor: 'black',
-                                                        } : {
-                                                            backgroundColor: 'gray',
-                                                        }),
-                                                        border: '1px solid black'
-                                                    }}>
+                                                    let playerLookup = false
 
-                                                    </div>
-                                                )
-                                            })}
-                                        </div>
+                                                    if (lobbyLookup?.players?.length >= player_count) playerLookup = true
 
-                                        <Link
-                                            className={``}
-                                            href={{
-                                                pathname: `/play`,
-                                                query: {
-                                                    server: id
-                                                }
-                                            }}
-                                        >
-                                            <ArticlesButton
-                                                className="px-5"
-                                                small
+                                                    return (
+                                                        <div key={player_count} className="icon" style={{
+                                                            width: '20px',
+                                                            height: '20px',
+                                                            ...(playerLookup ? {
+                                                                backgroundColor: 'black',
+                                                            } : {
+                                                                backgroundColor: 'gray',
+                                                            }),
+                                                            border: '1px solid black'
+                                                        }}>
+
+                                                        </div>
+                                                    )
+                                                })}
+                                            </div>
+
+                                            <Link
+                                                className={``}
+                                                href={{
+                                                    pathname: `/play`,
+                                                    query: {
+                                                        server: id
+                                                    }
+                                                }}
                                             >
-                                                Join
-                                            </ArticlesButton>
-                                        </Link>
+                                                <ArticlesButton
+                                                    className="px-5"
+                                                    small
+                                                >
+                                                    Join
+                                                </ArticlesButton>
+                                            </Link>
 
-                                    </div>
-                                )
-                            })}
+                                        </div>
+                                    )
+                                })}
 
+                            </div>
                         </div>
 
-                        <div className='small fw-bold  mt-3 mb-1'>Or</div>
+                        {/* <div className='small fw-bold  mt-3 mb-1'>Or</div> */}
 
                         {/* <div className='d-flex'>
 

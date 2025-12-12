@@ -17,6 +17,7 @@ import LeftPanelContent from '@/components/Game/LeftPanel';
 import { useSocketStore } from '@/hooks/useSocketStore';
 import { useCannonStore } from '@/hooks/useCannonStore';
 import generateRandomInteger from '@/util/generateRandomInteger';
+import ControlsOverlay from '@/components/Game/ControlsOverlay';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
@@ -30,21 +31,8 @@ export default function CannonGamePage() {
         socket: state.socket
     }));
 
-    const {
-        playerRotation,
-        setPlayerRotation,
-        setProjectiles,
-        projectiles,
-        resetPlayerRotation,
-        setGoalLocation,
-    } = useCannonStore(state => ({
-        playerRotation: state.playerRotation,
-        setPlayerRotation: state.setPlayerRotation,
-        setProjectiles: state.setProjectiles,
-        projectiles: state.projectiles,
-        resetPlayerRotation: state.resetPlayerRotation,
-        setGoalLocation: state.setGoalLocation,
-    }));
+    const resetPlayerRotation = useCannonStore(state => state.resetPlayerRotation);
+    const setGoalLocation = useCannonStore(state => state.setGoalLocation);
 
     const router = useRouter()
     const pathname = usePathname()
@@ -115,9 +103,9 @@ export default function CannonGamePage() {
         setTouchControlsEnabled,
         reloadScene,
         // controllerState,
-        isFullscreen,
-        requestFullscreen,
-        exitFullscreen,
+        // isFullscreen,
+        // requestFullscreen,
+        // exitFullscreen,
         setShowMenu
     }
 
@@ -182,76 +170,7 @@ export default function CannonGamePage() {
                 </div>
             </div> */}
 
-            <div className="controls-overlay">
-
-                <ArticlesButton
-                    // small
-                    className="fire-button"
-                    onClick={() => {
-                        console.log("FIRE!")
-                        setProjectiles([
-                            ...projectiles,
-                            {
-                                player: 1,
-                                id: Math.random()
-                            }
-                        ])
-                    }}
-                >
-                    <i className="fad fa-fire-alt me-0"></i>
-                </ArticlesButton>
-
-                {['up', 'down', 'left', 'right'].map(dir =>
-                    <ArticlesButton
-                        key={dir}
-                        className={`${dir}-button`}
-                        onClick={() => {
-
-                            if (['up', 'down'].includes(dir)) {
-
-                                console.log(dir)
-
-                                let newAngle = playerRotation[0]
-
-                                dir == 'up' ?
-                                    newAngle -= 0.1
-                                    :
-                                    newAngle += 0.1
-
-                                setPlayerRotation([
-                                    newAngle,
-                                    playerRotation[1],
-                                    playerRotation[2]
-                                ])
-
-                            }
-
-                            if (['left', 'right'].includes(dir)) {
-
-                                console.log(dir)
-
-                                let newAngle = playerRotation[1]
-
-                                dir == 'right' ?
-                                    newAngle -= 0.1
-                                    :
-                                    newAngle += 0.1
-
-                                setPlayerRotation([
-                                    playerRotation[0],
-                                    newAngle,
-                                    playerRotation[2]
-                                ])
-
-                            }
-
-                        }}
-                    >
-                        <i className={`fad fa-chevron-circle-${dir} me-0`}></i>
-                    </ArticlesButton>
-                )}
-
-            </div>
+            <ControlsOverlay />
 
             <div className='canvas-wrap'>
 
