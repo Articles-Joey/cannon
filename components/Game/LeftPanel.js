@@ -15,6 +15,7 @@ import ControllerPreview from "@/components/ControllerPreview";
 import { useSocketStore } from "@/hooks/useSocketStore";
 import { useCannonStore } from "@/hooks/useCannonStore";
 import useFullscreen from "@/hooks/useFullScreen";
+import { useStore } from "@/hooks/useStore";
 
 function LeftPanelContent(props) {
 
@@ -34,6 +35,10 @@ function LeftPanelContent(props) {
     const debug = useCannonStore(state => state.debug);
     const cameraMode = useCannonStore(state => state.cameraMode);
     const setCameraMode = useCannonStore(state => state.setCameraMode);
+
+    const setShowSettingsModal = useStore(state => state.setShowSettingsModal);
+    const sidebar = useStore(state => state.sidebar);
+    const toggleSidebar = useStore(state => state.toggleSidebar);
 
     const {
         server,
@@ -121,6 +126,30 @@ function LeftPanelContent(props) {
                             {isFullscreen && <span>Exit </span>}
                             {!isFullscreen && <span><i className='fad fa-expand'></i></span>}
                             <span>Fullscreen</span>
+                        </ArticlesButton>
+
+                        <ArticlesButton
+                            small
+                            className="w-50"
+                            active={isFullscreen}
+                            onClick={() => {
+                                setShowSettingsModal(true)
+                            }}
+                        >
+                            <i className='fad fa-cog'></i>
+                            <span>Settings</span>
+                        </ArticlesButton>
+
+                        <ArticlesButton
+                            small
+                            className="w-50"
+                            active={sidebar}
+                            onClick={() => {
+                                toggleSidebar()
+                            }}
+                        >
+                            <i className='fad fa-columns'></i>
+                            <span>Sidebar</span>
                         </ArticlesButton>
 
                         <div className='w-50'>

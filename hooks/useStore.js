@@ -15,6 +15,9 @@ export const useStore = create()(
       darkMode: true,
       toggleDarkMode: () => set({ darkMode: !get().darkMode }),
 
+      sidebar: true,
+      toggleSidebar: () => set({ sidebar: !get().sidebar }),
+
       nickname: '',
       setNickname: (nickname) => set({ nickname }),
       setRandomNickname: () => {
@@ -34,12 +37,29 @@ export const useStore = create()(
 
         set({ nickname: randomNames[Math.floor(Math.random() * randomNames.length)] })
 
-      }
+      },
+
+      showSettingsModal: false,
+      setShowSettingsModal: (state) => set({ showSettingsModal: state }),
+
+      showInfoModal: false,
+      setShowInfoModal: (state) => set({ showInfoModal: state }),
+
+      showCreditsModal: false,
+      setShowCreditsModal: (state) => set({ showCreditsModal: state }),
 
     }),
     {
       name: 'cannon-game-storage', // name of the item in the storage (must be unique)
       // storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+      partialize: (state) =>
+        Object.fromEntries(
+          Object.entries(state).filter(([key]) => ![
+            'showSettingsModal', 
+            'showInfoModal', 
+            'showCreditsModal'
+          ].includes(key)),
+        ),
       onRehydrateStorage: () => (state) => {
         state.setHasHydrated(true)
       },

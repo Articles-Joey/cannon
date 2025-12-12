@@ -21,16 +21,6 @@ import { useStore } from '@/hooks/useStore';
 //     ssr: false,
 // });
 
-const InfoModal = dynamic(
-    () => import('@/components/UI/InfoModal'),
-    { ssr: false }
-)
-
-// const SettingsModal = dynamic(
-//     () => import('app/(site)/community/games/four-frogs/components/SettingsModal'),
-//     { ssr: false }
-// )
-
 // const PrivateGameModal = dynamic(
 //     () => import('app/(site)/community/games/four-frogs/components/PrivateGameModal'),
 //     { ssr: false }
@@ -57,6 +47,11 @@ export default function CannonGameLobbyPage() {
     const setNickname = useStore(state => state.setNickname)
     const setRandomNickname = useStore(state => state.setRandomNickname)
 
+    const setShowInfoModal = useStore((state) => state.setShowInfoModal)
+    const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
+
+    const setShowCreditsModal = useStore((state) => state.setShowCreditsModal)
+
     // Only do once so user can set name from nothing without retriggering
     const [initialRandomName, setInitialRandomName] = useState(false)
     useEffect(() => {
@@ -73,9 +68,9 @@ export default function CannonGameLobbyPage() {
 
     }, [nickname, _hasHydrated])
 
-    const [showInfoModal, setShowInfoModal] = useState(false)
-    const [showSettingsModal, setShowSettingsModal] = useState(false)
-    const [showPrivateGameModal, setShowPrivateGameModal] = useState(false)
+    // const [showInfoModal, setShowInfoModal] = useState(false)
+    // const [showSettingsModal, setShowSettingsModal] = useState(false)
+    // const [showPrivateGameModal, setShowPrivateGameModal] = useState(false)
 
     const [lobbyDetails, setLobbyDetails] = useState({
         players: [],
@@ -84,7 +79,7 @@ export default function CannonGameLobbyPage() {
 
     useEffect(() => {
 
-        setShowInfoModal(localStorage.getItem('game:four-frogs:rulesAnControls') === 'true' ? true : false)
+        // setShowInfoModal(localStorage.getItem('game:four-frogs:rulesAnControls') === 'true' ? true : false)
 
         // if (userReduxState._id) {
         //     console.log("Is user")
@@ -104,11 +99,11 @@ export default function CannonGameLobbyPage() {
 
     }, [])
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        localStorage.setItem('game:four-frogs:rulesAnControls', showInfoModal)
+    //     localStorage.setItem('game:four-frogs:rulesAnControls', showInfoModal)
 
-    }, [showInfoModal])
+    // }, [showInfoModal])
 
     useEffect(() => {
 
@@ -126,28 +121,19 @@ export default function CannonGameLobbyPage() {
 
         <div className="cannon-landing-page">
 
-            {showInfoModal &&
-                <InfoModal
-                    show={showInfoModal}
-                    setShow={setShowInfoModal}
-                />
-            }
-
-            {/* {showSettingsModal &&
-                <SettingsModal
-                    show={showSettingsModal}
-                    setShow={setShowSettingsModal}
-                />
-            }
+            {/* 
 
             {showPrivateGameModal &&
                 <PrivateGameModal
                     show={showPrivateGameModal}
                     setShow={setShowPrivateGameModal}
                 />
-            } */}
+            } 
+             
+            */}
 
             <div className='background-wrap'>
+                <div className='filter'></div>
                 <Image
                     src={`${process.env.NEXT_PUBLIC_CDN}games/Cannon/background.jpg`}
                     alt=""
@@ -368,7 +354,7 @@ export default function CannonGameLobbyPage() {
                             }}
                         >
                             <i className="fad fa-info-square"></i>
-                            Rules & Controls
+                            Rules & Info
                         </ArticlesButton>
 
                         <Link href={'/'} className='w-50'>
@@ -388,9 +374,7 @@ export default function CannonGameLobbyPage() {
                             className={`w-50`}
                             small
                             onClick={() => {
-                                setShowInfoModal({
-                                    game: game_name
-                                })
+                                setShowCreditsModal(true)
                             }}
                         >
                             <i className="fad fa-users"></i>

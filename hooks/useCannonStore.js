@@ -58,7 +58,7 @@ export const useCannonStore = create((set) => ({
         }))
     },
 
-    cameraFollowsProjectile: true,
+    cameraFollowsProjectile: false,
     setCameraFollowsProjectile: (newValue) => {
         set((prev) => ({
             cameraFollowsProjectile: newValue

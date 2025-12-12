@@ -3,6 +3,7 @@ import { useState } from "react";
 import { Modal, Form } from "react-bootstrap"
 
 import ArticlesButton from "@/components/UI/Button";
+import { useStore } from "@/hooks/useStore";
 
 export default function FourFrogsSettingsModal({
     show,
@@ -14,6 +15,9 @@ export default function FourFrogsSettingsModal({
     const [lightboxData, setLightboxData] = useState(null)
 
     const [tab, setTab] = useState('Controls')
+
+    const darkMode = useStore(state => state.darkMode)
+    const toggleDarkMode = useStore(state => state.toggleDarkMode)
 
     return (
         <>
@@ -53,6 +57,7 @@ export default function FourFrogsSettingsModal({
                     <div className='p-2'>
                         {[
                             'Controls',
+                            'Visuals',
                             'Audio',
                             'Chat'
                         ].map(item =>
@@ -69,6 +74,20 @@ export default function FourFrogsSettingsModal({
                     <hr className="my-0" />
 
                     <div className="p-2">
+                        {tab == 'Visuals' &&
+                            <div>
+
+                                <div className="p-2">
+                                    <div>Dark Mode</div>
+                                    <ArticlesButton
+                                        onClick={() => { toggleDarkMode() }}
+                                    >
+                                        {darkMode ? 'Enabled' : 'Disabled'}
+                                    </ArticlesButton>
+                                </div>
+
+                            </div>
+                        }
                         {tab == 'Controls' &&
                             <div>
                                 {[
@@ -89,30 +108,27 @@ export default function FourFrogsSettingsModal({
                                         defaultKeyboardKey: 'D'
                                     },
                                     {
-                                        action: 'Drop Insect',
+                                        action: 'Move Up',
+                                        defaultKeyboardKey: 'Up Arrow'
+                                    },
+                                    {
+                                        action: 'Move Down',
+                                        defaultKeyboardKey: 'Down Arrow'
+                                    },
+                                    {
+                                        action: 'Move Left',
+                                        defaultKeyboardKey: 'Left Arrow'
+                                    },
+                                    {
+                                        action: 'Move Right',
+                                        defaultKeyboardKey: 'Right Arrow'
+                                    },
+                                    {
+                                        action: 'Fire Cannon',
                                         defaultKeyboardKey: 'Space'
                                     },
-                                    {
-                                        action: 'Stop Powerup',
-                                        defaultKeyboardKey: 'ArrowDown'
-                                    },
-                                    {
-                                        emote: true,
-                                        action: 'Stick out Tongue',
-                                        defaultKeyboardKey: 'ArrowDown'
-                                    },
-                                    {
-                                        emote: true,
-                                        action: 'Rotate Left',
-                                        defaultKeyboardKey: 'ArrowLeft'
-                                    },
-                                    {
-                                        emote: true,
-                                        action: 'Rotate Right',
-                                        defaultKeyboardKey: 'ArrowRight'
-                                    }
-                                ].map(obj =>
-                                    <div key={obj.action}>
+                                ].map((obj, obj_i) =>
+                                    <div key={`${obj.action}-${obj_i}`}>
                                         <div className="flex-header border-bottom pb-1 mb-1">
 
                                             <div>
@@ -122,11 +138,13 @@ export default function FourFrogsSettingsModal({
 
                                             <div>
 
-                                                <div className="badge badge-hover bg-articles me-1">{obj.defaultKeyboardKey}</div>
+                                                <div className="badge bg-black badge-hover border bg-articles me-1">{obj.defaultKeyboardKey}</div>
 
-                                                <ArticlesButton 
+                                                {/* TODO - Add back in - use Race Game logic for this, finished implementation */}
+                                                <ArticlesButton
                                                     className=""
                                                     small
+                                                    disabled
                                                 >
                                                     Change Key
                                                 </ArticlesButton>
