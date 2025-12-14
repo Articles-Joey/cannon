@@ -3,6 +3,7 @@
 import { createWithEqualityFn as create } from 'zustand/traditional'
 // import { nanoid } from 'nanoid'
 import { degToRad } from 'three/src/math/MathUtils'
+import generateRandomInteger from '@/util/generateRandomInteger'
 
 // const getLocalStorage = (key) => JSON.parse(window.localStorage.getItem(key))
 // const setLocalStorage = (key, value) => window.localStorage.setItem(key, JSON.stringify(value))
@@ -43,6 +44,23 @@ export const useCannonStore = create((set) => ({
     setGoalLocation: (newValue) => {
         set((prev) => ({
             goalLocation: newValue
+        }))
+    },
+    setRandomGoalLocation: () => {
+
+        set((prev) => ({
+            goalLocation: [
+                generateRandomInteger(-10, 10),
+                0,
+                generateRandomInteger(-10, 10)
+            ]
+        }))
+    },
+
+    changeCameraLocation: false,
+    setChangeCameraLocation: (newValue) => {
+        set((prev) => ({
+            changeCameraLocation: newValue
         }))
     },
 

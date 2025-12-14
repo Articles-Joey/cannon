@@ -10,12 +10,14 @@ import { Dropdown, DropdownButton } from "react-bootstrap";
 // import { useGameStore } from "../hooks/useGameStore";
 import ArticlesButton from "@/components/UI/Button";
 
-import ControllerPreview from "@/components/ControllerPreview";
-
 import { useSocketStore } from "@/hooks/useSocketStore";
 import { useCannonStore } from "@/hooks/useCannonStore";
 import useFullscreen from "@/hooks/useFullScreen";
 import { useStore } from "@/hooks/useStore";
+
+import DebugControls from "./DebugControls";
+import TouchControlsCard from "./TouchControlsCard";
+import ControllerUICard from "./ControllerUICard";
 
 function LeftPanelContent(props) {
 
@@ -40,17 +42,20 @@ function LeftPanelContent(props) {
     const sidebar = useStore(state => state.sidebar);
     const toggleSidebar = useStore(state => state.toggleSidebar);
 
+    const toggleAudioEnabled = useStore((state) => state.toggleAudioEnabled)
+    const audioEnabled = useStore((state) => state.audioSettings.enabled)
+
     const {
-        server,
+        // server,
         // players,
-        touchControlsEnabled,
-        setTouchControlsEnabled,
+        // touchControlsEnabled,
+        // setTouchControlsEnabled,
         reloadScene,
-        controllerState,
+        // controllerState,
         // isFullscreen,
         // requestFullscreen,
         // exitFullscreen,
-        setShowMenu
+        // setShowMenu
     } = props;
 
     return (
@@ -128,7 +133,7 @@ function LeftPanelContent(props) {
                             <span>Fullscreen</span>
                         </ArticlesButton>
 
-                        <ArticlesButton
+                        {/* <ArticlesButton
                             small
                             className="w-50"
                             active={isFullscreen}
@@ -138,7 +143,37 @@ function LeftPanelContent(props) {
                         >
                             <i className='fad fa-cog'></i>
                             <span>Settings</span>
-                        </ArticlesButton>
+                        </ArticlesButton> */}
+
+                        <div className='w-50 d-flex'>
+                            <ArticlesButton
+                                className={`w-100`}
+                                small
+                                onClick={() => {
+                                    setShowSettingsModal(true)
+                                }}
+                            >
+                                <i className="fad fa-cog px-0"></i>
+                                <span style={{ fontSize: '0.71rem' }}>Settings</span>
+                            </ArticlesButton>
+
+                            <ArticlesButton
+                                className={``}
+                                small
+                                active={audioEnabled}
+                                onClick={() => {
+                                    toggleAudioEnabled()
+                                }}
+                                style={{
+                                    // display: 'block',
+                                    // paddingLeft: '0px',
+                                    // paddingRight: '0px',
+                                    // width: '30px!important',
+                                }}
+                            >
+                                <i className="fad fa-volume me-0"></i>
+                            </ArticlesButton>
+                        </div>
 
                         <ArticlesButton
                             small
@@ -273,85 +308,15 @@ function LeftPanelContent(props) {
             </div> */}
 
             {/* Touch Controls */}
-            <div
-                className="card card-articles card-sm"
-            >
-                <div className="card-body">
+            <TouchControlsCard />
 
-                    <div className="small text-muted">Touch Controls</div>
-
-                    <div className='d-flex flex-column'>
-
-                        <div>
-                            <ArticlesButton
-                                size="sm"
-                                className="w-50"
-                                active={!touchControlsEnabled}
-                                onClick={() => {
-                                    setTouchControlsEnabled(false)
-                                }}
-                            >
-                                <i className="fad fa-redo"></i>
-                                Off
-                            </ArticlesButton>
-
-                            <ArticlesButton
-                                size="sm"
-                                className="w-50"
-                                active={touchControlsEnabled}
-                                onClick={() => {
-                                    setTouchControlsEnabled(true)
-                                }}
-                            >
-                                <i className="fad fa-redo"></i>
-                                On
-                            </ArticlesButton>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
+            <ControllerUICard />
 
             <DebugControls
                 reloadScene={reloadScene}
             />
 
-            {controllerState?.connected &&
-                <div className="panel-content-group p-0 text-dark">
 
-                    <div className="p-1 border-bottom border-dark">
-                        <div className="fw-bold" style={{ fontSize: '0.7rem' }}>
-                            {controllerState?.id}
-                        </div>
-                    </div>
-
-                    <div className='p-1'>
-                        <ArticlesButton
-                            small
-                            className="w-100"
-                            active={showControllerState}
-                            onClick={() => {
-                                setShowControllerState(prev => !prev)
-                            }}
-                        >
-                            {showControllerState ? 'Hide' : 'Show'} Controller Preview
-                        </ArticlesButton>
-                    </div>
-
-                    {showControllerState && <div className='p-3'>
-
-                        <ControllerPreview
-                            controllerState={controllerState}
-                            showJSON={true}
-                            showVibrationControls={true}
-                            maxHeight={300}
-                            showPreview={true}
-                        />
-                    </div>}
-
-                </div>
-            }
 
         </div>
     )
@@ -360,91 +325,7 @@ function LeftPanelContent(props) {
 
 export default memo(LeftPanelContent)
 
-function DebugControls({
-    reloadScene
-}) {
 
-    const projectiles = useCannonStore(state => state.projectiles);
-    const playerRotation = useCannonStore(state => state.playerRotation);
-    const setProjectiles = useCannonStore(state => state.setProjectiles);
 
-    const cameraFollowsProjectile = useCannonStore(state => state.cameraFollowsProjectile);
-    const setCameraFollowsProjectile = useCannonStore(state => state.setCameraFollowsProjectile);
 
-    return (
-        <>
-            {/* Debug Controls */}
-            <div
-                className="card card-articles card-sm"
-            >
-                <div className="card-body">
 
-                    <div className="small text-muted">Debug Controls</div>
-
-                    <div className="py-2">
-                        {JSON.stringify(playerRotation, null, 2)}
-                    </div>
-
-                    <div className="py-2">
-                        {/* {JSON.stringify(projectiles, null, 2)} */}
-                        {projectiles?.length || 0}
-                    </div>
-
-                    <div className='d-flex flex-column'>
-
-                        <div>
-                            <ArticlesButton
-                                size="sm"
-                                className="w-50"
-                                onClick={() => {
-                                    setProjectiles([])
-                                }}
-                            >
-                                {/* <i className="fad fa-redo"></i> */}
-                                Reset Projectiles
-                            </ArticlesButton>
-
-                            <ArticlesButton
-                                size="sm"
-                                className="w-50"
-                                onClick={reloadScene}
-                            >
-                                <i className="fad fa-redo"></i>
-                                Reload Game
-                            </ArticlesButton>
-
-                            <ArticlesButton
-                                size="sm"
-                                className="w-50"
-                                onClick={reloadScene}
-                            >
-                                <i className="fad fa-redo"></i>
-                                Reset Camera
-                            </ArticlesButton>
-
-                            <ArticlesButton
-                                size="sm"
-                                className="w-50"
-                                onClick={() => {
-                                    setCameraFollowsProjectile(!cameraFollowsProjectile)
-                                }}
-                                active={cameraFollowsProjectile}
-                            >
-                                {/* <i className="fad fa-redo"></i> */}
-                                <span
-                                // style={{
-                                //     fontSize: '0.52rem',
-                                // }}
-                                >
-                                    Follow Projectile
-                                </span>
-                            </ArticlesButton>
-                        </div>
-
-                    </div>
-
-                </div>
-            </div>
-        </>
-    )
-}

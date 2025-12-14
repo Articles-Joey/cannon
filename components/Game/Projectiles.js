@@ -6,12 +6,12 @@ import { Vector3 } from "three";
 
 export default function Projectiles() {
 
-    const [ref, api] = useSphere(() => ({
-        mass: 1,
-        // type: 'Dynamic',
-        args: [1, 1, 1],
-        position: [-2, 5, 0],
-    }))
+    // const [ref, api] = useSphere(() => ({
+    //     mass: 1,
+    //     // type: 'Dynamic',
+    //     args: [1, 1, 1],
+    //     position: [-2, 5, 0],
+    // }))
 
     const projectiles = useCannonStore(state => state.projectiles);
 
@@ -26,7 +26,7 @@ export default function Projectiles() {
                         -10
                     ]}
                     // position={[-43, 1, 43]}
-                    position={[5, 0, 43]}
+                    position={[5, 2, 43]}
                     item={item}
                 />
             })}
@@ -48,6 +48,10 @@ function Projectile({ position, velocity, item }) {
         mass: 1, // Give the projectile some mass
         position: position, // Initial spawn position
         args: [0.5], // Sphere radius
+        userData: { 
+            tag: 'player-projectile',
+            id: item.id
+        }
     }));
 
     useEffect(() => {
@@ -87,11 +91,19 @@ function Projectile({ position, velocity, item }) {
     useEffect(() => {
 
         const unsubscribe = api.position.subscribe(([x, y, z]) => {
-            if (y < -5) {
+            if (y < -1) {
 
                 console.log("Remove this projectile", item)
 
-                const removeProjectile = useCannonStore.getState().removeProjectile;
+                const { removeProjectile, setChangeCameraLocation, projectiles, cameraFollowsProjectile } = useCannonStore.getState();
+
+                if (cameraFollowsProjectile && projectiles[projectiles.length - 1]?.id === item.id) {
+                    setChangeCameraLocation([
+                        0,
+                        10,
+                        80
+                    ])
+                }
 
                 // api.mass.set(0)
 

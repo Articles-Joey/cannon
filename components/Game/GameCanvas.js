@@ -1,4 +1,4 @@
-import { createContext, createRef, forwardRef, memo, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createContext, createRef, forwardRef, memo, use, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
 import { Sky, useDetectGPU, useTexture, OrbitControls, Cylinder, QuadraticBezierLine, Text } from "@react-three/drei";
@@ -13,10 +13,15 @@ import { PaintBucket } from "@/components/Models/PaintBucket";
 import { Farm } from "@/components/Models/Farm";
 
 import { useCannonStore } from "@/hooks/useCannonStore";
-import { Physics, useBox, useCylinder, useSphere } from "@react-three/cannon";
+import { useStore } from '@/hooks/useStore';
+
+import { Debug, Physics, useBox, useCylinder, useSphere } from "@react-three/cannon";
 import WaterPlane from "@/components/Game/WaterPlane";
 import { degToRad } from "three/src/math/MathUtils";
 import Projectiles from "./Projectiles";
+import ChangeCameraLocationListener from "./ChangeCameraLocationListener";
+
+import minGraphicsQuality from "@/util/minGraphicsQuality";
 
 const texture = new TextureLoader().load(`${process.env.NEXT_PUBLIC_CDN}games/Race Game/grass.jpg`)
 
@@ -44,29 +49,28 @@ function GameCanvas(props) {
 
     // const GPUTier = useDetectGPU()
 
-    const {
-        playerRotation,
-        setPlayerRotation,
-        goalLocation
-    } = useCannonStore(state => ({
-        playerRotation: state.playerRotation,
-        setPlayerRotation: state.setPlayerRotation,
-        goalLocation: state.goalLocation,
-    }));
+    const playerRotation = useCannonStore(state => state.playerRotation);
+    // const setPlayerRotation = useCannonStore(state => state.setPlayerRotation);
+    const goalLocation = useCannonStore(state => state.goalLocation);
 
-    const {
-        handleCameraChange,
-        gameState,
-        players,
-        move,
-        cameraInfo,
-        server
-    } = props;
+    const darkMode = useStore(state => state.darkMode)
+    const graphicsQuality = useStore(state => state.graphicsQuality)
 
-    const [[a, b, c, d, e]] = useState(() => [...Array(5)].map(createRef))
+    // const {
+    //     handleCameraChange,
+    //     gameState,
+    //     players,
+    //     move,
+    //     cameraInfo,
+    //     server
+    // } = props;
+
+    // const [[a, b, c, d, e]] = useState(() => [...Array(5)].map(createRef))
 
     return (
         <Canvas camera={{ position: [0, 40, 90], fov: 50 }}>
+
+            <ChangeCameraLocationListener />
 
             <OrbitControls
                 makeDefault
@@ -156,57 +160,67 @@ function GameCanvas(props) {
                 />
             </group> */}
 
-            <group>
-                <Farm
-                    scale={0.1}
-                    position={[0, 0, -70]}
-                    rotation={[0, -Math.PI, 0]}
-                />
-                <Farm
-                    scale={0.1}
-                    position={[30, 0, -70]}
-                    rotation={[0, -Math.PI, 0]}
-                />
-                <Farm
-                    scale={0.1}
-                    position={[-30, 0, -70]}
-                    rotation={[0, -Math.PI, 0]}
-                />
-            </group>
+            {/* {minGraphicsQuality("Medium") && */}
+                <group
+                    visible={minGraphicsQuality("Medium", graphicsQuality) ? true : false}
+                >
+                    <Farm
+                        scale={0.1}
+                        position={[0, 0, -70]}
+                        rotation={[0, -Math.PI, 0]}
+                    />
+                    <Farm
+                        scale={0.1}
+                        position={[30, 0, -70]}
+                        rotation={[0, -Math.PI, 0]}
+                    />
+                    <Farm
+                        scale={0.1}
+                        position={[-30, 0, -70]}
+                        rotation={[0, -Math.PI, 0]}
+                    />
+                </group>
+            {/* } */}
 
-            {[...Array(60)].map((item, i) => {
-                return (
-                    <group key={i}>
-                        <Tree
-                            // key={i}
-                            scale={0.2}
-                            position={[-70, 0, (-88 + i * 3)]}
-                        />
-                        <Tree
-                            // key={i}
-                            scale={0.3}
-                            position={[-75, 0, (-88 + i * 3)]}
-                        />
-                    </group>
-                )
-            })}
-
-            {[...Array(60)].map((item, i) => {
-                return (
-                    <group key={i}>
-                        <Tree
-                            // key={i}
-                            scale={0.2}
-                            position={[70, 0, (-88 + i * 3)]}
-                        />
-                        <Tree
-                            // key={i}
-                            scale={0.3}
-                            position={[75, 0, (-88 + i * 3)]}
-                        />
-                    </group>
-                )
-            })}
+            {/* {minGraphicsQuality("High") && <> */}
+                <group
+                    visible={minGraphicsQuality("High", graphicsQuality) ? true : false}
+                >
+                    {[...Array(60)].map((item, i) => {
+                        return (
+                            <group key={i}>
+                                <Tree
+                                    // key={i}
+                                    scale={0.2}
+                                    position={[-70, 0, (-88 + i * 3)]}
+                                />
+                                <Tree
+                                    // key={i}
+                                    scale={0.3}
+                                    position={[-75, 0, (-88 + i * 3)]}
+                                />
+                            </group>
+                        )
+                    })}
+    
+                    {[...Array(60)].map((item, i) => {
+                        return (
+                            <group key={i}>
+                                <Tree
+                                    // key={i}
+                                    scale={0.2}
+                                    position={[70, 0, (-88 + i * 3)]}
+                                />
+                                <Tree
+                                    // key={i}
+                                    scale={0.3}
+                                    position={[75, 0, (-88 + i * 3)]}
+                                />
+                            </group>
+                        )
+                    })}
+                </group>
+            {/* </>} */}
 
             <GrassPlane />
 
@@ -227,53 +241,63 @@ function GameCanvas(props) {
                 <Node ref={d} name="d" color="#204090" position={[-43, 2.5, 43]} />
             </Nodes> */}
 
-            <Physics>
+            <Physics
+                gravity={[0, -18.82, 0]}
+            >
 
-                <Projectiles />
+                <Debug scale={1}>
 
-                <BucketCollisionDetection
-                    position={[0, 0, 0]}
-                    args={[3, 3, 0.25, 8]}
-                />
+                    <Projectiles />
 
-                <group
-                    // position={[0, 14, 0]}
-                    position={[
-                        goalLocation[0],
-                        // goalLocation[1], 
-                        14,
-                        goalLocation[2]
-                    ]}
-                >
-
-                    <Cylinder
-                        position={[0, -7, 0]} args={[1, 1, 14, 8]} material-color="red"
-                    />
-
-                    <WaterPlane
-                        position={[0, 6, 0]}
-                    />
-
-                    <PaintBucket
-                        scale={50}
-                    // position={[goalLocation[0], goalLocation[1], [goalLocation[2]]]}
-                    // position={[0, 14, 0]}
-                    />
-
-                    <PlayerProjectile
-                        position={[0, -7, 0]}
-                    />
-
-                    <Ground
+                    <BucketCollisionDetection
                         position={[
-                            0,
-                            // goalLocation[1], 
-                            -14,
-                            0
+                            goalLocation[0],
+                            20,
+                            goalLocation[2]
                         ]}
+                        args={[3, 3, 0.25, 8]}
                     />
 
-                </group>
+                    <group
+                        // position={[0, 14, 0]}
+                        position={[
+                            goalLocation[0],
+                            // goalLocation[1], 
+                            14,
+                            goalLocation[2]
+                        ]}
+                    >
+
+                        <Cylinder
+                            position={[0, -7, 0]} args={[1, 1, 14, 8]} material-color="red"
+                        />
+
+                        <WaterPlane
+                            position={[0, 6, 0]}
+                        />
+
+                        <PaintBucket
+                            scale={50}
+                        // position={[goalLocation[0], goalLocation[1], [goalLocation[2]]]}
+                        // position={[0, 14, 0]}
+                        />
+
+                        <PlayerProjectile
+                            position={[0, -7, 0]}
+                        />
+
+                        <Ground
+                            position={[
+                                0,
+                                // goalLocation[1], 
+                                -14,
+                                0
+                            ]}
+                        />
+
+                    </group>
+
+                </Debug>
 
             </Physics>
 
@@ -283,7 +307,7 @@ function GameCanvas(props) {
 
 export default memo(GameCanvas)
 
-function Ground({position}) {
+function Ground({ position }) {
 
     const [ref, api] = useBox(() => ({
         mass: 0,
@@ -302,18 +326,53 @@ function Ground({position}) {
 
 }
 
-function BucketCollisionDetection({ args }) {
+function BucketCollisionDetection({ position, args }) {
+
+    // const removeProjectile = useCannonStore(state => state.removeProjectile)
+    // const cameraFollowsProjectile = useCannonStore(state => state.cameraFollowsProjectile);
 
     const [ref, api] = useCylinder(() => ({
         mass: 0,
         // type: 'Static',
         isTrigger: true,
         args: args,
-        position: [0, 20, 0],
-        onCollide: () => {
-            console.log("Ball laned in bucket!")
+        position: position,
+        onCollide: (e) => {
+
+            console.log(e.body)
+
+            if (e.body.userData?.tag === 'player-projectile') {
+                console.log("Ball landed in bucket!", e.body.userData)
+
+                const {
+                    removeProjectile,
+                    setChangeCameraLocation,
+                    projectiles,
+                    cameraFollowsProjectile
+                } = useCannonStore.getState();
+
+                if (
+                    cameraFollowsProjectile
+                    // && 
+                    // projectiles[projectiles.length - 1]?.id === item.id
+                ) {
+                    setChangeCameraLocation([
+                        0,
+                        10,
+                        80
+                    ])
+                }
+
+                removeProjectile(e.body.userData.id)
+            }
+
         }
     }))
+
+    useEffect(() => {
+        console.log("position updated")
+        api.position.set(position[0], position[1], position[2])
+    }, [position])
 
     return (
         <mesh ref={ref} castShadow>

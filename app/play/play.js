@@ -12,12 +12,13 @@ import { useControllerStore } from '@/hooks/useControllerStore';
 import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
 
 // import LeftPanelContent from '@/components/UI/LeftPanel';
-import LeftPanelContent from '@/components/Game/LeftPanel';
+import LeftPanelContent from '@/components/UI/GameMenu';
 
 import { useSocketStore } from '@/hooks/useSocketStore';
 import { useCannonStore } from '@/hooks/useCannonStore';
 import generateRandomInteger from '@/util/generateRandomInteger';
 import ControlsOverlay from '@/components/Game/ControlsOverlay';
+import TouchControls from '@/components/UI/TouchControls';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
@@ -40,8 +41,8 @@ export default function CannonGamePage() {
     const params = Object.fromEntries(searchParams.entries());
     const { server } = params
 
-    const { controllerState, setControllerState } = useControllerStore()
-    const [showControllerState, setShowControllerState] = useState(false)
+    // const { controllerState, setControllerState } = useControllerStore()
+    // const [showControllerState, setShowControllerState] = useState(false)
 
     // const [ cameraMode, setCameraMode ] = useState('Player')
 
@@ -77,7 +78,7 @@ export default function CannonGamePage() {
 
     const [showMenu, setShowMenu] = useState(false)
 
-    const [touchControlsEnabled, setTouchControlsEnabled] = useLocalStorageNew("game:touchControlsEnabled", false)
+    // const [touchControlsEnabled, setTouchControlsEnabled] = useLocalStorageNew("game:touchControlsEnabled", false)
 
     const [sceneKey, setSceneKey] = useState(0);
 
@@ -97,16 +98,16 @@ export default function CannonGamePage() {
     const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
 
     let panelProps = {
-        server,
-        players,
-        touchControlsEnabled,
-        setTouchControlsEnabled,
+        // server,
+        // players,
+        // touchControlsEnabled,
+        // setTouchControlsEnabled,
         reloadScene,
         // controllerState,
         // isFullscreen,
         // requestFullscreen,
         // exitFullscreen,
-        setShowMenu
+        // setShowMenu
     }
 
     const game_name = 'Cannon'
@@ -121,11 +122,12 @@ export default function CannonGamePage() {
 
             <div className="menu-bar card card-articles p-1 justify-content-center">
 
-                <div className='flex-header align-items-center'>
+                <div className='d-flex justify-content-center align-items-center'>
 
                     <ArticlesButton
                         small
                         active={showMenu}
+                        className="px-5"
                         onClick={() => {
                             setShowMenu(prev => !prev)
                         }}
@@ -148,9 +150,9 @@ export default function CannonGamePage() {
                 />
             </div>
 
-            {/* <TouchControls
-                touchControlsEnabled={touchControlsEnabled}
-            /> */}
+            <TouchControls
+                // touchControlsEnabled={touchControlsEnabled}
+            />
 
             <div className='panel-left card rounded-0 d-none d-lg-flex'>
 

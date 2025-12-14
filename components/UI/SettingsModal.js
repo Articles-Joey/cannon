@@ -4,6 +4,7 @@ import { Modal, Form } from "react-bootstrap"
 
 import ArticlesButton from "@/components/UI/Button";
 import { useStore } from "@/hooks/useStore";
+import minGraphicsQuality from "@/util/minGraphicsQuality";
 
 export default function FourFrogsSettingsModal({
     show,
@@ -18,6 +19,17 @@ export default function FourFrogsSettingsModal({
 
     const darkMode = useStore(state => state.darkMode)
     const toggleDarkMode = useStore(state => state.toggleDarkMode)
+
+    const toontownMode = useStore(state => state.toggleToontownMode)
+    const toggleToontownMode = useStore(state => state.toggleToontownMode)
+
+    const toggleAudioEnabled = useStore((state) => state.toggleAudioEnabled)
+    const audioSettings = useStore((state) => state.audioSettings)
+    const setAudioSettings = useStore((state) => state.setAudioSettings)
+    const audioEnabled = useStore((state) => state.audioSettings.enabled)
+
+    const graphicsQuality = useStore((state) => state.graphicsQuality)
+    const setGraphicsQuality = useStore((state) => state.setGraphicsQuality)
 
     return (
         <>
@@ -78,11 +90,39 @@ export default function FourFrogsSettingsModal({
                             <div>
 
                                 <div className="p-2">
+                                    <div>Graphics Quality</div>
+                                    {[
+                                        'Low',
+                                        'Medium',
+                                        'High'
+                                    ].map((item, item_i) =>
+                                        <ArticlesButton
+                                            key={item_i}
+                                            active={item == graphicsQuality}
+                                            onClick={() => {
+                                                setGraphicsQuality(item)
+                                            }}
+                                        >
+                                            {item}
+                                        </ArticlesButton>
+                                    )}
+                                </div>
+
+                                <div className="p-2">
                                     <div>Dark Mode</div>
                                     <ArticlesButton
                                         onClick={() => { toggleDarkMode() }}
                                     >
                                         {darkMode ? 'Enabled' : 'Disabled'}
+                                    </ArticlesButton>
+                                </div>
+
+                                <div className="p-2">
+                                    <div>Toontown Mode</div>
+                                    <ArticlesButton
+                                        onClick={() => { toggleToontownMode() }}
+                                    >
+                                        {toontownMode ? 'Enabled' : 'Disabled'}
                                     </ArticlesButton>
                                 </div>
 
@@ -157,14 +197,41 @@ export default function FourFrogsSettingsModal({
                         }
                         {tab == 'Audio' &&
                             <>
-                                <Form.Label className="mb-0">Game Volume</Form.Label>
-                                <Form.Range />
-                                <Form.Label className="mb-0">Music Volume</Form.Label>
-                                <Form.Range />
+
+                                <div className="p-2">
+                                    <div>Music</div>
+                                    <ArticlesButton
+                                        onClick={() => { toggleAudioEnabled() }}
+                                    >
+                                        {audioEnabled ? 'Enabled' : 'Disabled'}
+                                    </ArticlesButton>
+                                </div>
+
+                                <div className="p-2">
+                                    <Form.Label className="mb-0">Game Volume</Form.Label>
+                                    <Form.Range
+                                        value={audioSettings.soundEffectsVolume}
+                                        onChange={(e) => setAudioSettings({
+                                            ...audioSettings,
+                                            soundEffectsVolume: e.target.value
+                                        })}
+                                    />
+                                </div>
+
+                                <div className="p-2">
+                                    <Form.Label className="mb-0">Music Volume</Form.Label>
+                                    <Form.Range
+                                        value={audioSettings.backgroundMusicVolume}
+                                        onChange={(e) => setAudioSettings({
+                                            ...audioSettings,
+                                            backgroundMusicVolume: e.target.value
+                                        })}
+                                    />
+                                </div>
                             </>
                         }
                         {tab == 'Chat' &&
-                            <>
+                            <div className="p-1">
                                 <Form.Check
                                     type="switch"
                                     id="custom-switch"
@@ -180,7 +247,7 @@ export default function FourFrogsSettingsModal({
                                     id="custom-switch"
                                     label="Game chat speech bubbles"
                                 />
-                            </>
+                            </div>
                         }
                     </div>
 

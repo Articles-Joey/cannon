@@ -1,7 +1,8 @@
 import { memo, useEffect, useState } from "react";
 
 import ArticlesButton from "@/components/UI/Button"
-import { useControlsStore, useGameStore } from "../hooks/useGameStore"
+import useTouchControlsStore from "@/hooks/useTouchControlsStore"
+import { useStore } from "@/hooks/useStore";
 
 const arePropsEqual = (prevProps, nextProps) => {
     // Compare all props for equality
@@ -10,9 +11,13 @@ const arePropsEqual = (prevProps, nextProps) => {
 
 function JumpButtonBase() {
 
-    const {
-        touchControls, setTouchControls
-    } = useControlsStore()
+    // const {
+    //     touchControls, setTouchControls
+    // } = useControlsStore()
+    const touchControlsEnabled = useTouchControlsStore(state => state.enabled)
+    const setTouchControlsEnabled = useTouchControlsStore(state => state.setEnabled)
+    const touchControls = useTouchControlsStore(state => state.touchControls)
+    const setTouchControls = useTouchControlsStore(state => state.setTouchControls)
 
     return (
         <ArticlesButton
@@ -33,18 +38,24 @@ const JumpButton = memo(JumpButtonBase, arePropsEqual);
 
 function TouchControlsBase(props) {
 
-    const {
-        touchControlsEnabled,
-    } = props;
+    // const {
+    //     touchControlsEnabled,
+    // } = props;
+
+    // const touchControlsEnabled = useStore(state => state.touchControlsEnabled)
+    const touchControlsEnabled = useTouchControlsStore(state => state.enabled)
+    const setTouchControlsEnabled = useTouchControlsStore(state => state.setEnabled)
 
     const [nippleCreated, setNippleCreated] = useState(false)
 
     const [nStart, setnStart] = useState(false)
     const [nDirection, setnDirection] = useState(false)
 
-    const {
-        touchControls, setTouchControls
-    } = useControlsStore()
+    // const {
+    //     touchControls, setTouchControls
+    // } = useControlsStore()
+    const touchControls = useTouchControlsStore(state => state.touchControls)
+    const setTouchControls = useTouchControlsStore(state => state.setTouchControls)
 
     function startNipple() {
 
@@ -86,76 +97,76 @@ function TouchControlsBase(props) {
             }
 
         })
-        .on('move', function (evt, data) {
+            .on('move', function (evt, data) {
 
-            // debug(data);
-            dragDistance = data.distance
-            console.log("2", dragDistance)
+                // debug(data);
+                dragDistance = data.distance
+                console.log("2", dragDistance)
 
-            if (dragDistance > 15 && dragDirection) {
+                if (dragDistance > 15 && dragDirection) {
 
-                if (dragDirection == 'left') setTouchControls({
-                    ...touchControls,
-                    left: true,
-                    right: false
-                })
+                    if (dragDirection == 'left') setTouchControls({
+                        ...touchControls,
+                        left: true,
+                        right: false
+                    })
 
-                if (dragDirection == 'right') setTouchControls({
-                    ...touchControls,
-                    left: false,
-                    right: true
-                })
+                    if (dragDirection == 'right') setTouchControls({
+                        ...touchControls,
+                        left: false,
+                        right: true
+                    })
 
-            } else {
-                setTouchControls({
-                    ...touchControls,
-                    left: false,
-                    right: false
-                })
-            }
-
-        })
-        .on(' ' +
-            'dir:up plain:up dir:left plain:left dir:down ' +
-            'plain:down dir:right plain:right',
-            function (evt, data) {
-
-                if (evt.type == 'move') {
-                    dragDistance = data.distance
-                }  
-                
-                // dump(evt.type);
-                console.log("3", evt.type, dragDistance)
-
-              
-
-                if (evt.type == 'dir:left') {
-                    dragDirection = 'left'
-                    // setnDirection('left')
-                    // setTouchControls({
-                    //     ...touchControls,
-                    //     left: true,
-                    //     right: false
-                    // })
+                } else {
+                    setTouchControls({
+                        ...touchControls,
+                        left: false,
+                        right: false
+                    })
                 }
 
-                if (evt.type == 'dir:right') {
-                    dragDirection = 'right'
-                    // setnDirection('right')
-                    // setTouchControls({
-                    //     ...touchControls,
-                    //     left: false,
-                    //     right: true
-                    // })
-                }
+            })
+            .on(' ' +
+                'dir:up plain:up dir:left plain:left dir:down ' +
+                'plain:down dir:right plain:right',
+                function (evt, data) {
 
-            }
-        )
-        .on('pressure', function (evt, data) {
-            // debug({
-            //   pressure: data
-            // });
-        });
+                    if (evt.type == 'move') {
+                        dragDistance = data.distance
+                    }
+
+                    // dump(evt.type);
+                    console.log("3", evt.type, dragDistance)
+
+
+
+                    if (evt.type == 'dir:left') {
+                        dragDirection = 'left'
+                        // setnDirection('left')
+                        // setTouchControls({
+                        //     ...touchControls,
+                        //     left: true,
+                        //     right: false
+                        // })
+                    }
+
+                    if (evt.type == 'dir:right') {
+                        dragDirection = 'right'
+                        // setnDirection('right')
+                        // setTouchControls({
+                        //     ...touchControls,
+                        //     left: false,
+                        //     right: true
+                        // })
+                    }
+
+                }
+            )
+            .on('pressure', function (evt, data) {
+                // debug({
+                //   pressure: data
+                // });
+            });
     }
 
     useEffect(() => {

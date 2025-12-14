@@ -15,6 +15,7 @@ import { Suspense } from 'react';
 import SocketLogicHandler from "@/components/SocketLogicHandler";
 import ClientModals from '@/components/UI/ClientModals';
 import DarkModeHandler from '@/components/UI/DarkModeHandler';
+import AudioHandler from '@/components/AudioHandler';
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -28,7 +29,7 @@ import DarkModeHandler from '@/components/UI/DarkModeHandler';
 
 export const metadata = {
   title: "Cannon Game",
-  description: "",
+  description: "Shoot your way to the top by landing your shots in the water tower!",
 };
 
 export default function RootLayout({ children }) {
@@ -48,11 +49,11 @@ export default function RootLayout({ children }) {
       // className={`${geistSans.variable} ${geistMono.variable}`}
       >
 
-        
         <Suspense>
           <SocketLogicHandler />
           <ClientModals />
           <DarkModeHandler />
+          <AudioHandler />
         </Suspense>
 
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>

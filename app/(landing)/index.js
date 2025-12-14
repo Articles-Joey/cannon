@@ -337,7 +337,7 @@ export default function CannonGameLobbyPage() {
                             className={`w-50`}
                             small
                             onClick={() => {
-                                setShowSettingsModal(prev => !prev)
+                                setShowSettingsModal(true)
                             }}
                         >
                             <i className="fad fa-cog"></i>
@@ -348,9 +348,7 @@ export default function CannonGameLobbyPage() {
                             className={`w-50`}
                             small
                             onClick={() => {
-                                setShowInfoModal({
-                                    game: game_name
-                                })
+                                setShowInfoModal(true)
                             }}
                         >
                             <i className="fad fa-info-square"></i>

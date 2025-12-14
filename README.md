@@ -31,3 +31,14 @@ Inspired by the minigame inside Toontown
 https://toontownrewritten.fandom.com/wiki/Cannon_Game
 
 ![Game Artwork](public/img/inspo-artwork.webp)
+
+## Attributions
+
+[Cannon Model]()  
+[Barn Model]()  
+[Water Tower Model]()  
+[Duck Model]()  
+
+[Grass Texture]()  
+
+[Game Music]()  
