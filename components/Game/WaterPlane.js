@@ -14,7 +14,7 @@ export default function WaterPlane(props) {
     const waterNormals = useLoader(THREE.TextureLoader, link)
 
     waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping
-    const geom = useMemo(() => new THREE.PlaneGeometry(5, 5), [])
+    const geom = useMemo(() => new THREE.CircleGeometry(2.8, 64), [])
     const config = useMemo(
         () => ({
             textureWidth: 512,

@@ -22,6 +22,7 @@ import Projectiles from "./Projectiles";
 import ChangeCameraLocationListener from "./ChangeCameraLocationListener";
 
 import minGraphicsQuality from "@/util/minGraphicsQuality";
+import Players from "./Players";
 
 const texture = new TextureLoader().load(`${process.env.NEXT_PUBLIC_CDN}games/Race Game/grass.jpg`)
 
@@ -48,6 +49,8 @@ const GrassPlane = () => {
 function GameCanvas(props) {
 
     // const GPUTier = useDetectGPU()
+
+    const debug = useCannonStore(state => state.debug);
 
     const playerRotation = useCannonStore(state => state.playerRotation);
     // const setPlayerRotation = useCannonStore(state => state.setPlayerRotation);
@@ -85,9 +88,11 @@ function GameCanvas(props) {
             // {...props} 
             />
 
+            <Players />
+
             <group>
 
-                <group position={[-15, 0, 43]}>
+                {/* <group position={[-15, 0, 43]}>
                     <Cannon
                         scale={3}
                         rotation={[0, degToRad(180), 0]}
@@ -97,9 +102,9 @@ function GameCanvas(props) {
                         rotation={[0, -Math.PI / 2, 0]}
                         scale={1}
                     />
-                </group>
+                </group> */}
 
-                <group position={[-5, 0, 43]}>
+                {/* <group position={[-5, 0, 43]}>
                     <Cannon
                         scale={3}
                         rotation={[0, degToRad(180), 0]}
@@ -109,10 +114,10 @@ function GameCanvas(props) {
                         rotation={[0, -Math.PI / 2, 0]}
                         scale={1}
                     />
-                </group>
+                </group> */}
 
                 {/* Single Player */}
-                <group position={[5, 0, 43]}>
+                {/* <group position={[5, 0, 43]}>
                     <group
                         rotation={[0, playerRotation[1], 0]}
                         scale={3}
@@ -127,9 +132,9 @@ function GameCanvas(props) {
                         rotation={[0, -Math.PI / 2, 0]}
                         scale={1}
                     />
-                </group>
+                </group> */}
 
-                <group position={[15, 0, 43]}>
+                {/* <group position={[15, 0, 43]}>
                     <Cannon
                         scale={3}
                         rotation={[0, degToRad(180), 0]}
@@ -139,7 +144,7 @@ function GameCanvas(props) {
                         rotation={[0, -Math.PI / 2, 0]}
                         scale={1}
                     />
-                </group>
+                </group> */}
 
             </group>
 
@@ -245,7 +250,11 @@ function GameCanvas(props) {
                 gravity={[0, -18.82, 0]}
             >
 
-                <Debug scale={1}>
+                <Debug 
+                    scale={
+                        debug ? 1 : 0
+                    }
+                >
 
                     <Projectiles />
 
@@ -255,7 +264,7 @@ function GameCanvas(props) {
                             20,
                             goalLocation[2]
                         ]}
-                        args={[3, 3, 0.25, 8]}
+                        args={[2, 2, 0.25, 8]}
                     />
 
                     <group
@@ -343,6 +352,17 @@ function BucketCollisionDetection({ position, args }) {
 
             if (e.body.userData?.tag === 'player-projectile') {
                 console.log("Ball landed in bucket!", e.body.userData)
+
+                const audioSettings = useStore.getState().audioSettings
+                if (audioSettings.enabled) {
+                    const audio = new Audio('/audio/watersplash.ogg')
+                    audio.volume = audioSettings.soundEffectsVolume / 100
+                    try {
+                        audio.play()
+                    } catch (error) {
+                        console.error("Audio playback failed", error)
+                    }
+                }
 
                 const {
                     removeProjectile,

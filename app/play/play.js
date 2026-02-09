@@ -7,9 +7,9 @@ import dynamic from 'next/dynamic'
 import ArticlesButton from '@/components/UI/Button';
 
 import useFullscreen from '@/hooks/useFullScreen';
-import { useControllerStore } from '@/hooks/useControllerStore';
 
-import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
+// import { useControllerStore } from '@/hooks/useControllerStore';
+// import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
 
 // import LeftPanelContent from '@/components/UI/LeftPanel';
 import LeftPanelContent from '@/components/UI/GameMenu';
@@ -19,6 +19,11 @@ import { useCannonStore } from '@/hooks/useCannonStore';
 import generateRandomInteger from '@/util/generateRandomInteger';
 import ControlsOverlay from '@/components/Game/ControlsOverlay';
 import TouchControls from '@/components/UI/TouchControls';
+import classNames from 'classnames';
+import { useStore } from '@/hooks/useStore';
+import PeerManager from '@/components/Game/PeerManager';
+import { Suspense } from 'react';
+import { useGameServer } from '@/hooks/useGameServer';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
@@ -31,6 +36,10 @@ export default function CannonGamePage() {
     } = useSocketStore(state => ({
         socket: state.socket
     }));
+
+    const sidebar = useStore(state => state.sidebar);
+
+    
 
     const resetPlayerRotation = useCannonStore(state => state.resetPlayerRotation);
     const setGoalLocation = useCannonStore(state => state.setGoalLocation);
@@ -67,6 +76,7 @@ export default function CannonGamePage() {
 
     useEffect(() => {
 
+        // resetPeerStore();
         resetPlayerRotation()
         setGoalLocation([
             generateRandomInteger(-10, 10),
@@ -76,7 +86,9 @@ export default function CannonGamePage() {
 
     }, []);
 
-    const [showMenu, setShowMenu] = useState(false)
+    // const [showMenu, setShowMenu] = useState(false)
+    const showMenu = useStore(state => state.showMenu);
+    const setShowMenu = useStore(state => state.setShowMenu);
 
     // const [touchControlsEnabled, setTouchControlsEnabled] = useLocalStorageNew("game:touchControlsEnabled", false)
 
@@ -116,11 +128,23 @@ export default function CannonGamePage() {
     return (
 
         <div
-            className={`cannon-game-page ${isFullscreen && 'fullscreen'}`}
+            className={
+                classNames(
+                    `cannon-game-page`,
+                    {
+                        'fullscreen': isFullscreen,
+                        'sidebar-open': sidebar
+                    }
+                )
+            }
             id="cannon-game-page"
         >
 
-            <div className="menu-bar card card-articles p-1 justify-content-center">
+            <Suspense>
+                <PeerManager />
+            </Suspense>
+
+            <div className="menu-bar card card-articles rounded-0 p-1 justify-content-center">
 
                 <div className='d-flex justify-content-center align-items-center'>
 
@@ -154,7 +178,7 @@ export default function CannonGamePage() {
                 // touchControlsEnabled={touchControlsEnabled}
             />
 
-            <div className='panel-left card rounded-0 d-none d-lg-flex'>
+            <div className='panel-left '>
 
                 <LeftPanelContent
                     {...panelProps}

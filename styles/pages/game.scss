@@ -10,6 +10,21 @@
         }
     }
 
+    &.sidebar-open {
+
+        @include media-breakpoint-up(lg) {
+            .menu-bar {
+                display: none;
+            }
+        }
+
+        .panel-left {
+            @include media-breakpoint-up(lg) {
+                display: block;
+            }
+        }
+    }
+
     .background {
         position: fixed;
         top: 0;
@@ -43,7 +58,8 @@
         @include media-breakpoint-up(lg) {
             transform: initial;
             right: 0;
-            bottom: 0;
+            // bottom: 0;
+            bottom: calc(50px + 0rem);
             margin: 1rem;
         }
 
@@ -95,9 +111,9 @@
         height: 50px;
         z-index: 3;
 
-        @include media-breakpoint-up(lg) {
-            display: none;
-        }
+        // @include media-breakpoint-up(lg) {
+        //     display: none;
+        // }
     }
 
     .mobile-menu {
@@ -142,7 +158,7 @@
 
     .debug-info,
     .game-info {
-        height: calc(100vh - 100px);
+        height: calc(100vh - 0px);
 
         .card {
             height: 100%;
@@ -192,6 +208,10 @@
         width: 300px;
         height: calc(100vh - 0px);
         flex-shrink: 0;
+    }
+
+    .panel-left {
+        display: none;
     }
 
     .panel-right {

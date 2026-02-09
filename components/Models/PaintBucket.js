@@ -47,4 +47,4 @@ export function PaintBucket(props) {
     )
 }
 
-useGLTF.preload('/Paint Bucket.glb')
+useGLTF.preload(link)

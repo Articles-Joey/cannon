@@ -4,6 +4,7 @@ import { createWithEqualityFn as create } from 'zustand/traditional'
 // import { nanoid } from 'nanoid'
 import { degToRad } from 'three/src/math/MathUtils'
 import generateRandomInteger from '@/util/generateRandomInteger'
+import { useStore } from './useStore'
 
 // const getLocalStorage = (key) => JSON.parse(window.localStorage.getItem(key))
 // const setLocalStorage = (key, value) => window.localStorage.setItem(key, JSON.stringify(value))
@@ -57,6 +58,13 @@ export const useCannonStore = create((set) => ({
         }))
     },
 
+    position: [0, 0, 43],
+    setPosition: (newValue) => {
+        set((prev) => ({
+            position: newValue
+        }))
+    },
+
     changeCameraLocation: false,
     setChangeCameraLocation: (newValue) => {
         set((prev) => ({
@@ -76,7 +84,7 @@ export const useCannonStore = create((set) => ({
         }))
     },
 
-    cameraFollowsProjectile: false,
+    cameraFollowsProjectile: true,
     setCameraFollowsProjectile: (newValue) => {
         set((prev) => ({
             cameraFollowsProjectile: newValue
@@ -90,6 +98,16 @@ export const useCannonStore = create((set) => ({
         }))
     },
     addProjectile: (newProjectile) => {
+        const audioSettings = useStore.getState().audioSettings
+        if (audioSettings.enabled) {
+            const audio = new Audio('/audio/Cannon Fire.ogg')
+            audio.volume = audioSettings.soundEffectsVolume / 100
+            try {
+                audio.play()
+            } catch (error) {
+                console.error("Audio playback failed", error)
+            }
+        }
         set((prev) => ({
             projectiles: [...prev.projectiles, newProjectile]
         }))

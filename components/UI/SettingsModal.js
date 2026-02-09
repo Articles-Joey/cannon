@@ -23,11 +23,6 @@ export default function FourFrogsSettingsModal({
     const toontownMode = useStore(state => state.toggleToontownMode)
     const toggleToontownMode = useStore(state => state.toggleToontownMode)
 
-    const toggleAudioEnabled = useStore((state) => state.toggleAudioEnabled)
-    const audioSettings = useStore((state) => state.audioSettings)
-    const setAudioSettings = useStore((state) => state.setAudioSettings)
-    const audioEnabled = useStore((state) => state.audioSettings.enabled)
-
     const graphicsQuality = useStore((state) => state.graphicsQuality)
     const setGraphicsQuality = useStore((state) => state.setGraphicsQuality)
 
@@ -196,39 +191,7 @@ export default function FourFrogsSettingsModal({
                             </div>
                         }
                         {tab == 'Audio' &&
-                            <>
-
-                                <div className="p-2">
-                                    <div>Music</div>
-                                    <ArticlesButton
-                                        onClick={() => { toggleAudioEnabled() }}
-                                    >
-                                        {audioEnabled ? 'Enabled' : 'Disabled'}
-                                    </ArticlesButton>
-                                </div>
-
-                                <div className="p-2">
-                                    <Form.Label className="mb-0">Game Volume</Form.Label>
-                                    <Form.Range
-                                        value={audioSettings.soundEffectsVolume}
-                                        onChange={(e) => setAudioSettings({
-                                            ...audioSettings,
-                                            soundEffectsVolume: e.target.value
-                                        })}
-                                    />
-                                </div>
-
-                                <div className="p-2">
-                                    <Form.Label className="mb-0">Music Volume</Form.Label>
-                                    <Form.Range
-                                        value={audioSettings.backgroundMusicVolume}
-                                        onChange={(e) => setAudioSettings({
-                                            ...audioSettings,
-                                            backgroundMusicVolume: e.target.value
-                                        })}
-                                    />
-                                </div>
-                            </>
+                            <AudioTab />
                         }
                         {tab == 'Chat' &&
                             <div className="p-1">
@@ -291,4 +254,48 @@ export default function FourFrogsSettingsModal({
         </>
     )
 
+}
+
+function AudioTab() {
+
+    const toggleAudioEnabled = useStore((state) => state.toggleAudioEnabled)
+    const audioSettings = useStore((state) => state.audioSettings)
+    const setAudioSettings = useStore((state) => state.setAudioSettings)
+    const audioEnabled = useStore((state) => state.audioSettings.enabled)
+
+    return (
+        <>
+
+            <div className="p-2">
+                <div>Music</div>
+                <ArticlesButton
+                    onClick={() => { toggleAudioEnabled() }}
+                >
+                    {audioEnabled ? 'Enabled' : 'Disabled'}
+                </ArticlesButton>
+            </div>
+
+            <div className="p-2">
+                <Form.Label className="mb-0">Game Volume</Form.Label>
+                <Form.Range
+                    value={audioSettings.soundEffectsVolume}
+                    onChange={(e) => setAudioSettings({
+                        ...audioSettings,
+                        soundEffectsVolume: e.target.value
+                    })}
+                />
+            </div>
+
+            <div className="p-2">
+                <Form.Label className="mb-0">Music Volume</Form.Label>
+                <Form.Range
+                    value={audioSettings.backgroundMusicVolume}
+                    onChange={(e) => setAudioSettings({
+                        ...audioSettings,
+                        backgroundMusicVolume: e.target.value
+                    })}
+                />
+            </div>
+        </>
+    )
 }

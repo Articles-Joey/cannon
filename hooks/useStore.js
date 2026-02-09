@@ -12,11 +12,14 @@ export const useStore = create()(
         });
       },
 
-      darkMode: true,
+      darkMode: null,
       toggleDarkMode: () => set({ darkMode: !get().darkMode }),
 
       sidebar: true,
       toggleSidebar: () => set({ sidebar: !get().sidebar }),
+
+      showMenu: false,
+      setShowMenu: (state) => set({ showMenu: state }),
 
       nickname: '',
       setNickname: (nickname) => set({ nickname }),

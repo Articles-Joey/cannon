@@ -18,6 +18,8 @@ import { useStore } from "@/hooks/useStore";
 import DebugControls from "./DebugControls";
 import TouchControlsCard from "./TouchControlsCard";
 import ControllerUICard from "./ControllerUICard";
+import Scoreboard from "./Scoreboard";
+import PeerDetails from "../PeerDetails";
 
 function LeftPanelContent(props) {
 
@@ -38,9 +40,15 @@ function LeftPanelContent(props) {
     const cameraMode = useCannonStore(state => state.cameraMode);
     const setCameraMode = useCannonStore(state => state.setCameraMode);
 
+    const darkMode = useStore(state => state.darkMode);
+    const toggleDarkMode = useStore(state => state.toggleDarkMode);
+
     const setShowSettingsModal = useStore(state => state.setShowSettingsModal);
+
     const sidebar = useStore(state => state.sidebar);
     const toggleSidebar = useStore(state => state.toggleSidebar);
+
+    const setShowMenu = useStore(state => state.setShowMenu);
 
     const toggleAudioEnabled = useStore((state) => state.toggleAudioEnabled)
     const audioEnabled = useStore((state) => state.audioSettings.enabled)
@@ -59,13 +67,13 @@ function LeftPanelContent(props) {
     } = props;
 
     return (
-        <div className='w-100'>
+        <div className='w-100 mx-auto' style={{maxWidth: '300px'}}>
 
             <div className="card card-articles card-sm">
 
                 <div className="card-body">
 
-                    {
+                    {/* {
                         (
                             server_type.includes("socket")
                             &&
@@ -99,7 +107,7 @@ function LeftPanelContent(props) {
                             </div>
 
                         </div>
-                    }
+                    } */}
 
                     <div className="d-flex flex-wrap">
 
@@ -152,9 +160,32 @@ function LeftPanelContent(props) {
                                 onClick={() => {
                                     setShowSettingsModal(true)
                                 }}
+
                             >
-                                <i className="fad fa-cog px-0"></i>
-                                <span style={{ fontSize: '0.71rem' }}>Settings</span>
+                                <div
+                                    style={{
+                                        fontSize: '0.5rem',
+                                        transform: "scale(1.2)"
+                                    }}
+                                >
+                                    <i className="fad fa-cog px-0"></i>
+                                    <span>Settings</span>
+                                </div>
+                            </ArticlesButton>
+
+                            <ArticlesButton
+                                className={``}
+                                small
+                                active={darkMode}
+                                onClick={() => {
+                                    toggleDarkMode()
+                                }}
+                            >
+                                {darkMode ?
+                                    <i className="fad fa-sun me-0"></i>
+                                    :
+                                    <i className="fad fa-moon me-0"></i>
+                                }
                             </ArticlesButton>
 
                             <ArticlesButton
@@ -163,12 +194,6 @@ function LeftPanelContent(props) {
                                 active={audioEnabled}
                                 onClick={() => {
                                     toggleAudioEnabled()
-                                }}
-                                style={{
-                                    // display: 'block',
-                                    // paddingLeft: '0px',
-                                    // paddingRight: '0px',
-                                    // width: '30px!important',
                                 }}
                             >
                                 <i className="fad fa-volume me-0"></i>
@@ -181,6 +206,7 @@ function LeftPanelContent(props) {
                             active={sidebar}
                             onClick={() => {
                                 toggleSidebar()
+                                setShowMenu(false)
                             }}
                         >
                             <i className='fad fa-columns'></i>
@@ -306,6 +332,10 @@ function LeftPanelContent(props) {
 
                 </div>
             </div> */}
+
+            <PeerDetails />
+
+            <Scoreboard />
 
             {/* Touch Controls */}
             <TouchControlsCard />
