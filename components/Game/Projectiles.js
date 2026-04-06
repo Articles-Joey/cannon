@@ -170,7 +170,9 @@ function Projectile({ position, velocity, item }) {
                 position={[0, -2, 0]}
                 scale={0.5}
             >
-                <Man />
+                <Man 
+                    action={"Man_Clapping"}
+                />
             </group>
 
         </group>
