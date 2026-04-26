@@ -13,6 +13,7 @@ export const useStore = create()(
       },
 
       darkMode: null,
+      setDarkMode: (state) => set({ darkMode: state }),
       toggleDarkMode: () => set({ darkMode: !get().darkMode }),
 
       sidebar: true,
@@ -65,6 +66,31 @@ export const useStore = create()(
       setToontownMode: (state) => set({ toontownMode: state }),
       toggleToontownMode: () => set({ toontownMode: !get().toontownMode }),
 
+      showGameOverModal: false,
+      setShowGameOverModal: (newValue) => {
+        set((prev) => ({
+          showGameOverModal: newValue
+        }))
+      },
+
+      debug: false,
+      setDebug: (newValue) => {
+        set((prev) => ({
+          debug: newValue
+         }))
+      },
+      toggleDebug: () => set({ debug: !get().debug }),
+
+      landingAnimation: true,
+      setLandingAnimation: (value) => set({ landingAnimation: value }),
+      toggleLandingAnimation: () => set({ landingAnimation: !get().landingAnimation }),
+
+      lobbyDetails: {
+        players: [],
+        games: [],
+      },
+      setLobbyDetails: (lobbyDetails) => set({ lobbyDetails }),
+
       graphicsQuality: 1,
       setGraphicsQuality: (quality) => set({ graphicsQuality: quality }),
 
@@ -85,7 +111,8 @@ export const useStore = create()(
           Object.entries(state).filter(([key]) => ![
             'showSettingsModal',
             'showInfoModal',
-            'showCreditsModal'
+            'showCreditsModal',
+            'showGameOverModal',
           ].includes(key)),
         ),
       onRehydrateStorage: () => (state) => {

@@ -11,7 +11,7 @@ import dynamic from 'next/dynamic'
 
 import ArticlesButton from '@/components/UI/Button';
 // import SingleInput from '@/components/Articles/SingleInput';
-import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
+// import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
 import IsDev from '@/components/UI/IsDev';
 // import { ChromePicker } from 'react-color';
 import { useSocketStore } from '@/hooks/useSocketStore';
@@ -28,6 +28,8 @@ import { useStore } from '@/hooks/useStore';
 
 import GameScoreboard from '@articles-media/articles-dev-box/GameScoreboard';
 import Ad from '@articles-media/articles-dev-box/Ad';
+import SessionButton from '@articles-media/articles-dev-box/SessionButton';
+
 const ReturnToLauncherButton = dynamic(() =>
     import('@articles-media/articles-dev-box/ReturnToLauncherButton'),
     { ssr: false }
@@ -37,12 +39,12 @@ import { GamepadKeyboard, PieMenu } from '@articles-media/articles-gamepad-helpe
 import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
 import useUserToken from '@articles-media/articles-dev-box/useUserToken';
 import { useGameServer } from '@/hooks/useGameServer';
-import { set } from 'date-fns';
 
 const assets_src = 'games/Cannon/'
 
 const game_key = 'cannon'
 const game_name = 'Cannon'
+const game_port = "3026"
 
 export default function CannonGameLobbyPage() {
 
@@ -71,29 +73,32 @@ export default function CannonGameLobbyPage() {
     const resetPeerStore = useGameServer(state => state.reset);
 
     // Only do once so user can set name from nothing without retriggering
-    const [initialRandomName, setInitialRandomName] = useState(false)
-    useEffect(() => {
+    // const [initialRandomName, setInitialRandomName] = useState(false)
+    // useEffect(() => {
 
-        if (!nickname && _hasHydrated && !initialRandomName) {
-            console.log("No nickname set, set a random!")
-            setRandomNickname()
-            setInitialRandomName(true)
-        }
+    //     if (!nickname && _hasHydrated && !initialRandomName) {
+    //         console.log("No nickname set, set a random!")
+    //         setRandomNickname()
+    //         setInitialRandomName(true)
+    //     }
 
-        if (nickname && _hasHydrated) {
-            setInitialRandomName(true)
-        }
+    //     if (nickname && _hasHydrated) {
+    //         setInitialRandomName(true)
+    //     }
 
-    }, [nickname, _hasHydrated])
+    // }, [nickname, _hasHydrated])
 
     // const [showInfoModal, setShowInfoModal] = useState(false)
     // const [showSettingsModal, setShowSettingsModal] = useState(false)
     // const [showPrivateGameModal, setShowPrivateGameModal] = useState(false)
 
-    const [lobbyDetails, setLobbyDetails] = useState({
-        players: [],
-        games: [],
-    })
+    const lobbyDetails = useStore(state => state.lobbyDetails)
+    const setLobbyDetails = useStore(state => state.setLobbyDetails)
+
+    // const [lobbyDetails, setLobbyDetails] = useState({
+    //     players: [],
+    //     games: [],
+    // })
 
     const [joinGame, setJoinGame] = useState(false)
     const [isMounted, setIsMounted] = useState(false)
@@ -110,7 +115,7 @@ export default function CannonGameLobbyPage() {
         isLoading: userTokenLoading,
         mutate: userTokenMutate
     } = useUserToken(
-        "3026"
+        game_port
     );
 
     const {
@@ -157,7 +162,7 @@ export default function CannonGameLobbyPage() {
                 />
             </div>
 
-            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center">
+            <div className="container d-flex flex-column-reverse flex-lg-row justify-content-center align-items-center py-3">
 
                 <div
                     style={{ "width": "20rem" }}
@@ -241,7 +246,7 @@ export default function CannonGameLobbyPage() {
                                         className='d-none'
                                     >
                                         <div className="fw-bold mb-1 small text-center">
-                                            {lobbyDetails.players.length || 0} player{lobbyDetails.players.length > 1 && 's'} in the lobby.
+                                            {lobbyDetails?.players?.length || 0} player{lobbyDetails?.players?.length > 1 && 's'} in the lobby.
                                         </div>
 
                                         {/* <div className='small fw-bold'>Public Servers</div> */}
@@ -425,10 +430,15 @@ export default function CannonGameLobbyPage() {
                                 }}
                             >
                                 <i className="fad fa-info-square"></i>
-                                Rules & Info
+                                Info
                             </ArticlesButton>
 
-                            <Link href={'/'} className='w-50'>
+                            <a
+                                href={'https://github.com/Articles-Joey/cannon'}
+                                className='w-50'
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
                                 <ArticlesButton
                                     className={`w-100`}
                                     small
@@ -436,10 +446,10 @@ export default function CannonGameLobbyPage() {
 
                                     }}
                                 >
-                                    <i className="fad fa-sign-out fa-rotate-180"></i>
-                                    Leave Game
+                                    <i className="fab fa-github"></i>
+                                    Github
                                 </ArticlesButton>
-                            </Link>
+                            </a>
 
                             <ArticlesButton
                                 className={`w-50`}
@@ -455,6 +465,10 @@ export default function CannonGameLobbyPage() {
                         </div>
 
                     </div>
+
+                    <SessionButton
+                        port={game_port}
+                    />
 
                     <ReturnToLauncherButton />
 

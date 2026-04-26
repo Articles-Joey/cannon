@@ -39,7 +39,7 @@ export default function CannonGamePage() {
 
     const sidebar = useStore(state => state.sidebar);
 
-    
+    const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
 
     const resetPlayerRotation = useCannonStore(state => state.resetPlayerRotation);
     const setGoalLocation = useCannonStore(state => state.setGoalLocation);
@@ -151,13 +151,23 @@ export default function CannonGamePage() {
                     <ArticlesButton
                         small
                         active={showMenu}
-                        className="px-5"
+                        className="px-4"
                         onClick={() => {
-                            setShowMenu(prev => !prev)
+                            setShowMenu(!showMenu)
                         }}
                     >
                         <i className="fad fa-bars"></i>
                         <span>Menu</span>
+                    </ArticlesButton>
+                    <ArticlesButton
+                        small
+                        // active={showMenu}
+                        className=""
+                        onClick={() => {
+                            setShowSettingsModal(true)
+                        }}
+                    >
+                        <i className="fad fa-cog"></i>
                     </ArticlesButton>
 
                     <div>

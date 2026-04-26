@@ -5,6 +5,7 @@ import { createWithEqualityFn as create } from 'zustand/traditional'
 import { degToRad } from 'three/src/math/MathUtils'
 import generateRandomInteger from '@/util/generateRandomInteger'
 import { useStore } from './useStore'
+import { useAudioStore } from './useAudioStore'
 
 // const getLocalStorage = (key) => JSON.parse(window.localStorage.getItem(key))
 // const setLocalStorage = (key, value) => window.localStorage.setItem(key, JSON.stringify(value))
@@ -98,7 +99,7 @@ export const useCannonStore = create((set) => ({
         }))
     },
     addProjectile: (newProjectile) => {
-        const audioSettings = useStore.getState().audioSettings
+        const audioSettings = useAudioStore.getState().audioSettings
         if (audioSettings.enabled) {
             const audio = new Audio('/audio/Cannon Fire.ogg')
             audio.volume = audioSettings.soundEffectsVolume / 100

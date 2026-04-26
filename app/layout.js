@@ -54,11 +54,11 @@ export default function RootLayout({ children }) {
       // className={`${geistSans.variable} ${geistMono.variable}`}
       >
 
+        <SocketLogicHandler />
+        <LayoutClient />
+
         <Suspense>
-          <SocketLogicHandler />
-          <ClientModals />
-          <LayoutClient />
-          <DarkModeHandler />
+          <ClientModals />          
           <AudioHandler />
         </Suspense>
 

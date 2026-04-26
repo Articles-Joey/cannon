@@ -23,6 +23,7 @@ import ChangeCameraLocationListener from "./ChangeCameraLocationListener";
 
 import minGraphicsQuality from "@/util/minGraphicsQuality";
 import Players from "./Players";
+import { useAudioStore } from "@/hooks/useAudioStore";
 
 const texture = new TextureLoader().load(`${process.env.NEXT_PUBLIC_CDN}games/Race Game/grass.jpg`)
 
@@ -353,7 +354,7 @@ function BucketCollisionDetection({ position, args }) {
             if (e.body.userData?.tag === 'player-projectile') {
                 console.log("Ball landed in bucket!", e.body.userData)
 
-                const audioSettings = useStore.getState().audioSettings
+                const audioSettings = useAudioStore.getState().audioSettings
                 if (audioSettings.enabled) {
                     const audio = new Audio('/audio/watersplash.ogg')
                     audio.volume = audioSettings.soundEffectsVolume / 100

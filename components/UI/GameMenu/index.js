@@ -12,7 +12,7 @@ import ArticlesButton from "@/components/UI/Button";
 
 import { useSocketStore } from "@/hooks/useSocketStore";
 import { useCannonStore } from "@/hooks/useCannonStore";
-import useFullscreen from "@/hooks/useFullScreen";
+import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
 import { useStore } from "@/hooks/useStore";
 
 import DebugControls from "./DebugControls";
@@ -67,7 +67,7 @@ function LeftPanelContent(props) {
     } = props;
 
     return (
-        <div className='w-100 mx-auto' style={{maxWidth: '300px'}}>
+        <div className='mobile-menu-container'>
 
             <div className="card card-articles card-sm">
 
@@ -132,7 +132,7 @@ function LeftPanelContent(props) {
                                 if (isFullscreen) {
                                     exitFullscreen()
                                 } else {
-                                    requestFullscreen('cannon-game-page')
+                                    requestFullscreen()
                                 }
                             }}
                         >

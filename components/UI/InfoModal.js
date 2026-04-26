@@ -18,12 +18,15 @@ const games = []
 
 import IsDev from "@/components/UI/IsDev";
 import ArticlesButton from "./Button";
+import { useStore } from "@/hooks/useStore";
 
 export default function GameInfoModal({
     show,
     setShow,
     credits
 }) {
+
+    const darkMode = useStore(state => state.darkMode)
 
     const [showModal, setShowModal] = useState(true)
 
@@ -77,11 +80,21 @@ export default function GameInfoModal({
                     <Modal.Title>Game Info</Modal.Title>
                 </Modal.Header>
 
-                <Modal.Body className="flex-column p-3">
+                <Modal.Body className="flex-column p-0">
 
-                    <h6>Objective:</h6>
+                    <div className="ratio ratio-16x9">
+                        {darkMode ?
+                            <img src={"img/screenshot.webp"}></img>
+                            :
+                            <img src={"img/screenshot.webp"}></img>
+                        }
+                    </div>
 
-                    <p>Launch as many cannonballs into the water tower as you can before the timer runs out. Each time a player gets a cannonball into the tower, they score points and the tower moves to a new location.</p>
+                    <div className="p-3">
+                        <h6>Objective:</h6>
+
+                        <p>Launch as many cannonballs into the water tower as you can before the timer runs out. Each time a player gets a cannonball into the tower, they score points and the tower moves to a new location.</p>
+                    </div>
 
                 </Modal.Body>
 

@@ -5,6 +5,7 @@ import { Modal, Form } from "react-bootstrap"
 import ArticlesButton from "@/components/UI/Button";
 import { useStore } from "@/hooks/useStore";
 import minGraphicsQuality from "@/util/minGraphicsQuality";
+import { useAudioStore } from "@/hooks/useAudioStore";
 
 export default function FourFrogsSettingsModal({
     show,
@@ -173,7 +174,7 @@ export default function FourFrogsSettingsModal({
 
                                             <div>
 
-                                                <div className="badge bg-black badge-hover border bg-articles me-1">{obj.defaultKeyboardKey}</div>
+                                                <div className="badge bg-black text-white badge-hover border bg-articles me-1">{obj.defaultKeyboardKey}</div>
 
                                                 {/* TODO - Add back in - use Race Game logic for this, finished implementation */}
                                                 <ArticlesButton
@@ -258,10 +259,10 @@ export default function FourFrogsSettingsModal({
 
 function AudioTab() {
 
-    const toggleAudioEnabled = useStore((state) => state.toggleAudioEnabled)
-    const audioSettings = useStore((state) => state.audioSettings)
-    const setAudioSettings = useStore((state) => state.setAudioSettings)
-    const audioEnabled = useStore((state) => state.audioSettings.enabled)
+    const toggleAudioEnabled = useAudioStore((state) => state.toggleAudioEnabled)
+    const audioSettings = useAudioStore((state) => state.audioSettings)
+    const setAudioSettings = useAudioStore((state) => state.setAudioSettings)
+    const audioEnabled = useAudioStore((state) => state.audioSettings.enabled)
 
     return (
         <>

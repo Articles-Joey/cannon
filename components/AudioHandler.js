@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useStore } from "@/hooks/useStore";
+// import { useStore } from "@/hooks/useStore";
 import { usePathname } from "next/navigation";
+import { useAudioStore } from "@/hooks/useAudioStore";
 
 export default function AudioHandler() {
 
     const pathname = usePathname();
-    const audioSettings = useStore((state) => state?.audioSettings);
+    const audioSettings = useAudioStore((state) => state?.audioSettings);
     const musicRef = useRef(null);
 
     // Initialize Audio instance once
@@ -17,7 +18,7 @@ export default function AudioHandler() {
             // Use built-in looping for seamless loop
             musicRef.current.loop = true;
             // Set initial volume if available
-            const initialSettings = useStore.getState().audioSettings;
+            const initialSettings = useAudioStore.getState().audioSettings;
             if (initialSettings?.backgroundMusicVolume) {
                 musicRef.current.volume = initialSettings.backgroundMusicVolume / 100;
             }
