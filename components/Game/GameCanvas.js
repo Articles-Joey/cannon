@@ -1,9 +1,9 @@
 import { createContext, createRef, forwardRef, memo, use, useContext, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { Canvas, useFrame, useThree } from "@react-three/fiber"
-import { Sky, useDetectGPU, useTexture, OrbitControls, Cylinder, QuadraticBezierLine, Text } from "@react-three/drei";
+import { Sky, useDetectGPU, useTexture, OrbitControls, Cylinder, QuadraticBezierLine, Text, Stats } from "@react-three/drei";
 
-import { NearestFilter, RepeatWrapping, TextureLoader, Vector3 } from "three";
+import { Vector3 } from "three";
 
 import Tree from "@/components/Models/Tree";
 import Duck from "@/components/Models/Duck";
@@ -24,34 +24,14 @@ import ChangeCameraLocationListener from "./ChangeCameraLocationListener";
 import minGraphicsQuality from "@/util/minGraphicsQuality";
 import Players from "./Players";
 import { useAudioStore } from "@/hooks/useAudioStore";
-
-const texture = new TextureLoader().load(`${process.env.NEXT_PUBLIC_CDN}games/Race Game/grass.jpg`)
-
-const GrassPlane = () => {
-
-    const width = 110; // Set the width of the plane
-    const height = 170; // Set the height of the plane
-
-    texture.magFilter = NearestFilter;
-    texture.wrapS = RepeatWrapping
-    texture.wrapT = RepeatWrapping
-    texture.repeat.set(5, 5)
-
-    return (
-        <>
-            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.1, 0]}>
-                <planeGeometry attach="geometry" args={[width, height]} />
-                <meshStandardMaterial attach="material" map={texture} />
-            </mesh>
-        </>
-    );
-};
+import GrassPlane from "./GrassPlane";
+import GrassArea from "./GrassArea";
 
 function GameCanvas(props) {
 
     // const GPUTier = useDetectGPU()
 
-    const debug = useCannonStore(state => state.debug);
+    const debug = useStore(state => state.debug);
 
     const playerRotation = useCannonStore(state => state.playerRotation);
     // const setPlayerRotation = useCannonStore(state => state.setPlayerRotation);
@@ -74,6 +54,10 @@ function GameCanvas(props) {
     return (
         <Canvas camera={{ position: [0, 40, 90], fov: 50 }}>
 
+            {process.env.NODE_ENV === 'development' && <>
+                <Stats className="stats-overlay" />
+            </>}
+
             <ChangeCameraLocationListener />
 
             <OrbitControls
@@ -81,13 +65,15 @@ function GameCanvas(props) {
             // autoRotate={gameState?.status == 'In Lobby'}
             />
 
-            <Sky
-                // distance={450000}
-                sunPosition={[0, -10, 0]}
-            // inclination={0}
-            // azimuth={0.25}
-            // {...props} 
-            />
+            {darkMode ?
+                <Sky
+                    sunPosition={[0, -1, 0]}
+                />
+                :
+                <Sky
+                    sunPosition={[0, 1, 0]}
+                />
+            }
 
             <Players />
 
@@ -167,68 +153,69 @@ function GameCanvas(props) {
             </group> */}
 
             {/* {minGraphicsQuality("Medium") && */}
-                <group
-                    visible={minGraphicsQuality("Medium", graphicsQuality) ? true : false}
-                >
-                    <Farm
-                        scale={0.1}
-                        position={[0, 0, -70]}
-                        rotation={[0, -Math.PI, 0]}
-                    />
-                    <Farm
-                        scale={0.1}
-                        position={[30, 0, -70]}
-                        rotation={[0, -Math.PI, 0]}
-                    />
-                    <Farm
-                        scale={0.1}
-                        position={[-30, 0, -70]}
-                        rotation={[0, -Math.PI, 0]}
-                    />
-                </group>
+            <group
+                visible={minGraphicsQuality("Medium", graphicsQuality) ? true : false}
+            >
+                <Farm
+                    scale={0.1}
+                    position={[0, 0, -70]}
+                    rotation={[0, -Math.PI, 0]}
+                />
+                <Farm
+                    scale={0.1}
+                    position={[30, 0, -70]}
+                    rotation={[0, -Math.PI, 0]}
+                />
+                <Farm
+                    scale={0.1}
+                    position={[-30, 0, -70]}
+                    rotation={[0, -Math.PI, 0]}
+                />
+            </group>
             {/* } */}
 
             {/* {minGraphicsQuality("High") && <> */}
-                <group
-                    visible={minGraphicsQuality("High", graphicsQuality) ? true : false}
-                >
-                    {[...Array(60)].map((item, i) => {
-                        return (
-                            <group key={i}>
-                                <Tree
-                                    // key={i}
-                                    scale={0.2}
-                                    position={[-70, 0, (-88 + i * 3)]}
-                                />
-                                <Tree
-                                    // key={i}
-                                    scale={0.3}
-                                    position={[-75, 0, (-88 + i * 3)]}
-                                />
-                            </group>
-                        )
-                    })}
-    
-                    {[...Array(60)].map((item, i) => {
-                        return (
-                            <group key={i}>
-                                <Tree
-                                    // key={i}
-                                    scale={0.2}
-                                    position={[70, 0, (-88 + i * 3)]}
-                                />
-                                <Tree
-                                    // key={i}
-                                    scale={0.3}
-                                    position={[75, 0, (-88 + i * 3)]}
-                                />
-                            </group>
-                        )
-                    })}
-                </group>
+            <group
+                visible={minGraphicsQuality("High", graphicsQuality) ? true : false}
+            >
+                {[...Array(60)].map((item, i) => {
+                    return (
+                        <group key={i}>
+                            <Tree
+                                // key={i}
+                                scale={0.2}
+                                position={[-70, 0, (-88 + i * 3)]}
+                            />
+                            <Tree
+                                // key={i}
+                                scale={0.3}
+                                position={[-75, 0, (-88 + i * 3)]}
+                            />
+                        </group>
+                    )
+                })}
+
+                {[...Array(60)].map((item, i) => {
+                    return (
+                        <group key={i}>
+                            <Tree
+                                // key={i}
+                                scale={0.2}
+                                position={[70, 0, (-88 + i * 3)]}
+                            />
+                            <Tree
+                                // key={i}
+                                scale={0.3}
+                                position={[75, 0, (-88 + i * 3)]}
+                            />
+                        </group>
+                    )
+                })}
+            </group>
             {/* </>} */}
 
             <GrassPlane />
+            <GrassArea />
 
             <Sand
                 args={[200, 200]}
@@ -251,7 +238,7 @@ function GameCanvas(props) {
                 gravity={[0, -18.82, 0]}
             >
 
-                <Debug 
+                <Debug
                     scale={
                         debug ? 1 : 0
                     }

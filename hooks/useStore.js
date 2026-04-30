@@ -1,56 +1,33 @@
 import { create } from 'zustand'
 import { persist, createJSONStorage } from 'zustand/middleware'
 
+import typicalZustandStoreExcludes from '@articles-media/articles-dev-box/typicalZustandStoreExcludes';
+import typicalZustandStoreStateSlice from '@articles-media/articles-dev-box/typicalZustandStoreStateSlice';
+
+const generateRandomNickname = () => {
+
+  const randomNames = [
+    'BoomMaster',
+    'IronBall',
+    'PowderKeg',
+    'FuseLighter',
+    'CannonKing',
+    'BlastRadius',
+    'HeavyMetal',
+    'SharpShooter',
+    'RecoilRider',
+    'SiegeBreaker',
+  ]
+
+  return randomNames[Math.floor(Math.random() * randomNames.length)]
+
+}
+
 export const useStore = create()(
   persist(
     (set, get) => ({
 
-      _hasHydrated: false,
-      setHasHydrated: (state) => {
-        set({
-          _hasHydrated: state
-        });
-      },
-
-      darkMode: null,
-      setDarkMode: (state) => set({ darkMode: state }),
-      toggleDarkMode: () => set({ darkMode: !get().darkMode }),
-
-      sidebar: true,
-      toggleSidebar: () => set({ sidebar: !get().sidebar }),
-
-      showMenu: false,
-      setShowMenu: (state) => set({ showMenu: state }),
-
-      nickname: '',
-      setNickname: (nickname) => set({ nickname }),
-      setRandomNickname: () => {
-
-        const randomNames = [
-          'BoomMaster',
-          'IronBall',
-          'PowderKeg',
-          'FuseLighter',
-          'CannonKing',
-          'BlastRadius',
-          'HeavyMetal',
-          'SharpShooter',
-          'RecoilRider',
-          'SiegeBreaker',
-        ]
-
-        set({ nickname: randomNames[Math.floor(Math.random() * randomNames.length)] })
-
-      },
-
-      showSettingsModal: false,
-      setShowSettingsModal: (state) => set({ showSettingsModal: state }),
-
-      showInfoModal: false,
-      setShowInfoModal: (state) => set({ showInfoModal: state }),
-
-      showCreditsModal: false,
-      setShowCreditsModal: (state) => set({ showCreditsModal: state }),
+      ...typicalZustandStoreStateSlice(set, get, generateRandomNickname),
 
       // 1, 2, 3
       aimSensitivity: 1,
@@ -61,38 +38,6 @@ export const useStore = create()(
       touchControlsEnabled: false,
       setTouchControlsEnabled: (state) => set({ touchControlsEnabled: state }),
       toggleTouchControlsEnabled: () => set({ touchControlsEnabled: !get().touchControlsEnabled }),
-
-      toontownMode: false,
-      setToontownMode: (state) => set({ toontownMode: state }),
-      toggleToontownMode: () => set({ toontownMode: !get().toontownMode }),
-
-      showGameOverModal: false,
-      setShowGameOverModal: (newValue) => {
-        set((prev) => ({
-          showGameOverModal: newValue
-        }))
-      },
-
-      debug: false,
-      setDebug: (newValue) => {
-        set((prev) => ({
-          debug: newValue
-         }))
-      },
-      toggleDebug: () => set({ debug: !get().debug }),
-
-      landingAnimation: true,
-      setLandingAnimation: (value) => set({ landingAnimation: value }),
-      toggleLandingAnimation: () => set({ landingAnimation: !get().landingAnimation }),
-
-      lobbyDetails: {
-        players: [],
-        games: [],
-      },
-      setLobbyDetails: (lobbyDetails) => set({ lobbyDetails }),
-
-      graphicsQuality: 1,
-      setGraphicsQuality: (quality) => set({ graphicsQuality: quality }),
 
       audioSettings: {
         enabled: true,
@@ -109,11 +54,9 @@ export const useStore = create()(
       partialize: (state) =>
         Object.fromEntries(
           Object.entries(state).filter(([key]) => ![
-            'showSettingsModal',
-            'showInfoModal',
-            'showCreditsModal',
-            'showGameOverModal',
-          ].includes(key)),
+            // Exclude list of keys to not persist
+            ...typicalZustandStoreExcludes,
+          ].includes(key))
         ),
       onRehydrateStorage: () => (state) => {
         state.setHasHydrated(true)
