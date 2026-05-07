@@ -74,6 +74,7 @@ export default function ClientModals() {
                                 ]
                             },
                             'Controls': {
+                                touchControls: true,
                                 defaultKeyBindings: {
                                     // moveUp: "W",
                                     // moveDown: "S",
@@ -103,8 +104,6 @@ export default function ClientModals() {
                 <CreditsModal
                     show={showCreditsModal}
                     setShow={setShowCreditsModal}
-                    owner="Articles-Joey"
-                    repo="cannon"
                 />
             }
 

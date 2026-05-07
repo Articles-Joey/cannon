@@ -5,31 +5,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
 
-// import { useSelector, useDispatch } from 'react-redux'
-
-// import ROUTES from 'components/constants/routes'
-
 import ArticlesButton from '@/components/UI/Button';
-// import SingleInput from '@/components/Articles/SingleInput';
-// import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
-import IsDev from '@/components/UI/IsDev';
-// import { ChromePicker } from 'react-color';
 import { useSocketStore } from '@/hooks/useSocketStore';
 import { useStore } from '@/hooks/useStore';
-
-// const Ad = dynamic(() => import('components/Ads/Ad'), {
-//     ssr: false,
-// });
-
-// const PrivateGameModal = dynamic(
-//     () => import('app/(site)/community/games/four-frogs/components/PrivateGameModal'),
-//     { ssr: false }
-// )
 
 import GameScoreboard from '@articles-media/articles-dev-box/GameScoreboard';
 import Ad from '@articles-media/articles-dev-box/Ad';
 import SessionButton from '@articles-media/articles-dev-box/SessionButton';
-
+import NicknameInput from '@articles-media/articles-dev-box/NicknameInput';
+import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
 const ReturnToLauncherButton = dynamic(() =>
     import('@articles-media/articles-dev-box/ReturnToLauncherButton'),
     { ssr: false }
@@ -40,11 +24,9 @@ import useUserDetails from '@articles-media/articles-dev-box/useUserDetails';
 import useUserToken from '@articles-media/articles-dev-box/useUserToken';
 import { useGameServer } from '@/hooks/useGameServer';
 
-const assets_src = 'games/Cannon/'
-
-const game_key = 'cannon'
-const game_name = 'Cannon'
-const game_port = "3026"
+const game_key = process.env.NEXT_PUBLIC_GAME_KEY
+const game_name = process.env.NEXT_PUBLIC_GAME_NAME
+const game_port = process.env.NEXT_PUBLIC_GAME_PORT
 
 export default function CannonGameLobbyPage() {
 
@@ -53,9 +35,6 @@ export default function CannonGameLobbyPage() {
     } = useSocketStore(state => ({
         socket: state.socket,
     }));
-
-    // const userReduxState = useSelector((state) => state.auth.user_details)
-    // const userReduxState = false
 
     const darkMode = useStore(state => state.darkMode)
     const toggleDarkMode = useStore(state => state.toggleDarkMode)
@@ -72,33 +51,8 @@ export default function CannonGameLobbyPage() {
 
     const resetPeerStore = useGameServer(state => state.reset);
 
-    // Only do once so user can set name from nothing without retriggering
-    // const [initialRandomName, setInitialRandomName] = useState(false)
-    // useEffect(() => {
-
-    //     if (!nickname && _hasHydrated && !initialRandomName) {
-    //         console.log("No nickname set, set a random!")
-    //         setRandomNickname()
-    //         setInitialRandomName(true)
-    //     }
-
-    //     if (nickname && _hasHydrated) {
-    //         setInitialRandomName(true)
-    //     }
-
-    // }, [nickname, _hasHydrated])
-
-    // const [showInfoModal, setShowInfoModal] = useState(false)
-    // const [showSettingsModal, setShowSettingsModal] = useState(false)
-    // const [showPrivateGameModal, setShowPrivateGameModal] = useState(false)
-
     const lobbyDetails = useStore(state => state.lobbyDetails)
     const setLobbyDetails = useStore(state => state.setLobbyDetails)
-
-    // const [lobbyDetails, setLobbyDetails] = useState({
-    //     players: [],
-    //     games: [],
-    // })
 
     const [joinGame, setJoinGame] = useState(false)
     const [isMounted, setIsMounted] = useState(false)
@@ -106,7 +60,6 @@ export default function CannonGameLobbyPage() {
     useEffect(() => {
         resetPeerStore();
         setIsMounted(true)
-
     }, [])
 
     const {
@@ -130,17 +83,6 @@ export default function CannonGameLobbyPage() {
     return (
 
         <div className="cannon-landing-page">
-
-            {/* 
-
-            {showPrivateGameModal &&
-                <PrivateGameModal
-                    show={showPrivateGameModal}
-                    setShow={setShowPrivateGameModal}
-                />
-            } 
-             
-            */}
 
             <div className='background-wrap'>
                 <div className='filter'></div>
@@ -183,38 +125,10 @@ export default function CannonGameLobbyPage() {
 
                         <div className='card-header d-flex align-items-center'>
 
-                            <div className="flex-grow-1">
+                            <NicknameInput
+                                useStore={useStore}
+                            />
 
-                                <div className="form-group articles mb-0">
-                                    <label htmlFor="nickname">Nickname</label>
-                                    {/* <SingleInput
-                                        value={nickname}
-                                        setValue={setNickname}
-                                        noMargin
-                                    /> */}
-                                    <div className='d-flex'>
-                                        <input
-                                            type="text"
-                                            className="form-control"
-                                            id="nickname"
-                                            value={nickname}
-                                            onChange={(e) => setNickname(e.target.value)}
-                                            placeholder="Enter your nickname"
-                                        />
-                                        <ArticlesButton
-                                            className=""
-                                            onClick={() => {
-                                                setRandomNickname()
-                                            }}
-                                        >
-                                            <i className='fas fa-redo me-0'></i>
-                                        </ArticlesButton>
-                                    </div>
-                                </div>
-
-                                <div className='mt-1' style={{ fontSize: '0.8rem' }}>Visible to all players</div>
-
-                            </div>
                         </div>
 
                         <div className="card-body">
@@ -396,71 +310,10 @@ export default function CannonGameLobbyPage() {
 
                         <div className="card-footer d-flex flex-wrap justify-content-center">
 
-                            <div className='d-flex w-50'>
-                                <ArticlesButton
-                                    className={`flex-grow-1`}
-                                    small
-                                    onClick={() => {
-                                        setShowSettingsModal(true)
-                                    }}
-                                >
-                                    <i className="fad fa-cog"></i>
-                                    Settings
-                                </ArticlesButton>
-                                <ArticlesButton
-                                    className={``}
-                                    small
-                                    onClick={() => {
-                                        toggleDarkMode()
-                                    }}
-                                >
-                                    {darkMode ?
-                                        <i className="fad fa-sun"></i>
-                                        :
-                                        <i className="fad fa-moon"></i>
-                                    }
-                                </ArticlesButton>
-                            </div>
-
-                            <ArticlesButton
-                                className={`w-50`}
-                                small
-                                onClick={() => {
-                                    setShowInfoModal(true)
-                                }}
-                            >
-                                <i className="fad fa-info-square"></i>
-                                Info
-                            </ArticlesButton>
-
-                            <a
-                                href={'https://github.com/Articles-Joey/cannon'}
-                                className='w-50'
-                                target="_blank"
-                                rel="noopener noreferrer"
-                            >
-                                <ArticlesButton
-                                    className={`w-100`}
-                                    small
-                                    onClick={() => {
-
-                                    }}
-                                >
-                                    <i className="fab fa-github"></i>
-                                    Github
-                                </ArticlesButton>
-                            </a>
-
-                            <ArticlesButton
-                                className={`w-50`}
-                                small
-                                onClick={() => {
-                                    setShowCreditsModal(true)
-                                }}
-                            >
-                                <i className="fad fa-users"></i>
-                                Credits
-                            </ArticlesButton>
+                            <GameMenuPrimaryButtonGroup
+                                useStore={useStore}
+                                type="Landing"
+                            />
 
                         </div>
 
@@ -468,6 +321,7 @@ export default function CannonGameLobbyPage() {
 
                     <SessionButton
                         port={game_port}
+                        friendsButton={true}
                     />
 
                     <ReturnToLauncherButton />

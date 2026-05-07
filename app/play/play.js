@@ -86,58 +86,25 @@ export default function CannonGamePage() {
 
     }, []);
 
-    // const [showMenu, setShowMenu] = useState(false)
     const showMenu = useStore(state => state.showMenu);
     const setShowMenu = useStore(state => state.setShowMenu);
-
-    // const [touchControlsEnabled, setTouchControlsEnabled] = useLocalStorageNew("game:touchControlsEnabled", false)
-
-    const [sceneKey, setSceneKey] = useState(0);
+    const reloadScene = useStore(state => state.reloadScene)
+    const sceneKey = useStore(state => state.sceneKey)
 
     const [gameState, setGameState] = useState(false)
-
-    // Function to handle scene reload
-    const reloadScene = () => {
-        resetPlayerRotation()
-        setGoalLocation([
-            generateRandomInteger(-10, 10),
-            0,
-            generateRandomInteger(-10, 10)
-        ])
-        setSceneKey((prevKey) => prevKey + 1);
-    };
-
-    const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
-
-    let panelProps = {
-        // server,
-        // players,
-        // touchControlsEnabled,
-        // setTouchControlsEnabled,
-        reloadScene,
-        // controllerState,
-        // isFullscreen,
-        // requestFullscreen,
-        // exitFullscreen,
-        // setShowMenu
-    }
-
-    const game_name = 'Cannon'
-    const game_key = 'cannon'
 
     return (
 
         <div
-            className={
-                classNames(
-                    `cannon-game-page`,
-                    {
-                        'fullscreen': isFullscreen,
-                        'sidebar-open': sidebar
-                    }
-                )
-            }
-            id="cannon-game-page"
+            className={classNames(
+                `${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`,
+                {
+                    'menu-open': showMenu,
+                    'fullscreen': useFullscreen().isFullscreen,
+                    'show-sidebar': sidebar,
+                }
+            )}
+            id={`${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`}
         >
 
             <Suspense>
@@ -185,7 +152,7 @@ export default function CannonGamePage() {
             </div>
 
             <TouchControls
-                // touchControlsEnabled={touchControlsEnabled}
+            // touchControlsEnabled={touchControlsEnabled}
             />
 
             <div className='panel-left '>
