@@ -1,6 +1,6 @@
 @use "@/styles/components/global.scss" as *;
 
-[data-bs-theme="dark"] .cannon-landing-page {
+[data-bs-theme="dark"] .landing-page {
     .background-wrap {
 
         .filter {
@@ -16,7 +16,7 @@
     }
 }
 
-.cannon-landing-page {
+.landing-page {
     flex-grow: 1;
     display: flex;
     justify-content: center;

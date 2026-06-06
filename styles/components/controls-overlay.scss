@@ -1,0 +1,117 @@
+@use "@/styles/components/global.scss" as *;
+
+.controls-overlay {
+    position: fixed;
+    bottom: calc(50px + 1rem);
+    right: 50%;
+    background-color: rgba(0, 0, 0, 0.75);
+    width: 160px;
+    height: 160px;
+    z-index: 1;
+    transform: translateX(50%);
+
+    @include media-breakpoint-up(lg) {
+        transform: initial;
+        right: 0;
+        // bottom: 0;
+        bottom: calc(50px + 0rem);
+        margin: 1rem;
+    }
+
+    &.toontown-mode {
+        background-color: transparent;
+
+        .controls-background-container {
+            display: flex;
+        }
+
+        .directional-button,
+        .fire-button {
+            opacity: 0;
+        }
+    }
+
+    .controls-background-container {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+
+        .controls-background {
+            // filter: blur(2px) brightness(0.80);
+            transform: scale(1.5);
+            background-position: 0px 0;
+            overflow: hidden;
+            width: 128px;
+            height: 128px;
+        }
+    }
+
+    // .background {
+    //     position: absolute;
+    //     top: 50%;
+    //     left: 50%;
+    //     height: 100%;
+    //     width: 100%;
+    //     z-index: 0;
+    //     overflow: hidden;
+    //     width: 128px;
+    //     height: 128px;
+    //     transform: scale(1) translateX(-50%) translateY(-50%);
+    //     background-position: 0px 0; 
+    //     // background-size: 512px 512px;
+    //     // background-image: url('img/toontown/palette_2.png');
+
+    //     // img {
+    //     //     // filter: blur(2px) brightness(0.80);
+    //     //     transform: scale(1.05);
+    //     // }
+    // }
+
+    .sensitivity-buttons {
+        position: absolute;
+        top: -1.5rem;
+        // right: 50%;
+        width: 100%;
+        // transform: translateX(50%);
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .fire-button,
+    .up-button,
+    .down-button,
+    .left-button,
+    .right-button {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translateX(-50%) translateY(-50%);
+    }
+
+    .fire-button {
+        background-color: red;
+    }
+
+    .left-button {
+        transform: translateX(calc(-50% - 50px)) translateY(-50%);
+    }
+
+    .right-button {
+        transform: translateX(calc(-50% + 50px)) translateY(-50%);
+    }
+
+    .up-button {
+        transform: translateX(-50%) translateY(calc(-50% - 50px));
+    }
+
+    .down-button {
+        transform: translateX(-50%) translateY(calc(-50% + 50px));
+    }
+}

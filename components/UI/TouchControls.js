@@ -179,7 +179,7 @@ function TouchControlsBase(props) {
     }, []);
 
     return (
-        <div className={`touch-controls-area ${!touchControlsEnabled && 'd-none'}`}>
+        <div className={`touch-controls-area hide-in-screenshot-mode ${!touchControlsEnabled && 'd-none'}`}>
 
             <div className='d-flex'>
 

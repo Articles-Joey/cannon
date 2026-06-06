@@ -1,5 +1,6 @@
 {
   "name": "cannon-game",
+  "description": "Launch yourself into the water tower as much as you can before the timer runs out. Each time a player scores the water tower will move.",
   "version": "0.9.0",
   "homepage": "https://cannon.articles.media",
   "engines": {
@@ -23,7 +24,7 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@articles-media/articles-dev-box": "^1.0.42",
+    "@articles-media/articles-dev-box": "^1.5.0",
     "@articles-media/articles-gamepad-helper": "^0.0.13",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
@@ -39,6 +40,7 @@
     "next": "^16.2.4",
     "nipplejs": "^0.10.2",
     "peerjs": "^1.5.5",
+    "qrcode.react": "^4.2.0",
     "react": "^19.2.4",
     "react-bootstrap": "^2.10.10",
     "react-countdown": "^2.3.6",
@@ -47,7 +49,9 @@
     "sass": "^1.97.0",
     "socket.io-client": "^4.8.1",
     "swr": "^2.4.1",
-    "three": "^0.182.0"
+    "three": "^0.182.0",
+    "uuid": "^14.0.0",
+    "zustand": "^5.0.12"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

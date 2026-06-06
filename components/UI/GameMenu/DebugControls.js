@@ -1,8 +1,9 @@
 import { useCannonStore } from "@/hooks/useCannonStore";
 import ArticlesButton from "@/components/UI/Button";
+import { useStore } from "@/hooks/useStore";
 
 export default function DebugControls({
-    reloadScene
+    
 }) {
 
     const projectiles = useCannonStore(state => state.projectiles);
@@ -15,6 +16,8 @@ export default function DebugControls({
     const setChangeCameraLocation = useCannonStore(state => state.setChangeCameraLocation);
 
     const setRandomGoalLocation = useCannonStore(state => state.setRandomGoalLocation);
+
+    const reloadScene = useStore(state => state.reloadScene);
 
     return (
         <>

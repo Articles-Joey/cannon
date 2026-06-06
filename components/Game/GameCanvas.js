@@ -5,12 +5,7 @@ import { Sky, useDetectGPU, useTexture, OrbitControls, Cylinder, QuadraticBezier
 
 import { Vector3 } from "three";
 
-import Tree from "@/components/Models/Tree";
-import Duck from "@/components/Models/Duck";
-import Sand from '@/components/Models/Sand';
-import { Cannon } from "@/components/Models/Cannon";
-import { PaintBucket } from "@/components/Models/PaintBucket";
-import { Farm } from "@/components/Models/Farm";
+// import { PaintBucket } from "@/components/Models/PaintBucket";
 
 import { useCannonStore } from "@/hooks/useCannonStore";
 import { useStore } from '@/hooks/useStore';
@@ -26,35 +21,26 @@ import Players from "./Players";
 import { useAudioStore } from "@/hooks/useAudioStore";
 import GrassPlane from "./GrassPlane";
 import GrassArea from "./GrassArea";
+import TreesArea from "./TreesArea";
+import ImageRing from "./ImageRing";
+import FenceRing from "./FenceRing";
+import ScoreTarget from "./ScoreTarget";
 
 function GameCanvas(props) {
 
-    // const GPUTier = useDetectGPU()
-
     const debug = useStore(state => state.debug);
 
-    const playerRotation = useCannonStore(state => state.playerRotation);
-    // const setPlayerRotation = useCannonStore(state => state.setPlayerRotation);
     const goalLocation = useCannonStore(state => state.goalLocation);
 
     const darkMode = useStore(state => state.darkMode)
     const graphicsQuality = useStore(state => state.graphicsQuality)
 
-    // const {
-    //     handleCameraChange,
-    //     gameState,
-    //     players,
-    //     move,
-    //     cameraInfo,
-    //     server
-    // } = props;
-
-    // const [[a, b, c, d, e]] = useState(() => [...Array(5)].map(createRef))
+    const showStats = useStore((state) => state?.debugConfig?.showStats);
 
     return (
         <Canvas camera={{ position: [0, 40, 90], fov: 50 }}>
 
-            {process.env.NODE_ENV === 'development' && <>
+            {showStats && <>
                 <Stats className="stats-overlay" />
             </>}
 
@@ -65,174 +51,32 @@ function GameCanvas(props) {
             // autoRotate={gameState?.status == 'In Lobby'}
             />
 
+            <ImageRing />
+            <FenceRing />
+
             {darkMode ?
-                <Sky
-                    sunPosition={[0, -1, 0]}
-                />
+                <>
+                    <ambientLight intensity={0.25} />
+                    <spotLight intensity={15000} position={[0, 100, 0]} angle={15} penumbra={1} />
+                    <Sky
+                        sunPosition={[0, -1, 0]}
+                    />
+                </>
                 :
-                <Sky
-                    sunPosition={[0, 1, 0]}
-                />
+                <>
+                    <ambientLight intensity={5} />
+                    <spotLight intensity={30000} position={[-50, 100, 50]} angle={5} penumbra={1} />
+                    <Sky
+                        sunPosition={[0, 1, 0]}
+                    />
+                </>
             }
 
             <Players />
 
-            <group>
-
-                {/* <group position={[-15, 0, 43]}>
-                    <Cannon
-                        scale={3}
-                        rotation={[0, degToRad(180), 0]}
-                    />
-                    <Duck
-                        position={[0, 0, 5]}
-                        rotation={[0, -Math.PI / 2, 0]}
-                        scale={1}
-                    />
-                </group> */}
-
-                {/* <group position={[-5, 0, 43]}>
-                    <Cannon
-                        scale={3}
-                        rotation={[0, degToRad(180), 0]}
-                    />
-                    <Duck
-                        position={[0, 0, 5]}
-                        rotation={[0, -Math.PI / 2, 0]}
-                        scale={1}
-                    />
-                </group> */}
-
-                {/* Single Player */}
-                {/* <group position={[5, 0, 43]}>
-                    <group
-                        rotation={[0, playerRotation[1], 0]}
-                        scale={3}
-
-                    >
-                        <Cannon
-                            rotation={[playerRotation[0], 0, 0]}
-                        />
-                    </group>
-                    <Duck
-                        position={[0, 0, 5]}
-                        rotation={[0, -Math.PI / 2, 0]}
-                        scale={1}
-                    />
-                </group> */}
-
-                {/* <group position={[15, 0, 43]}>
-                    <Cannon
-                        scale={3}
-                        rotation={[0, degToRad(180), 0]}
-                    />
-                    <Duck
-                        position={[0, 0, 5]}
-                        rotation={[0, -Math.PI / 2, 0]}
-                        scale={1}
-                    />
-                </group> */}
-
-            </group>
-
-            {/* <group>
-                <Farm
-                    scale={0.1}
-                    position={[0, 0, 70]}
-                />
-
-                <Farm
-                    scale={0.1}
-                    position={[-30, 0, 70]}
-                />
-
-                <Farm
-                    scale={0.1}
-                    position={[30, 0, 70]}
-                />
-            </group> */}
-
-            {/* {minGraphicsQuality("Medium") && */}
-            <group
-                visible={minGraphicsQuality("Medium", graphicsQuality) ? true : false}
-            >
-                <Farm
-                    scale={0.1}
-                    position={[0, 0, -70]}
-                    rotation={[0, -Math.PI, 0]}
-                />
-                <Farm
-                    scale={0.1}
-                    position={[30, 0, -70]}
-                    rotation={[0, -Math.PI, 0]}
-                />
-                <Farm
-                    scale={0.1}
-                    position={[-30, 0, -70]}
-                    rotation={[0, -Math.PI, 0]}
-                />
-            </group>
-            {/* } */}
-
-            {/* {minGraphicsQuality("High") && <> */}
-            <group
-                visible={minGraphicsQuality("High", graphicsQuality) ? true : false}
-            >
-                {[...Array(60)].map((item, i) => {
-                    return (
-                        <group key={i}>
-                            <Tree
-                                // key={i}
-                                scale={0.2}
-                                position={[-70, 0, (-88 + i * 3)]}
-                            />
-                            <Tree
-                                // key={i}
-                                scale={0.3}
-                                position={[-75, 0, (-88 + i * 3)]}
-                            />
-                        </group>
-                    )
-                })}
-
-                {[...Array(60)].map((item, i) => {
-                    return (
-                        <group key={i}>
-                            <Tree
-                                // key={i}
-                                scale={0.2}
-                                position={[70, 0, (-88 + i * 3)]}
-                            />
-                            <Tree
-                                // key={i}
-                                scale={0.3}
-                                position={[75, 0, (-88 + i * 3)]}
-                            />
-                        </group>
-                    )
-                })}
-            </group>
-            {/* </>} */}
-
+            <TreesArea />
             <GrassPlane />
-            <GrassArea />
-
-            <Sand
-                args={[200, 200]}
-                rotation={[-Math.PI / 2, 0, 0]}
-                position={[0, -0.2, 0]}
-            />
-
-            <ambientLight intensity={5} />
-            <spotLight intensity={30000} position={[-50, 100, 50]} angle={5} penumbra={1} />
-
-            {/* <pointLight position={[-10, -10, -10]} /> */}
-
-            {/* <Nodes>
-                <Node ref={a} name="a" color="#204090" position={[0, 2, 0]} connectedTo={[]} />
-                <Node ref={b} name="b" color="#904020" position={[-10, 20, 10]} connectedTo={[d, a]} />
-                <Node ref={d} name="d" color="#204090" position={[-43, 2.5, 43]} />
-            </Nodes> */}
+            <GrassArea />            
 
             <Physics
                 gravity={[0, -18.82, 0]}
@@ -264,33 +108,8 @@ function GameCanvas(props) {
                             goalLocation[2]
                         ]}
                     >
-
-                        <Cylinder
-                            position={[0, -7, 0]} args={[1, 1, 14, 8]} material-color="red"
-                        />
-
-                        <WaterPlane
-                            position={[0, 6, 0]}
-                        />
-
-                        <PaintBucket
-                            scale={50}
-                        // position={[goalLocation[0], goalLocation[1], [goalLocation[2]]]}
-                        // position={[0, 14, 0]}
-                        />
-
-                        <PlayerProjectile
-                            position={[0, -7, 0]}
-                        />
-
-                        <Ground
-                            position={[
-                                0,
-                                // goalLocation[1], 
-                                -14,
-                                0
-                            ]}
-                        />
+                        
+                        <ScoreTarget />
 
                     </group>
 
@@ -303,25 +122,6 @@ function GameCanvas(props) {
 }
 
 export default memo(GameCanvas)
-
-function Ground({ position }) {
-
-    const [ref, api] = useBox(() => ({
-        mass: 0,
-        type: 'Static',
-        args: [10, 0.5, 10],
-        position: position,
-    }))
-
-    return (
-        <mesh ref={ref} castShadow>
-            <boxGeometry args={[10, 0.5, 10]} />
-            {/* <BeachBall /> */}
-            <meshStandardMaterial color="red" />
-        </mesh>
-    )
-
-}
 
 function BucketCollisionDetection({ position, args }) {
 
@@ -413,8 +213,6 @@ function PlayerProjectile() {
     )
 
 }
-
-
 
 const context = createContext()
 

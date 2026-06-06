@@ -2,7 +2,7 @@ import Link from "next/link";
 
 import { memo } from "react";
 
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { Dropdown, DropdownButton } from "react-bootstrap";
 
@@ -13,6 +13,7 @@ import ArticlesButton from "@/components/UI/Button";
 import { useSocketStore } from "@/hooks/useSocketStore";
 import { useCannonStore } from "@/hooks/useCannonStore";
 import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
+import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
 import { useStore } from "@/hooks/useStore";
 
 import DebugControls from "./DebugControls";
@@ -21,7 +22,7 @@ import ControllerUICard from "./ControllerUICard";
 import Scoreboard from "./Scoreboard";
 import PeerDetails from "../PeerDetails";
 
-function LeftPanelContent(props) {
+function LeftPanelContent({ }) {
 
     const searchParams = useSearchParams()
     const searchParamsObject = Object.fromEntries(searchParams.entries());
@@ -40,31 +41,20 @@ function LeftPanelContent(props) {
     const cameraMode = useCannonStore(state => state.cameraMode);
     const setCameraMode = useCannonStore(state => state.setCameraMode);
 
-    const darkMode = useStore(state => state.darkMode);
-    const toggleDarkMode = useStore(state => state.toggleDarkMode);
+    const reloadScene = useStore(state => state.reloadScene);
 
-    const setShowSettingsModal = useStore(state => state.setShowSettingsModal);
+    // const darkMode = useStore(state => state.darkMode);
+    // const toggleDarkMode = useStore(state => state.toggleDarkMode);
 
-    const sidebar = useStore(state => state.sidebar);
-    const toggleSidebar = useStore(state => state.toggleSidebar);
+    // const setShowSettingsModal = useStore(state => state.setShowSettingsModal);
 
-    const setShowMenu = useStore(state => state.setShowMenu);
+    // const sidebar = useStore(state => state.sidebar);
+    // const toggleSidebar = useStore(state => state.toggleSidebar);
 
-    const toggleAudioEnabled = useStore((state) => state.toggleAudioEnabled)
-    const audioEnabled = useStore((state) => state.audioSettings.enabled)
+    // const setShowMenu = useStore(state => state.setShowMenu);
 
-    const {
-        // server,
-        // players,
-        // touchControlsEnabled,
-        // setTouchControlsEnabled,
-        reloadScene,
-        // controllerState,
-        // isFullscreen,
-        // requestFullscreen,
-        // exitFullscreen,
-        // setShowMenu
-    } = props;
+    // const toggleAudioEnabled = useStore((state) => state.toggleAudioEnabled)
+    // const audioEnabled = useStore((state) => state.audioSettings.enabled)
 
     return (
         <div className='mobile-menu-container'>
@@ -109,94 +99,101 @@ function LeftPanelContent(props) {
                         </div>
                     } */}
 
-                    <div className="d-flex flex-wrap">
+                    <div className="">
 
-                        <GameMenuPrimaryButtonGroup
-                            useStore={useStore}
-                            type="GameMenu"
-                        />
-
-                        <div className='w-50'>
-                            <DropdownButton
-                                variant="articles w-100"
-                                size='sm'
-                                id="dropdown-basic-button"
-                                className="dropdown-articles"
-                                title={
-                                    <span>
-                                        <i className="fad fa-camera"></i>
-                                        <span>Camera</span>
-                                    </span>
-                                }
-                            >
-
-                                <div style={{ maxHeight: '600px', overflowY: 'auto', width: '200px' }}>
-
-                                    {[
-                                        {
-                                            name: 'Free',
-                                        },
-                                        {
-                                            name: 'Player',
-                                        }
-                                    ]
-                                        .map(location =>
-                                            <Dropdown.Item
-                                                key={location.name}
-                                                active={cameraMode == location.name}
-                                                onClick={() => {
-                                                    setCameraMode(location.name)
-                                                    // setShowMenu(false)
-                                                }}
-                                                className="d-flex justify-content-between"
-                                            >
-                                                <i className="fad fa-camera"></i>
-                                                {location.name}
-                                            </Dropdown.Item>
-                                        )}
-
-                                </div>
-
-                            </DropdownButton>
+                        <div className='d-flex flex-wrap mb-3'>
+                            <GameMenuPrimaryButtonGroup
+                                useStore={useStore}
+                                type="GameMenu"
+                                useRouter={useRouter}
+                            />
                         </div>
 
-                        <div className='w-50'>
-                            <DropdownButton
-                                variant="articles w-100"
-                                size='sm'
-                                id="dropdown-basic-button"
-                                className="dropdown-articles"
-                                title={
-                                    <span>
-                                        <i className="fad fa-bug"></i>
-                                        <span>Debug </span>
-                                        <span>{debug ? 'On' : 'Off'}</span>
-                                    </span>
-                                }
-                            >
+                        <div className="d-flex flex-wrap">
 
-                                <div style={{ maxHeight: '600px', overflowY: 'auto', width: '200px' }}>
+                            <div className='w-50'>
+                                <DropdownButton
+                                    variant="articles w-100"
+                                    size='sm'
+                                    id="dropdown-basic-button"
+                                    className="dropdown-articles"
+                                    title={
+                                        <span>
+                                            <i className="fad fa-camera"></i>
+                                            <span>Camera</span>
+                                        </span>
+                                    }
+                                >
+    
+                                    <div style={{ maxHeight: '600px', overflowY: 'auto', width: '200px' }}>
+    
+                                        {[
+                                            {
+                                                name: 'Free',
+                                            },
+                                            {
+                                                name: 'Player',
+                                            }
+                                        ]
+                                            .map(location =>
+                                                <Dropdown.Item
+                                                    key={location.name}
+                                                    active={cameraMode == location.name}
+                                                    onClick={() => {
+                                                        setCameraMode(location.name)
+                                                        // setShowMenu(false)
+                                                    }}
+                                                    className="d-flex justify-content-between"
+                                                >
+                                                    <i className="fad fa-camera"></i>
+                                                    {location.name}
+                                                </Dropdown.Item>
+                                            )}
+    
+                                    </div>
+    
+                                </DropdownButton>
+                            </div>
+    
+                            <div className='w-50'>
+                                <DropdownButton
+                                    variant="articles w-100"
+                                    size='sm'
+                                    id="dropdown-basic-button"
+                                    className="dropdown-articles"
+                                    title={
+                                        <span>
+                                            <i className="fad fa-bug"></i>
+                                            <span>Debug </span>
+                                            <span>{debug ? 'On' : 'Off'}</span>
+                                        </span>
+                                    }
+                                >
+    
+                                    <div style={{ maxHeight: '600px', overflowY: 'auto', width: '200px' }}>
+    
+                                        {[
+                                            false,
+                                            true
+                                        ]
+                                            .map(location =>
+                                                <Dropdown.Item
+                                                    key={location}
+                                                    onClick={() => {
+                                                        setDebug(location)
+                                                        reloadScene()
+                                                    }}
+                                                    className="d-flex justify-content-between"
+                                                >
+                                                    {location ? 'True' : 'False'}
+                                                </Dropdown.Item>
+                                            )}
+    
+                                    </div>
+    
+                                </DropdownButton>
+                            </div>
 
-                                    {[
-                                        false,
-                                        true
-                                    ]
-                                        .map(location =>
-                                            <Dropdown.Item
-                                                key={location}
-                                                onClick={() => {
-                                                    setDebug(location)
-                                                    reloadScene()
-                                                }}
-                                                className="d-flex justify-content-between"
-                                            >
-                                                {location ? 'True' : 'False'}
-                                            </Dropdown.Item>
-                                        )}
-
-                                </div>
-
-                            </DropdownButton>
                         </div>
 
                     </div>
@@ -241,15 +238,11 @@ function LeftPanelContent(props) {
             <Scoreboard />
 
             {/* Touch Controls */}
-            <TouchControlsCard />
+            {/* <TouchControlsCard /> */}
 
             <ControllerUICard />
 
-            <DebugControls
-                reloadScene={reloadScene}
-            />
-
-
+            <DebugControls />
 
         </div>
     )

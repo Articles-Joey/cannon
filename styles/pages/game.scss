@@ -1,29 +1,9 @@
 @use "@/styles/components/global.scss" as *;
+@use "@/styles/components/controls-overlay.scss" as *;
 
 .cannon-game-page {
     position: relative;
     display: flex;
-
-    &.fullscreen {
-        .mobile-menu {
-            top: 0px;
-        }
-    }
-
-    &.sidebar-open {
-
-        @include media-breakpoint-up(lg) {
-            .menu-bar {
-                display: none;
-            }
-        }
-
-        .panel-left {
-            @include media-breakpoint-up(lg) {
-                display: block;
-            }
-        }
-    }
 
     .background {
         position: fixed;
@@ -43,119 +23,6 @@
     .container {
         position: relative;
         z-index: 1;
-    }
-
-    .controls-overlay {
-        position: fixed;
-        bottom: calc(50px + 1rem);
-        right: 50%;
-        background-color: rgba(0, 0, 0, 0.75);
-        width: 160px;
-        height: 160px;
-        z-index: 1;
-        transform: translateX(50%);
-
-        @include media-breakpoint-up(lg) {
-            transform: initial;
-            right: 0;
-            // bottom: 0;
-            bottom: calc(50px + 0rem);
-            margin: 1rem;
-        }
-
-        .sensitivity-buttons {
-            position: absolute;
-            top: -1.5rem;
-            // right: 50%;
-            width: 100%;
-            // transform: translateX(50%);
-
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .fire-button,
-        .up-button,
-        .down-button,
-        .left-button,
-        .right-button {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translateX(-50%) translateY(-50%);
-        }
-
-        .fire-button {
-            background-color: red;
-        }
-
-        .left-button {
-            transform: translateX(calc(-50% - 50px)) translateY(-50%);
-        }
-
-        .right-button {
-            transform: translateX(calc(-50% + 50px)) translateY(-50%);
-        }
-
-        .up-button {
-            transform: translateX(-50%) translateY(calc(-50% - 50px));
-        }
-
-        .down-button {
-            transform: translateX(-50%) translateY(calc(-50% + 50px));
-        }
-    }
-
-    .menu-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 50px;
-        z-index: 3;
-
-        // @include media-breakpoint-up(lg) {
-        //     display: none;
-        // }
-    }
-
-    .mobile-menu {
-        position: fixed;
-        bottom: 50px;
-        left: 0;
-        width: 100%;
-        // top: 0px;
-        // height: 500px;
-        // overflow: auto;
-        z-index: 2;
-        background-color: rgba(0, 0, 0, 0.75);
-        transform: translateY(calc(100% + 50px));
-        transition-duration: 200ms;
-        // padding: 1rem;
-        display: flex;
-        align-items: flex-end;
-
-        &.show {
-            transform: translateY(0);
-        }
-
-        // @include media-breakpoint-up(lg) {
-        //     overflow: initial;
-        //     height: initial;
-        // }
-
-        .mobile-menu-container {
-            max-width: 400px;
-            margin: 0 auto;
-            height: calc(100vh - 50px);
-            overflow: auto;
-            padding: 1rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: flex-end;
-        }
-
     }
 
     .touch-controls-area {
@@ -223,23 +90,6 @@
 
     .ad {
         // padding: 1rem;
-    }
-
-    .panel-left,
-    .panel-right {
-        width: 300px;
-        height: calc(100vh - 0px);
-        flex-shrink: 0;
-    }
-
-    .panel-left {
-        display: none;
-    }
-
-    .panel-right {
-        display: flex;
-        justify-content: center;
-        align-items: center;
     }
 
     .game-panel {

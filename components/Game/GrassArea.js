@@ -64,7 +64,7 @@ function createBladeGeometry() {
     return geometry;
 }
 
-export default function GrassArea({ inner = 1, outer = 150, count = 16000 }) {
+export default function GrassArea({ inner = 1, outer = 100, count = 16000 }) {
 
     const graphicsQuality = useStore(state => state.graphicsQuality);    
 

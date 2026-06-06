@@ -1,15 +1,19 @@
+"use client"
 import { useCannonStore } from '@/hooks/useCannonStore';
 import { useGameServer } from '@/hooks/useGameServer';
+import { useGameStore } from '@/hooks/useGameStore';
 import { useStore } from '@/hooks/useStore';
-import { useSearchParams } from 'next/navigation';
+import { usePathname, useSearchParams } from 'next/navigation';
 import { useRef } from 'react';
 import { useEffect } from 'react';
 
-export default function PeerManager() {
+export default function PeerHandler() {
+
+    const pathname = usePathname();
 
     const searchParams = useSearchParams()
     const params = Object.fromEntries(searchParams.entries());
-    const { server } = params
+    const { server, server_type } = params
 
     const nickname = useStore(state => state.nickname);
 
@@ -21,13 +25,16 @@ export default function PeerManager() {
     const isHost = useGameServer(state => state.isHost)
     const setIsHost = useGameServer(state => state.setIsHost)
     // const gameState = useGameServer(state => state.gameState) // Removed to prevent re-renders
-    const setGameState = useGameServer(state => state.setGameState)
+    const setGameState = useGameStore(state => state.setGameState)
+
     const addBannedId = useGameServer(state => state.addBannedId)
     const setDisplayId = useGameServer(state => state.setDisplayId)
 
     const initializingRef = useRef(false);
 
     useEffect(() => {
+
+        if (server_type !== "online-peer") return;
 
         if (!server && !peer && !initializingRef.current) {
             initializingRef.current = true;
@@ -59,19 +66,18 @@ export default function PeerManager() {
                         connectionsRef.current[conn.peer] = conn;
 
                         // Assign a spaced-out position to the new player
-                        setGameState(prev => {
-                            const players = [...(prev.players || [])];
-                            const playerCount = players.length; // includes host already
-                            const spacing = 4;
-                            const offsetX = playerCount * spacing;
-                            players.push({
-                                id: conn.peer,
-                                position: [offsetX, 0, 43],
-                                assignedPosition: [offsetX, 0, 43],
-                                rotation: [0, Math.PI, 0]
-                            });
-                            return { ...prev, players };
+                        const prev = useGameStore.getState().gameState;
+                        const players = [...(prev.players || [])];
+                        const playerCount = players.length; // includes host already
+                        const spacing = 4;
+                        const offsetX = playerCount * spacing;
+                        players.push({
+                            id: conn.peer,
+                            position: [offsetX, 0, 43],
+                            assignedPosition: [offsetX, 0, 43],
+                            rotation: [0, Math.PI, 0]
                         });
+                        setGameState({ ...prev, players });
 
                         // New player joined — tell them their assigned position
                         // (will be included in next gameState broadcast)
@@ -85,25 +91,24 @@ export default function PeerManager() {
                     });
                     conn.on('data', (msg) => {
                         if (msg.type === 'playerUpdate') {
-                            setGameState(prev => {
-                                const players = [...(prev.players || [])];
-                                const index = players.findIndex(p => p.id === conn.peer);
-                                // Only update rotation, action, nickname — NOT position
-                                // Position is assigned by the host on join
-                                const newPlayerData = {
-                                    id: conn.peer,
-                                    rotation: msg.data.rotation,
-                                    action: msg.data.action,
-                                    nickname: msg.data.nickname
-                                };
+                            const prev = useGameStore.getState().gameState;
+                            const players = [...(prev.players || [])];
+                            const index = players.findIndex(p => p.id === conn.peer);
+                            // Only update rotation, action, nickname — NOT position
+                            // Position is assigned by the host on join
+                            const newPlayerData = {
+                                id: conn.peer,
+                                rotation: msg.data.rotation,
+                                action: msg.data.action,
+                                nickname: msg.data.nickname
+                            };
 
-                                if (index > -1) {
-                                    players[index] = { ...players[index], ...newPlayerData };
-                                } else {
-                                    players.push({ ...newPlayerData, position: [0, 0, 43] });
-                                }
-                                return { ...prev, players };
-                            });
+                            if (index > -1) {
+                                players[index] = { ...players[index], ...newPlayerData };
+                            } else {
+                                players.push({ ...newPlayerData, position: [0, 0, 43] });
+                            }
+                            setGameState({ ...prev, players });
                         }
                         if (msg.type === 'fireProjectile') {
                             // Client fired a projectile — add it to local cannon store
@@ -118,10 +123,11 @@ export default function PeerManager() {
                     conn.on('close', () => {
                         console.log('Client disconnected: ' + conn.peer);
                         delete connectionsRef.current[conn.peer];
-                        setGameState(prev => ({
+                        const prev = useGameStore.getState().gameState;
+                        setGameState({
                             ...prev,
                             players: (prev.players || []).filter(p => p.id !== conn.peer)
-                        }));
+                        });
                     });
                 });
 
@@ -177,14 +183,14 @@ export default function PeerManager() {
             initClient();
         }
 
-    }, [server, peer, setPeer, setIsHost, setGameState]);
+    }, [server, server_type, peer, setPeer, setIsHost, setGameState]);
 
     // const lastTagTime = useRef(0);
 
     // Network Loop
     useEffect(() => {
         
-        if (!peer) return;
+        if (server_type !== "online-peer" || !peer) return;
 
         const interval = setInterval(() => {
 
@@ -200,74 +206,36 @@ export default function PeerManager() {
             const myId = peer.id;
 
             if (isHost) {
-                let broadcastState = null;
+                // Host: Update self, run tag logic, and broadcast
+                const prev = useGameStore.getState().gameState;
+                const players = [...(prev.players || [])];
+                let itPlayerId = prev.itPlayerId || myId; // Keep existing IT or default
 
-                // Host: Update self, run tag logic, and broadcast using FUNCTIONAL update
-                // to avoid race conditions with incoming client data
-                setGameState(prev => {
-                    const players = [...(prev.players || [])];
-                    let itPlayerId = prev.itPlayerId || myId; // Keep existing IT or default
+                // 1. Update Host Data
+                const index = players.findIndex(p => p.id === myId);
+                const hostPosition = index > -1 && players[index].assignedPosition
+                    ? players[index].assignedPosition
+                    : [0, 0, 43];
+                const newPlayer = { id: myId, position: hostPosition, assignedPosition: hostPosition, rotation: myRotation, action: myAction, nickname: myNickname };
 
-                    // 1. Update Host Data
-                    const index = players.findIndex(p => p.id === myId);
-                    const hostPosition = index > -1 && players[index].assignedPosition
-                        ? players[index].assignedPosition
-                        : [0, 0, 43];
-                    const newPlayer = { id: myId, position: hostPosition, assignedPosition: hostPosition, rotation: myRotation, action: myAction, nickname: myNickname };
+                if (index > -1) {
+                    players[index] = { ...players[index], ...newPlayer };
+                } else {
+                    players.push(newPlayer);
+                }
 
-                    if (index > -1) {
-                        players[index] = { ...players[index], ...newPlayer };
-                    } else {
-                        players.push(newPlayer);
-                    }
+                // 2. Tag Logic (Omitted/Commented in original)
 
-                    // 2. Tag Logic (Moved inside to use fresh 'players' and 'itPlayerId')
-                    // if (Date.now() > lastTagTime.current + 3000) {
-                    //     const currentItPlayer = players.find(p => p.id === itPlayerId);
-
-                    //     if (currentItPlayer && currentItPlayer.position) {
-                    //         const taggedPlayer = players.find(p => {
-                    //             if (p.id === itPlayerId) return false;
-                    //             if (!p.position) return false;
-
-                    //             const dx = p.position[0] - currentItPlayer.position[0];
-                    //             const dy = p.position[1] - currentItPlayer.position[1];
-                    //             const dz = p.position[2] - currentItPlayer.position[2];
-                    //             const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
-
-                    //             return dist < 1.0;
-                    //         });
-
-                    //         if (taggedPlayer) {
-                    //             console.log(`Tag Event! ${itPlayerId} tagged ${taggedPlayer.id}`);
-                    //             itPlayerId = taggedPlayer.id;
-                    //             lastTagTime.current = Date.now();
-                    //         }
-                    //     } else {
-                    //         if (!currentItPlayer && players.length > 0) {
-                    //             console.log("IT player lost, resetting to Host");
-                    //             itPlayerId = myId;
-                    //         }
-                    //     }
-                    // }
-
-                    // 3. Construct New State (include projectiles from local physics)
-                    const newState = { ...prev, players, itPlayerId, projectiles: localProjectiles };
-
-                    // Capture for broadcast
-                    broadcastState = newState;
-
-                    return newState;
-                });
+                // 3. Construct New State (include projectiles from local physics)
+                const newState = { ...prev, players, itPlayerId, projectiles: localProjectiles };
+                setGameState(newState);
 
                 // Broadcast the state we just calculated
-                if (broadcastState) {
-                    Object.values(connectionsRef.current).forEach(conn => {
-                        if (conn.open) {
-                            conn.send({ type: 'gameState', state: broadcastState });
-                        }
-                    });
-                }
+                Object.values(connectionsRef.current).forEach(conn => {
+                    if (conn.open) {
+                        conn.send({ type: 'gameState', state: newState });
+                    }
+                });
 
             } else {
                 // Client: Send position + rotation to host
@@ -292,7 +260,7 @@ export default function PeerManager() {
         }, 50);
 
         return () => clearInterval(interval);
-    }, [peer, isHost, setGameState]);
+    }, [peer, server_type, isHost, setGameState]);
 
     return (
         <></>

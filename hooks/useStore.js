@@ -50,7 +50,7 @@ export const useStore = create()(
     }),
     {
       name: 'cannon-game-storage', // name of the item in the storage (must be unique)
-      // storage: createJSONStorage(() => sessionStorage), // (optional) by default, 'localStorage' is used
+      version: 1,
       partialize: (state) =>
         Object.fromEntries(
           Object.entries(state).filter(([key]) => ![

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useControllerStore } from "@/hooks/useControllerStore";
 import ArticlesButton from "@/components/UI/Button";
-import ControllerPreview from "@/components/ControllerPreview";
+// import ControllerPreview from "@/components/ControllerPreview";
 
 export default function ControllerUICard({ }) {
 
@@ -32,7 +32,7 @@ export default function ControllerUICard({ }) {
                         </ArticlesButton>
                     </div>
 
-                    {showControllerState && <div className='p-3'>
+                    {/* {showControllerState && <div className='p-3'>
 
                         <ControllerPreview
                             controllerState={controllerState}
@@ -41,7 +41,7 @@ export default function ControllerUICard({ }) {
                             maxHeight={300}
                             showPreview={true}
                         />
-                    </div>}
+                    </div>} */}
 
                 </div>
             }

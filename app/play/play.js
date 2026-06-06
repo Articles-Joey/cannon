@@ -21,9 +21,10 @@ import ControlsOverlay from '@/components/Game/ControlsOverlay';
 import TouchControls from '@/components/UI/TouchControls';
 import classNames from 'classnames';
 import { useStore } from '@/hooks/useStore';
-import PeerManager from '@/components/Game/PeerManager';
-import { Suspense } from 'react';
-import { useGameServer } from '@/hooks/useGameServer';
+// import PeerManager from '@/components/Game/PeerManager';
+// import { Suspense } from 'react';
+// import { useGameServer } from '@/hooks/useGameServer';
+import GameMenu from '@articles-media/articles-dev-box/GameMenu';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
@@ -39,7 +40,7 @@ export default function CannonGamePage() {
 
     const sidebar = useStore(state => state.sidebar);
 
-    const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
+    // const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
 
     const resetPlayerRotation = useCannonStore(state => state.resetPlayerRotation);
     const setGoalLocation = useCannonStore(state => state.setGoalLocation);
@@ -55,7 +56,7 @@ export default function CannonGamePage() {
 
     // const [ cameraMode, setCameraMode ] = useState('Player')
 
-    const [players, setPlayers] = useState([])
+    // const [players, setPlayers] = useState([])
 
     useEffect(() => {
 
@@ -91,7 +92,7 @@ export default function CannonGamePage() {
     const reloadScene = useStore(state => state.reloadScene)
     const sceneKey = useStore(state => state.sceneKey)
 
-    const [gameState, setGameState] = useState(false)
+    // const [gameState, setGameState] = useState(false)
 
     return (
 
@@ -107,82 +108,31 @@ export default function CannonGamePage() {
             id={`${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`}
         >
 
-            <Suspense>
-                <PeerManager />
-            </Suspense>
-
-            <div className="menu-bar card card-articles rounded-0 p-1 justify-content-center">
-
-                <div className='d-flex justify-content-center align-items-center'>
-
-                    <ArticlesButton
-                        small
-                        active={showMenu}
-                        className="px-4"
-                        onClick={() => {
-                            setShowMenu(!showMenu)
-                        }}
-                    >
-                        <i className="fad fa-bars"></i>
-                        <span>Menu</span>
-                    </ArticlesButton>
-                    <ArticlesButton
-                        small
-                        // active={showMenu}
-                        className=""
-                        onClick={() => {
-                            setShowSettingsModal(true)
-                        }}
-                    >
-                        <i className="fad fa-cog"></i>
-                    </ArticlesButton>
-
-                    <div>
-                        {/* Y: {(playerLocation?.y || 0)} */}
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div className={`mobile-menu ${showMenu && 'show'}`}>
-                <LeftPanelContent
-                    {...panelProps}
-                />
-            </div>
-
-            <TouchControls
-            // touchControlsEnabled={touchControlsEnabled}
+            <GameMenu
+                useStore={useStore}
+                LeftPanelContent={LeftPanelContent}
+                menuBarConfig={{
+                    style: "Bar",
+                    menuBarButtonPosition: "Left",
+                    settingsWithMenuButton: true,
+                }}
+                sidebarConfig={{
+                    style: "Static Panel",
+                }}
             />
-
-            <div className='panel-left '>
-
-                <LeftPanelContent
-                    {...panelProps}
-                />
-
-            </div>
-
-            {/* <div className='game-info'>
-                <div className="card card-articles card-sm">
-                    <div className="card-body">
-                        <pre> 
-                            {JSON.stringify(playerData, undefined, 2)}
-                        </pre>
-                    </div>
-                </div>
-            </div> */}
-
-            <ControlsOverlay />
 
             <div className='canvas-wrap'>
 
+                <TouchControls />
+
+                <ControlsOverlay />
+
                 <GameCanvas
                     key={sceneKey}
-                    gameState={gameState}
+                    // gameState={gameState}
                     // playerData={playerData}
                     // setPlayerData={setPlayerData}
-                    players={players}
+                    // players={players}
                 />
 
             </div>

@@ -5,7 +5,6 @@ Files: Man.glb [493.2KB] > F:\My Documents\Sites\games\cannon\public\models\Man-
 */
 
 import React from 'react'
-import { useGraph } from '@react-three/fiber'
 import { useGLTF, useAnimations } from '@react-three/drei'
 import { SkeletonUtils } from 'three-stdlib'
 import { useEffect } from 'react'
@@ -14,31 +13,27 @@ import { useRef } from 'react'
 
 const link = 'models/Man-transformed.glb'
 
-export function Model({ action, ...props }) {
+export function ModelMan({ action, ...props }) {
   const group = useRef()
   const { scene, animations } = useGLTF(link)
   const clone = useMemo(() => SkeletonUtils.clone(scene), [scene])
-  const { nodes, materials } = useGraph(clone)
   const { actions } = useAnimations(animations, group)
 
   useEffect(() => {
-    actions[action]?.reset().fadeIn(0.2).play()
-    return () => actions[action]?.fadeOut(0.2)
+    const currentAction = actions ? actions[action] : null
+    if (currentAction) {
+      currentAction.reset().fadeIn(0.2).play()
+      return () => {
+        if (currentAction && typeof currentAction.fadeOut === 'function') {
+          currentAction.fadeOut(0.2)
+        }
+      }
+    }
   }, [action, actions])
 
   return (
     <group ref={group} {...props} dispose={null}>
-      <group name="Root_Scene">
-        <primitive object={nodes.Bone} />
-        <group name="BaseHuman" rotation={[-Math.PI / 2, 0, 0]} scale={100}>
-          <skinnedMesh name="BaseHuman_1" geometry={nodes.BaseHuman_1.geometry} material={materials.PaletteMaterial001} skeleton={nodes.BaseHuman_1.skeleton} />
-          <skinnedMesh name="BaseHuman_2" geometry={nodes.BaseHuman_2.geometry} material={materials.PaletteMaterial001} skeleton={nodes.BaseHuman_2.skeleton} />
-          <skinnedMesh name="BaseHuman_3" geometry={nodes.BaseHuman_3.geometry} material={materials.PaletteMaterial001} skeleton={nodes.BaseHuman_3.skeleton} />
-          <skinnedMesh name="BaseHuman_4" geometry={nodes.BaseHuman_4.geometry} material={materials.PaletteMaterial001} skeleton={nodes.BaseHuman_4.skeleton} />
-          <skinnedMesh name="BaseHuman_5" geometry={nodes.BaseHuman_5.geometry} material={materials.PaletteMaterial001} skeleton={nodes.BaseHuman_5.skeleton} />
-          <skinnedMesh name="BaseHuman_6" geometry={nodes.BaseHuman_6.geometry} material={materials.PaletteMaterial001} skeleton={nodes.BaseHuman_6.skeleton} />
-        </group>
-      </group>
+      <primitive object={clone} />
     </group>
   )
 }

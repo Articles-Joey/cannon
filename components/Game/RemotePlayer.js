@@ -1,6 +1,7 @@
 import Duck from "@/components/Models/Duck";
 import { Cannon } from "@/components/Models/Cannon";
 import { degToRad } from "three/src/math/MathUtils";
+import { ModelMan } from "../Models/Man";
 
 const PLAYER_SPACING = 4; // units apart along X axis
 
@@ -14,16 +15,36 @@ export default function RemotePlayer({ player, index = 0, totalPlayers = 1 }) {
     return (
         <>
             <group position={position}>
+                {/* group applies yaw and scale to the whole cannon assembly */}
                 <group rotation={[0, rotation[1], 0]} scale={3}>
-                    <Cannon
-                        rotation={[rotation[0], 0, 0]}
-                    />
+                    {/* Cannon receives pitch (X) rotation */}
+                    <Cannon rotation={[
+                        rotation[0],
+                        0,
+                        0
+                    ]} />
+
+                    {/*
+                        Put the ModelMan inside the same yaw/scale group so it follows cannon yaw.
+                        Wrap it with a small group that applies the cannon pitch so it follows pitch too,
+                        and cancel the parent scale with 1/3 so the character keeps its original size.
+                    */}
+                    <group
+                        rotation={[
+                            rotation[0],
+                            degToRad(90),
+                            degToRad(90)
+                        ]}
+                        scale={1 / 3}
+                    >
+                        <ModelMan
+                            position={[2.25, 0, 0]}
+                            rotation={[0, degToRad(90), 0]}
+                            scale={1}
+                            action={"HumanArmature|Man_Clapping"}
+                        />
+                    </group>
                 </group>
-                <Duck
-                    position={[0, 0, 5]}
-                    rotation={[0, -Math.PI / 2, 0]}
-                    scale={1}
-                />
             </group>
         </>
     )

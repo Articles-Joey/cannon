@@ -15,6 +15,8 @@ export default function ControlsOverlay(props) {
 
     const [activeButton, setActiveButton] = useState(null);
 
+    const toontownMode = useStore(state => state.toontownMode);
+
     const playerRotation = useCannonStore(state => state.playerRotation);
     const setPlayerRotation = useCannonStore(state => state.setPlayerRotation);
     const addProjectile = useCannonStore(state => state.addProjectile);
@@ -150,7 +152,16 @@ export default function ControlsOverlay(props) {
     }, [moveUp, moveDown, moveLeft, moveRight, activeButton, setPlayerRotation]);
 
     return (
-        <div className="controls-overlay">
+        <div className={`controls-overlay hide-in-screenshot-mode ${toontownMode ? 'toontown-mode' : ''}`}>
+
+            <div className="controls-background-container">
+                <div 
+                className="controls-background"
+                style={{
+                    backgroundImage: "url('/img/toontown/palette_2.png')",
+                }}
+                ></div>
+            </div>
 
             <div className="sensitivity-buttons">
                 <div 
@@ -185,7 +196,7 @@ export default function ControlsOverlay(props) {
             {['up', 'down', 'left', 'right'].map(dir =>
                 <ArticlesButton
                     key={dir}
-                    className={`${dir}-button`}
+                    className={`${dir}-button directional-button`}
                     active={(dir == 'up' ? moveUp : dir == 'down' ? moveDown : dir == 'left' ? moveLeft : moveRight) || activeButton === dir}
                     onMouseDown={() => setActiveButton(dir)}
                     onMouseUp={() => setActiveButton(null)}

@@ -1,34 +1,35 @@
 import { useCannonStore } from "@/hooks/useCannonStore";
 import { useGameServer } from "@/hooks/useGameServer";
 import { useSphere } from "@react-three/cannon";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, memo } from "react";
 import { useFrame, useThree } from "@react-three/fiber";
-import { Vector3 } from "three";
-import { Model as Man } from '../Models/Man'
+import { ModelMan } from '../Models/Man'
+
+const DEFAULT_VELOCITY = [-1.5, 26, -10];
+const DEFAULT_POSITION = [5, 2, 43];
 
 export default function Projectiles() {
 
-    // const [ref, api] = useSphere(() => ({
-    //     mass: 1,
-    //     // type: 'Dynamic',
-    //     args: [1, 1, 1],
-    //     position: [-2, 5, 0],
-    // }))
-
     const projectiles = useCannonStore(state => state.projectiles);
+    const localPeerId = useGameServer(state => state.peer)?.id;
+
+    // Only track camera for my own projectiles, and only the latest one I fired
+    const myProjectiles = projectiles.filter(p => p.ownerId === localPeerId || (p.ownerId === 'host' && !localPeerId));
+    const latestId = myProjectiles.length > 0 ? myProjectiles[myProjectiles.length - 1].id : null;
 
     return (
         <group>
-            {projectiles.map((item, item_i) => {
+            {projectiles.map((item) => {
+                const isOwner = item.ownerId === localPeerId || (item.ownerId === 'host' && !localPeerId);
+                const isMyLatest = item.id === latestId;
+                
                 return <Projectile
                     key={item.id}
-                    velocity={item.velocity || [
-                        -1.5,
-                        26,
-                        -10
-                    ]}
-                    position={item.position || [5, 2, 43]}
+                    velocity={item.velocity || DEFAULT_VELOCITY}
+                    position={item.position || DEFAULT_POSITION}
                     item={item}
+                    isOwner={isOwner}
+                    isMyLatest={isMyLatest}
                 />
             })}
         </group>
@@ -36,17 +37,11 @@ export default function Projectiles() {
 
 }
 
-function Projectile({ position, velocity, item }) {
+const Projectile = memo(function Projectile({ position, velocity, item, isOwner, isMyLatest }) {
 
     const { camera, controls } = useThree();
-    const projectiles = useCannonStore(state => state.projectiles);
     const cameraFollowsProjectile = useCannonStore(state => state.cameraFollowsProjectile);
-    const localPeerId = useGameServer(state => state.peer)?.id;
     
-    // Only track camera for my own projectiles, and only the latest one I fired
-    const myProjectiles = projectiles.filter(p => p.ownerId === localPeerId || p.ownerId === 'host' && !localPeerId);
-    const isMyLatest = myProjectiles.length > 0 && myProjectiles[myProjectiles.length - 1]?.id === item.id;
-    const isOwner = item.ownerId === localPeerId || (item.ownerId === 'host' && !localPeerId);
     const positionRef = useRef(position);
     const velocityRef = useRef([0, 0, 0]);
     const manRef = useRef();
@@ -170,12 +165,12 @@ function Projectile({ position, velocity, item }) {
                 position={[0, -2, 0]}
                 scale={0.5}
             >
-                <Man 
-                    action={"Man_Clapping"}
+                <ModelMan 
+                    action={"HumanArmature|Man_Clapping"}
                 />
             </group>
 
         </group>
     );
 
-}
+});

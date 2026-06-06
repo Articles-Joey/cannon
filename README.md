@@ -1,6 +1,6 @@
 # Cannon Game
 
-![Game Screenshot](public/img/screenshot.webp)
+![Game Screenshot](public/img/preview.webp)
 
 The objective is to change the angle on a cannon in order to get an accurate landing position into the water tower. 
 

@@ -16,11 +16,13 @@ import "@articles-media/articles-gamepad-helper/dist/articles-gamepad-helper.css
 
 import { Suspense } from 'react';
 
-import SocketLogicHandler from "@/components/SocketLogicHandler";
-import ClientModals from '@/components/UI/ClientModals';
-import DarkModeHandler from '@/components/UI/DarkModeHandler';
-import AudioHandler from '@/components/AudioHandler';
+import SocketLogicHandler from "@/components/Handlers/SocketLogicHandler";
+// import ClientModals from '@/components/UI/ClientModals';
+// import DarkModeHandler from '@/components/UI/DarkModeHandler';
+import AudioHandler from '@/components/Handlers/AudioHandler';
 import LayoutClient from './layout-client';
+import SinglePlayerHandler from '@/components/Handlers/SinglePlayerHandler';
+import PeerHandler from '@/components/Handlers/PeerHandler';
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -53,13 +55,15 @@ export default function RootLayout({ children }) {
       <body
       // className={`${geistSans.variable} ${geistMono.variable}`}
       >
-
-        <SocketLogicHandler />
+        
         <LayoutClient />
 
         <Suspense>
-          <ClientModals />          
+          <SocketLogicHandler />
+          {/* <ClientModals />    */}
           <AudioHandler />
+          <PeerHandler />
+          <SinglePlayerHandler />
         </Suspense>
 
         <AppRouterCacheProvider options={{ enableCssLayer: true }}>

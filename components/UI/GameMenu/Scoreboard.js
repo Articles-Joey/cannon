@@ -1,20 +1,25 @@
-export default function Scoreboard({}) {
+import { useGameStore } from "@/hooks/useGameStore";
 
-    let players = [
-        { id: 1, name: "Player 1", score: 10 },
-    ]
+export default function Scoreboard({ }) {
+
+    const gameState = useGameStore(state => state.gameState);
 
     return (
         <div className="">
             <div className="card card-sm card-articles card-scoreboard">
                 <div className="card-header">
-                    Scores
+                    Player Scores
                 </div>
                 <div className="card-body">
 
-                    {players.map((player) => {
+                    {gameState?.players?.map((player) => {
                         return (
-                            <div key={player.id}>{player.name}: {player.score}</div>
+                            <div key={player.id}>
+                                <div>{player.nickname}: {player.score || 0}</div>
+                                <div>
+                                    {player.rotation || "?"}
+                                </div>
+                            </div>
                         );
                     })}
 
