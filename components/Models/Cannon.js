@@ -5,7 +5,7 @@ import { useGLTF } from '@react-three/drei'
 
 const link = `${process.env.NEXT_PUBLIC_CDN}games/Cannon/Cannon.glb`
 
-export function Cannon(props) {
+export function ModelCannon(props) {
     const { nodes, materials } = useGLTF(link)
     return (
         <group {...props} dispose={null}>

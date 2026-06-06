@@ -26,7 +26,9 @@ import ImageRing from "./ImageRing";
 import FenceRing from "./FenceRing";
 import ScoreTarget from "./ScoreTarget";
 
-function GameCanvas(props) {
+function GameCanvas({
+    landingAnimationMode = false,
+}) {
 
     const debug = useStore(state => state.debug);
 
@@ -48,7 +50,7 @@ function GameCanvas(props) {
 
             <OrbitControls
                 makeDefault
-            // autoRotate={gameState?.status == 'In Lobby'}
+                autoRotate={landingAnimationMode}
             />
 
             <ImageRing />

@@ -1,5 +1,5 @@
 import Duck from "@/components/Models/Duck";
-import { Cannon } from "@/components/Models/Cannon";
+import { ModelCannon } from "@/components/Models/Cannon";
 import { degToRad } from "three/src/math/MathUtils";
 import { ModelMan } from "../Models/Man";
 
@@ -18,7 +18,7 @@ export default function RemotePlayer({ player, index = 0, totalPlayers = 1 }) {
                 {/* group applies yaw and scale to the whole cannon assembly */}
                 <group rotation={[0, rotation[1], 0]} scale={3}>
                     {/* Cannon receives pitch (X) rotation */}
-                    <Cannon rotation={[
+                    <ModelCannon rotation={[
                         rotation[0],
                         0,
                         0

@@ -1,0 +1,13 @@
+.background-page {
+    position: relative;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+
+    canvas {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
+
+}

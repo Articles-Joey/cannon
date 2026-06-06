@@ -19,6 +19,20 @@ import { useGameServer } from '@/hooks/useGameServer';
 // const game_name = process.env.NEXT_PUBLIC_GAME_NAME
 // const game_port = process.env.NEXT_PUBLIC_GAME_PORT
 
+// const backgroundImage = `img/preview.webp`;
+const LandingBackgroundAnimation = dynamic(() =>
+    import('@/components/Game/LandingBackgroundAnimation'),
+    {
+        ssr: false,
+        // loading: () => <img
+        //     src={backgroundImage.src}
+        //     alt=""
+        //     // fill
+        //     style={{ objectFit: 'cover', objectPosition: 'center', filter: 'blur(10px)' }}
+        // />
+    }
+);
+
 export default function CannonGameLobbyPage() {
 
     const {
@@ -51,10 +65,18 @@ export default function CannonGameLobbyPage() {
                 // RotatingMascot={RotatingMascot}
                 Link={Link}
                 logoImage={`img/icon.png`}
+                LandingBackgroundAnimation={
+                    <LandingBackgroundAnimation />
+                }
                 heroOverride={<>
                     <img
-                        src="img/inspo-artwork.webp"
-                        alt="Toontown Icon"
+                        src={
+                            toontownMode ?
+                                "img/toontown-hero.webp"
+                                :
+                                "img/hero.webp"
+                        }
+                        alt="Hero Image"
                         className='w-100'
                     />
                 </>}
