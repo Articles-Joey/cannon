@@ -4,9 +4,12 @@ import { useTexture } from "@react-three/drei";
 import { NearestFilter, RepeatWrapping } from "three";
 
 const GrassPlane = () => {
+
+    const toontownMode = useStore(state => state.toontownMode);
     const graphicsQuality = useStore(state => state.graphicsQuality)
+
     const [colorMap, normalMap] = useTexture([
-        '/textures/Grass/Poliigon_GrassPatchyGround_4585_BaseColor.jpg',
+        toontownMode ? 'img/toontown/grass.png' : '/textures/Grass/Poliigon_GrassPatchyGround_4585_BaseColor.jpg',
         '/textures/Grass/Poliigon_GrassPatchyGround_4585_Normal.png'
     ])
 
@@ -39,7 +42,7 @@ const GrassPlane = () => {
         <>
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
                 <planeGeometry attach="geometry" args={[width, height]} />
-                <meshStandardMaterial attach="material" map={colorMap} normalMap={normalMap} />
+                <meshStandardMaterial attach="material" map={colorMap} normalMap={toontownMode ? null : normalMap} />
             </mesh>
         </>
     );

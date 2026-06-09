@@ -2,6 +2,7 @@ import * as THREE from 'three'
 import { useRef, useMemo } from 'react'
 import { extend, useThree, useLoader, useFrame } from '@react-three/fiber'
 import { Water } from 'three-stdlib'
+import { useStore } from '@/hooks/useStore'
 
 extend({ Water })
 
@@ -11,23 +12,29 @@ export default function WaterPlane(props) {
     const ref = useRef()
     const gl = useThree((state) => state.gl)
 
+    const darkMode = useStore(state => state.darkMode)
+    const toontownMode = useStore(state => state.toontownMode)
+
     const waterNormals = useLoader(THREE.TextureLoader, link)
 
     waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping
-    const geom = useMemo(() => new THREE.CircleGeometry(2.8, 64), [])
+    const geom = useMemo(() => new THREE.CircleGeometry(
+        5, 
+        toontownMode ? 8 : 32
+    ), [])
     const config = useMemo(
         () => ({
             textureWidth: 512,
             textureHeight: 512,
             waterNormals,
             sunDirection: [1000, 10, 0],
-            sunColor: 0xffffff,
-            waterColor: 0x001e0f,
+            sunColor: darkMode ? 0x222222 : 0xffffff,
+            waterColor: darkMode ? 0x011111 : 0x001e0f,
             distortionScale: 3.7,
             fog: false,
             format: gl.encoding
         }),
-        [waterNormals]
+        [waterNormals, darkMode]
     )
     useFrame((state, delta) => (ref.current.material.uniforms.time.value += delta))
     return <water ref={ref} args={[geom, config]} {...props} rotation-x={-Math.PI / 2} />

@@ -21,6 +21,8 @@ import TouchControlsCard from "./TouchControlsCard";
 import ControllerUICard from "./ControllerUICard";
 import Scoreboard from "./Scoreboard";
 import PeerDetails from "../PeerDetails";
+import useGameHelpers from "@/hooks/useGameHelpers";
+import { useGameStore } from "@/hooks/useGameStore";
 
 function LeftPanelContent({ }) {
 
@@ -35,6 +37,12 @@ function LeftPanelContent({ }) {
     }));
 
     const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
+
+    const gameState = useGameStore(state => state.gameState)
+
+    const {
+        startGame
+    } = useGameHelpers()
 
     const setDebug = useCannonStore(state => state.setDebug);
     const debug = useCannonStore(state => state.debug);
@@ -124,9 +132,9 @@ function LeftPanelContent({ }) {
                                         </span>
                                     }
                                 >
-    
+
                                     <div style={{ maxHeight: '600px', overflowY: 'auto', width: '200px' }}>
-    
+
                                         {[
                                             {
                                                 name: 'Free',
@@ -149,12 +157,12 @@ function LeftPanelContent({ }) {
                                                     {location.name}
                                                 </Dropdown.Item>
                                             )}
-    
+
                                     </div>
-    
+
                                 </DropdownButton>
                             </div>
-    
+
                             <div className='w-50'>
                                 <DropdownButton
                                     variant="articles w-100"
@@ -169,9 +177,9 @@ function LeftPanelContent({ }) {
                                         </span>
                                     }
                                 >
-    
+
                                     <div style={{ maxHeight: '600px', overflowY: 'auto', width: '200px' }}>
-    
+
                                         {[
                                             false,
                                             true
@@ -188,9 +196,9 @@ function LeftPanelContent({ }) {
                                                     {location ? 'True' : 'False'}
                                                 </Dropdown.Item>
                                             )}
-    
+
                                     </div>
-    
+
                                 </DropdownButton>
                             </div>
 
@@ -234,6 +242,30 @@ function LeftPanelContent({ }) {
             </div> */}
 
             <PeerDetails />
+
+            <div className="p-3">
+
+                <div className="mb-1 d-flex justify-content-between">
+
+                    <div>Status: {gameState.status}</div>
+
+                    <div>
+                        <i className="fas fa-clock"></i>
+                        {60 - gameState.timer}
+                    </div>
+
+                </div>
+
+                <ArticlesButton
+                    variant="success"
+                    className="w-100"
+                    onClick={() => {
+                        startGame()
+                    }}
+                >
+                    Start Game
+                </ArticlesButton>
+            </div>
 
             <Scoreboard />
 

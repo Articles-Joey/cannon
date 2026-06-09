@@ -5,17 +5,26 @@ import { Vector3, Euler } from 'three';
 import { useCannonStore } from "@/hooks/useCannonStore";
 import { useGameServer } from "@/hooks/useGameServer";
 import { useGamepad, getLeftStick } from "@/hooks/useGamepad";
+import { useAudioStore } from "@/hooks/useAudioStore";
 
 import ArticlesButton from "../UI/Button"
 import { useStore } from "@/hooks/useStore";
+import { useSearchParams } from "next/navigation";
 
 export default function ControlsOverlay(props) {
+
+    const searchParams = useSearchParams()
+    const params = Object.fromEntries(searchParams.entries());
+    const { server, server_type } = params
 
     const { moveUp, moveDown, moveRight, moveLeft, fire } = useKeyboard()
 
     const [activeButton, setActiveButton] = useState(null);
+    const [stickMoving, setStickMoving] = useState(false);
 
     const toontownMode = useStore(state => state.toontownMode);
+
+    const audioSettings = useAudioStore(state => state.audioSettings);
 
     const playerRotation = useCannonStore(state => state.playerRotation);
     const setPlayerRotation = useCannonStore(state => state.setPlayerRotation);
@@ -58,10 +67,13 @@ export default function ControlsOverlay(props) {
             id: Math.random(),
             velocity: [velocity.x, velocity.y, velocity.z],
             position: spawnPos,
-            ownerId: peer?.id || 'host'
+            ownerId: server_type === 'single-player' ?
+            'local'
+            :
+            peer?.id || 'host'
         };
 
-        if (isHost) {
+        if ((isHost && server_type == 'online-peer') || (server_type === 'single-player')) {
             // Host: add projectile directly (physics runs locally)
             addProjectile(projectileData);
         } else {
@@ -83,6 +95,20 @@ export default function ControlsOverlay(props) {
 
     // Keep a ref to handleFire for the gamepad loop
     handleFireRef.current = handleFire;
+
+    // Adjustment sound
+    const adjustAudioRef = useRef(null);
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            adjustAudioRef.current = new Audio("/audio/adjust.mp3");
+        }
+        return () => {
+            if (adjustAudioRef.current) {
+                adjustAudioRef.current.pause();
+                adjustAudioRef.current = null;
+            }
+        };
+    }, []);
 
     useEffect(() => {
         if (fire) {
@@ -112,9 +138,14 @@ export default function ControlsOverlay(props) {
     useEffect(() => {
         const interval = setInterval(() => {
             const [stickX, stickY] = getLeftStick();
+            const isStickMoving = stickX !== 0 || stickY !== 0;
+
+            if (isStickMoving !== stickMoving) {
+                setStickMoving(isStickMoving);
+            }
 
             // Left stick adjusts cannon rotation
-            if (stickX !== 0 || stickY !== 0) {
+            if (isStickMoving) {
                 const currentRotation = useCannonStore.getState().playerRotation;
                 let [x, y, z] = currentRotation;
                 const stickSensitivity = nudgeAmount * 1.5;
@@ -131,7 +162,29 @@ export default function ControlsOverlay(props) {
         }, 20);
 
         return () => clearInterval(interval);
-    }, [nudgeAmount, setPlayerRotation, gamepadFireRef]);
+    }, [nudgeAmount, setPlayerRotation, gamepadFireRef, stickMoving]);
+
+    useEffect(() => {
+        const isCurrentlyMoving = moveUp || moveDown || moveLeft || moveRight || !!activeButton || stickMoving;
+        const audio = adjustAudioRef.current;
+
+        if (audio) {
+            if (audioSettings?.enabled) {
+                audio.volume = (audioSettings.game_volume || 50) / 100;
+                if (isCurrentlyMoving) {
+                    audio.loop = true;
+                    if (audio.paused) {
+                        audio.play().catch(() => {});
+                    }
+                } else {
+                    audio.loop = false;
+                }
+            } else {
+                audio.pause();
+                audio.currentTime = 0;
+            }
+        }
+    }, [moveUp, moveDown, moveLeft, moveRight, activeButton, stickMoving, audioSettings]);
 
     useEffect(() => {
         if (!moveUp && !moveDown && !moveLeft && !moveRight && !activeButton) return;

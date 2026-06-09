@@ -39,13 +39,13 @@ export const useStore = create()(
       setTouchControlsEnabled: (state) => set({ touchControlsEnabled: state }),
       toggleTouchControlsEnabled: () => set({ touchControlsEnabled: !get().touchControlsEnabled }),
 
-      audioSettings: {
-        enabled: true,
-        backgroundMusicVolume: 50,
-        soundEffectsVolume: 50,
-      },
-      setAudioSettings: (settings) => set({ audioSettings: { ...get().audioSettings, ...settings } }),
-      toggleAudioEnabled: () => set({ audioSettings: { ...get().audioSettings, enabled: !get().audioSettings.enabled } }),
+      // audioSettings: {
+      //   enabled: true,
+      //   backgroundMusicVolume: 50,
+      //   soundEffectsVolume: 50,
+      // },
+      // setAudioSettings: (settings) => set({ audioSettings: { ...get().audioSettings, ...settings } }),
+      // toggleAudioEnabled: () => set({ audioSettings: { ...get().audioSettings, enabled: !get().audioSettings.enabled } }),
 
     }),
     {

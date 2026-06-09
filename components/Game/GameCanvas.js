@@ -25,6 +25,7 @@ import TreesArea from "./TreesArea";
 import ImageRing from "./ImageRing";
 import FenceRing from "./FenceRing";
 import ScoreTarget from "./ScoreTarget";
+import TowerAndWaterCollisionDetection from "./TowerAndWaterCollisionDetection";
 
 function GameCanvas({
     landingAnimationMode = false,
@@ -51,6 +52,13 @@ function GameCanvas({
             <OrbitControls
                 makeDefault
                 autoRotate={landingAnimationMode}
+                target={landingAnimationMode ? [50, 0, 0] : [0, 0, 0]}
+                enableDamping
+                dampingFactor={0.08}
+                minDistance={8}
+                maxDistance={120}
+                minPolarAngle={0.2}
+                maxPolarAngle={Math.PI / 2 - 0.05}
             />
 
             <ImageRing />
@@ -66,7 +74,7 @@ function GameCanvas({
                 </>
                 :
                 <>
-                    <ambientLight intensity={5} />
+                    <ambientLight intensity={2} />
                     <spotLight intensity={30000} position={[-50, 100, 50]} angle={5} penumbra={1} />
                     <Sky
                         sunPosition={[0, 1, 0]}
@@ -78,7 +86,7 @@ function GameCanvas({
 
             <TreesArea />
             <GrassPlane />
-            <GrassArea />            
+            <GrassArea />
 
             <Physics
                 gravity={[0, -18.82, 0]}
@@ -92,27 +100,29 @@ function GameCanvas({
 
                     <Projectiles />
 
-                    <BucketCollisionDetection
-                        position={[
-                            goalLocation[0],
-                            20,
-                            goalLocation[2]
-                        ]}
-                        args={[2, 2, 0.25, 8]}
-                    />
-
-                    <group
-                        // position={[0, 14, 0]}
-                        position={[
-                            goalLocation[0],
-                            // goalLocation[1], 
-                            14,
-                            goalLocation[2]
-                        ]}
-                    >
-                        
-                        <ScoreTarget />
-
+                    {/* TODO - Make this all in one? */}
+                    <group>
+                        <TowerAndWaterCollisionDetection
+                            position={[
+                                goalLocation[0],
+                                20,
+                                goalLocation[2]
+                            ]}
+                        />
+    
+                        <group
+                            // position={[0, 14, 0]}
+                            position={[
+                                goalLocation[0],
+                                // goalLocation[1], 
+                                14,
+                                goalLocation[2]
+                            ]}
+                        >
+    
+                            <ScoreTarget />
+    
+                        </group>
                     </group>
 
                 </Debug>
@@ -125,97 +135,6 @@ function GameCanvas({
 
 export default memo(GameCanvas)
 
-function BucketCollisionDetection({ position, args }) {
-
-    // const removeProjectile = useCannonStore(state => state.removeProjectile)
-    // const cameraFollowsProjectile = useCannonStore(state => state.cameraFollowsProjectile);
-
-    const [ref, api] = useCylinder(() => ({
-        mass: 0,
-        // type: 'Static',
-        isTrigger: true,
-        args: args,
-        position: position,
-        onCollide: (e) => {
-
-            console.log(e.body)
-
-            if (e.body.userData?.tag === 'player-projectile') {
-                console.log("Ball landed in bucket!", e.body.userData)
-
-                const audioSettings = useAudioStore.getState().audioSettings
-                if (audioSettings.enabled) {
-                    const audio = new Audio('/audio/watersplash.ogg')
-                    audio.volume = audioSettings.soundEffectsVolume / 100
-                    try {
-                        audio.play()
-                    } catch (error) {
-                        console.error("Audio playback failed", error)
-                    }
-                }
-
-                const {
-                    removeProjectile,
-                    setChangeCameraLocation,
-                    projectiles,
-                    cameraFollowsProjectile
-                } = useCannonStore.getState();
-
-                if (
-                    cameraFollowsProjectile
-                    // && 
-                    // projectiles[projectiles.length - 1]?.id === item.id
-                ) {
-                    setChangeCameraLocation([
-                        0,
-                        10,
-                        80
-                    ])
-                }
-
-                removeProjectile(e.body.userData.id)
-            }
-
-        }
-    }))
-
-    useEffect(() => {
-        console.log("position updated")
-        api.position.set(position[0], position[1], position[2])
-    }, [position])
-
-    return (
-        <mesh ref={ref} castShadow>
-            <cylinderGeometry args={args} />
-            <meshStandardMaterial
-                transparent={true}
-                opacity={0}
-                color="red"
-            />
-        </mesh>
-    )
-
-}
-
-function PlayerProjectile() {
-
-    const [ref, api] = useSphere(() => ({
-        mass: 1,
-        // type: 'Dynamic',
-        args: [1, 1, 1],
-        position: [2, 5, 0],
-    }))
-
-    return (
-        <mesh ref={ref} castShadow>
-            <sphereGeometry args={[1, 10, 10]} />
-            {/* <BeachBall /> */}
-            <meshStandardMaterial color="red" />
-        </mesh>
-    )
-
-}
-
 const context = createContext()
 
 const Circle = forwardRef(({ children, opacity = 1, radius = 0.05, segments = 32, color = '#ff1050', ...props }, ref) => (
@@ -226,71 +145,3 @@ const Circle = forwardRef(({ children, opacity = 1, radius = 0.05, segments = 32
     </mesh>
 ))
 Circle.displayName = 'Circle'
-
-export function Nodes({ children }) {
-    const group = useRef()
-    const [nodes, set] = useState([])
-    const lines = useMemo(() => {
-        const lines = []
-        for (let node of nodes)
-            node.connectedTo
-                .map((ref) => [node?.position, ref.current?.position])
-                .forEach(([start, end]) => lines.push({ start: start.clone().add({ x: 0.35, y: 0, z: 0 }), end: end.clone().add({ x: -0.35, y: 0, z: 0 }) }))
-        return lines
-    }, [nodes])
-    useFrame((_, delta) => group.current.children.forEach((group) => (group.children[0].material.uniforms.dashOffset.value -= delta * 10)))
-    return (
-        <context.Provider value={set}>
-            <group ref={group}>
-                {lines.map((line, index) => (
-                    <group key={index}>
-                        <QuadraticBezierLine key={index} {...line} color="white" dashed dashScale={50} gapSize={20} />
-                        <QuadraticBezierLine key={index} {...line} color="black" lineWidth={10} transparent opacity={0.25} />
-                    </group>
-                ))}
-            </group>
-            {children}
-            {lines.map(({ start, end }, index) => (
-                <group key={index} position-z={1}>
-                    <Circle position={start} />
-                    <Circle position={end} />
-                </group>
-            ))}
-        </context.Provider>
-    )
-}
-
-export const Node = forwardRef(({ color = 'black', name, connectedTo = [], position = [0, 0, 0], ...props }, ref) => {
-    const set = useContext(context)
-    const { size, camera } = useThree()
-    const [pos, setPos] = useState(() => new Vector3(...position))
-    const state = useMemo(() => ({ position: pos, connectedTo }), [pos, connectedTo])
-    // Register this node on mount, unregister on unmount
-    useLayoutEffect(() => {
-        set((nodes) => [...nodes, state])
-        return () => void set((nodes) => nodes.filter((n) => n !== state))
-    }, [state, pos])
-    // Drag n drop, hover
-    const [hovered, setHovered] = useState(false)
-    useEffect(() => void (document.body.style.cursor = hovered ? 'grab' : 'auto'), [hovered])
-    // const bind = useDrag(({ down, xy: [x, y] }) => {
-    //     document.body.style.cursor = down ? 'grabbing' : 'grab'
-    //     setPos(new Vector3((x / size.width) * 2 - 1, -(y / size.height) * 2 + 1, 0).unproject(camera).multiply({ x: 1, y: 1, z: 0 }).clone())
-    // })
-    const bind = () => { }
-    return (
-        <Circle ref={ref} {...bind()} opacity={0.2} radius={0.5} color={color} position={pos} {...props}>
-            <Circle
-                radius={0.25}
-                position={[0, 0, 0.1]}
-                // onPointerOver={() => setHovered(true)}
-                // onPointerOut={() => setHovered(false)}
-                color={hovered ? '#ff1050' : color}>
-                <Text position={[0, 0, 1]} fontSize={0.25}>
-                    {name}
-                </Text>
-            </Circle>
-        </Circle>
-    )
-})
-Node.displayName = 'Node'

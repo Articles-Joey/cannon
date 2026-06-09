@@ -7,6 +7,7 @@ import { useStore } from "@/hooks/useStore"
 import { useSocketStore } from "@/hooks/useSocketStore"
 import { useSearchParams } from "next/navigation";
 import { useGameStore } from "@/hooks/useGameStore";
+import { useCannonStore } from '@/hooks/useCannonStore';
 
 const totalRounds = 5;
 
@@ -45,7 +46,7 @@ export default function SinglePlayerHandler() {
 
     const searchParams = useSearchParams()
     const params = Object.fromEntries(searchParams.entries());
-    const { server } = params
+    const { server, server_type } = params
 
     const socket = useSocketStore(state => state.socket)
 
@@ -55,11 +56,59 @@ export default function SinglePlayerHandler() {
     const players = useGameStore(state => state.gameState.players)
     const status = useGameStore(state => state.gameState.status)
     const setGameState = useGameStore(state => state.setGameState)
+    
+    const setRandomGoalLocation = useCannonStore(state => state.setRandomGoalLocation);
+
+    const playersLength = gameState?.players?.length || 0;
+
+    const playersTotalScore = players?.reduce((total, player) => total + (player.score || 0), 0) || 0;
+
+    useEffect(() => {
+        
+        if (server_type == "single-player") {
+
+            setRandomGoalLocation();
+
+        }
+
+    }, [playersTotalScore])
+
+    const {
+        position: myPosition,
+        playerRotation: myRotation,
+    } = useCannonStore(state => ({
+        position: state.position,
+        playerRotation: state.playerRotation,
+    }));
 
     if (server) {
         console.warn("Not single player mode, server param found:", server)
         return null;
     }
+
+    useEffect(() => {
+
+        if (playersLength == 0) return
+
+        const gameState = useGameStore.getState().gameState;
+        setGameState({
+            ...gameState,
+            players: [
+                ...gameState?.players?.map(p => {
+                    if (p.id === 'local') {
+                        return {
+                            ...p,
+                            position: myPosition,
+                            rotation: myRotation,
+                        }
+                    }
+                    return p;
+                }),
+            ]
+        })
+    }, [
+        myPosition, myRotation, playersLength
+    ])
 
     useEffect(() => {
 
@@ -83,6 +132,7 @@ export default function SinglePlayerHandler() {
                 }],
                 status: 'In Lobby',
                 timer: 0,
+                maxTime: 60,
                 // fallingItems: (() => {
                 //     const items = [];
                 //     for (let i = 0; i < 3; i++) {
@@ -166,7 +216,7 @@ export default function SinglePlayerHandler() {
                         // ),
                     });
                 }
-            }, 50);
+            }, 1000);
 
         }
 

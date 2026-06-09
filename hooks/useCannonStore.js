@@ -102,7 +102,7 @@ export const useCannonStore = create((set) => ({
         const audioSettings = useAudioStore.getState().audioSettings
         if (audioSettings.enabled) {
             const audio = new Audio('/audio/Cannon Fire.ogg')
-            audio.volume = audioSettings.soundEffectsVolume / 100
+            audio.volume = audioSettings.game_volume / 100
             try {
                 audio.play()
             } catch (error) {

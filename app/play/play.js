@@ -25,6 +25,7 @@ import { useStore } from '@/hooks/useStore';
 // import { Suspense } from 'react';
 // import { useGameServer } from '@/hooks/useGameServer';
 import GameMenu from '@articles-media/articles-dev-box/GameMenu';
+import TimerOverlay from '@/components/UI/TimerOverlay';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
@@ -58,22 +59,22 @@ export default function CannonGamePage() {
 
     // const [players, setPlayers] = useState([])
 
-    useEffect(() => {
+    // useEffect(() => {
 
-        if (server && socket.connected) {
-            socket.emit('join-room', `game:cannon-room-${server}`, {
-                game_id: server,
-                nickname: JSON.parse(localStorage.getItem('game:nickname')),
-                client_version: '1',
+    //     if (server && socket.connected) {
+    //         socket.emit('join-room', `game:cannon-room-${server}`, {
+    //             game_id: server,
+    //             nickname: JSON.parse(localStorage.getItem('game:nickname')),
+    //             client_version: '1',
 
-            });
-        }
+    //         });
+    //     }
 
-        // return function cleanup() {
-        //     socket.emit('leave-room', 'game:glass-ceiling-landing')
-        // };
+    //     // return function cleanup() {
+    //     //     socket.emit('leave-room', 'game:glass-ceiling-landing')
+    //     // };
 
-    }, [server, socket.connected]);
+    // }, [server, socket.connected]);
 
     useEffect(() => {
 
@@ -126,6 +127,8 @@ export default function CannonGamePage() {
                 <TouchControls />
 
                 <ControlsOverlay />
+
+                <TimerOverlay />
 
                 <GameCanvas
                     key={sceneKey}

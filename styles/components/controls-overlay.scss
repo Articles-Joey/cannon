@@ -1,5 +1,11 @@
 @use "@/styles/components/global.scss" as *;
 
+.show-sidebar .controls-overlay {
+    @include media-breakpoint-up(lg) {
+        bottom: calc(0rem);
+    }
+}
+
 .controls-overlay {
     position: fixed;
     bottom: calc(50px + 1rem);

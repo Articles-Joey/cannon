@@ -19,8 +19,8 @@ export default function AudioHandler() {
             musicRef.current.loop = true;
             // Set initial volume if available
             const initialSettings = useAudioStore.getState().audioSettings;
-            if (initialSettings?.backgroundMusicVolume) {
-                musicRef.current.volume = initialSettings.backgroundMusicVolume / 100;
+            if (initialSettings?.music_volume) {
+                musicRef.current.volume = initialSettings.music_volume / 100;
             }
         }
 
@@ -36,12 +36,12 @@ export default function AudioHandler() {
     // Handle Volume Changes Independently
     useEffect(() => {
         if (musicRef.current && audioSettings) {
-             const volume = audioSettings.backgroundMusicVolume !== undefined 
-                ? audioSettings.backgroundMusicVolume 
+             const volume = audioSettings.music_volume !== undefined 
+                ? audioSettings.music_volume 
                 : 50;
              musicRef.current.volume = volume / 100;
         }
-    }, [audioSettings?.backgroundMusicVolume]);
+    }, [audioSettings?.music_volume]);
 
     // Handle Play/Pause State
     useEffect(() => {

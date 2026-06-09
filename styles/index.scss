@@ -39,3 +39,10 @@ input[type="range"]::-webkit-slider-thumb {
     left: initial !important;
     z-index: 4;
 }
+
+@font-face {
+	font-family: "Minnie";
+	src: url("/fonts/Minnie.ttf") format("truetype");
+	font-weight: normal;
+	font-style: normal;
+}

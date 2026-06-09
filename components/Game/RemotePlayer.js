@@ -2,6 +2,8 @@ import Duck from "@/components/Models/Duck";
 import { ModelCannon } from "@/components/Models/Cannon";
 import { degToRad } from "three/src/math/MathUtils";
 import { ModelMan } from "../Models/Man";
+import { useStore } from "@/hooks/useStore";
+import { ModelToon } from "../Models/Toon";
 
 const PLAYER_SPACING = 4; // units apart along X axis
 
@@ -11,6 +13,8 @@ export default function RemotePlayer({ player, index = 0, totalPlayers = 1 }) {
     // const offsetX = (index - (totalPlayers - 1) / 2) * PLAYER_SPACING;
     const position = player?.position;
     const rotation = player?.rotation || [0, degToRad(180), 0];
+
+    const toontownMode = useStore(state => state.toontownMode)
 
     return (
         <>
@@ -37,12 +41,23 @@ export default function RemotePlayer({ player, index = 0, totalPlayers = 1 }) {
                         ]}
                         scale={1 / 3}
                     >
-                        <ModelMan
-                            position={[2.25, 0, 0]}
-                            rotation={[0, degToRad(90), 0]}
-                            scale={1}
-                            action={"HumanArmature|Man_Clapping"}
-                        />
+
+                        {toontownMode ?
+                            <ModelToon
+                                position={[2, 1, 0]}
+                                rotation={[0, degToRad(90), 0]}
+                                scale={1}
+                                action={"HumanArmature|Man_Clapping"}
+                            />
+                            :
+                            <ModelMan
+                                position={[2.25, 0, 0]}
+                                rotation={[0, degToRad(90), 0]}
+                                scale={1}
+                                action={"HumanArmature|Man_Clapping"}
+                            />
+                        }
+
                     </group>
                 </group>
             </group>
