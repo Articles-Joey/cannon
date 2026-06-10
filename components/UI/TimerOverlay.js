@@ -23,7 +23,7 @@ export default function TimerOverlay() {
 
                 }}
             >
-                {timeLeft}
+                {timeLeft || 0}
             </div>
 
             <img src="/img/toontown/toon-alarm-clock.webp" alt="Timer Icon" className="" />

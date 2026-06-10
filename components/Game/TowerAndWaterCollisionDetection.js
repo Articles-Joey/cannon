@@ -126,6 +126,7 @@ export default function TowerAndWaterCollisionDetection({ position, args }) {
     useEffect(() => {
         console.log("position updated")
         api.position.set(position[0], position[1], position[2])
+        towerApi.position.set(position[0], position[1] - 10, position[2])
     }, [position])
 
     return (

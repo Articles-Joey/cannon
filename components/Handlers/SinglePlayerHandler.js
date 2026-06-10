@@ -8,6 +8,7 @@ import { useSocketStore } from "@/hooks/useSocketStore"
 import { useSearchParams } from "next/navigation";
 import { useGameStore } from "@/hooks/useGameStore";
 import { useCannonStore } from '@/hooks/useCannonStore';
+import { useScoreStore } from '@/hooks/useScoreStore';
 
 const totalRounds = 5;
 
@@ -56,7 +57,7 @@ export default function SinglePlayerHandler() {
     const players = useGameStore(state => state.gameState.players)
     const status = useGameStore(state => state.gameState.status)
     const setGameState = useGameStore(state => state.setGameState)
-    
+
     const setRandomGoalLocation = useCannonStore(state => state.setRandomGoalLocation);
 
     const playersLength = gameState?.players?.length || 0;
@@ -132,7 +133,7 @@ export default function SinglePlayerHandler() {
                 }],
                 status: 'In Lobby',
                 timer: 0,
-                maxTime: 60,
+                maxTime: process.env.NODE_ENV !== 'production' ? 10 : 60,
                 // fallingItems: (() => {
                 //     const items = [];
                 //     for (let i = 0; i < 3; i++) {
@@ -178,9 +179,11 @@ export default function SinglePlayerHandler() {
                 if (
                     currentGameTimer
                     >=
-                    59
+                    currentGameState.maxTime
                     // 5
                 ) {
+
+                    useScoreStore.getState().setMaxScore(currentGameState.players?.[0]?.score || 0)
 
                     setGameState({
                         ...currentGameState,

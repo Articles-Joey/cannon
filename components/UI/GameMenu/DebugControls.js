@@ -3,7 +3,7 @@ import ArticlesButton from "@/components/UI/Button";
 import { useStore } from "@/hooks/useStore";
 
 export default function DebugControls({
-    
+
 }) {
 
     const projectiles = useCannonStore(state => state.projectiles);
@@ -29,13 +29,12 @@ export default function DebugControls({
 
                     <div className="small text-muted">Debug Controls</div>
 
-                    <div className="py-2">
-                        {JSON.stringify(playerRotation, null, 2)}
+                    <div className="small">
+                        {playerRotation?.[0]?.toFixed(2)}, {playerRotation?.[1]?.toFixed(2)}, {playerRotation?.[2]?.toFixed(2)}
                     </div>
 
                     <div className="py-2">
-                        {/* {JSON.stringify(projectiles, null, 2)} */}
-                        {projectiles?.length || 0}
+                        Projectiles: {projectiles?.length || 0}
                     </div>
 
                     <div className='d-flex flex-column'>

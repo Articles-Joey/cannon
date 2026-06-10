@@ -1,6 +1,8 @@
 @use "@/styles/components/global.scss" as *;
+
 @use "@/styles/components/controls-overlay.scss" as *;
 @use "@/styles/components/game-timer-overlay.scss" as *;
+@use "@/styles/components/game-over-overlay.scss" as *;
 
 .cannon-game-page {
     position: relative;

@@ -26,6 +26,7 @@ import { useStore } from '@/hooks/useStore';
 // import { useGameServer } from '@/hooks/useGameServer';
 import GameMenu from '@articles-media/articles-dev-box/GameMenu';
 import TimerOverlay from '@/components/UI/TimerOverlay';
+import GameOverOverlay from '@/components/UI/GameOverOverlay';
 
 const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
     ssr: false,
@@ -129,6 +130,8 @@ export default function CannonGamePage() {
                 <ControlsOverlay />
 
                 <TimerOverlay />
+
+                <GameOverOverlay />
 
                 <GameCanvas
                     key={sceneKey}

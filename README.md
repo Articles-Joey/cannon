@@ -6,7 +6,9 @@ The objective is to change the angle on a cannon in order to get an accurate lan
 
 ## Getting Started
 
-First, run the development server:
+First you will need to setup a .env file from the .env.sample provided.
+
+Then development server can be run:
 
 ```bash
 npm run dev
@@ -20,9 +22,21 @@ WASD keys - Angle Cannon
 
 SPACE or Enter - Launch
 
+✅ Keyboard
+✅ Touch
+✅ Gamepad (Xbox One Controller)
+
 ## Multiplayer
 
 Aiming to have multiplayer via P2P and Websockets. Websocket backend code is not in this repo or available at this time. P2P code will be included here.
+
+## TODO
+
+Multiplayer game loop still being worked on
+
+## Scripts
+
+In the scripts folder is reset_public and sync_to_s3. This is only for Articles Media usage. Allows for putting public folder to CloudFront to lower Vercel charges for the public facing site.
 
 ## Inspiration
 
@@ -34,11 +48,9 @@ https://toontownrewritten.fandom.com/wiki/Cannon_Game
 
 ## Attributions
 
-[Cannon Model]()  
-[Barn Model]()  
+[Cannon Model - Quaternius](https://poly.pizza/m/J15vlPVvKK)  
 [Water Tower Model]()  
-[Duck Model]()  
 
-[Grass Texture]()  
+[Grass Texture - Poliigon](https://www.poliigon.com/)  
 
 [Game Music]()  

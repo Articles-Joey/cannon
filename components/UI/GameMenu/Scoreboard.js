@@ -8,7 +8,7 @@ export default function Scoreboard({ }) {
         <div className="">
             <div className="card card-sm card-articles card-scoreboard">
                 <div className="card-header">
-                    Player Scores
+                    Players
                 </div>
                 <div className="card-body">
 
@@ -16,8 +16,8 @@ export default function Scoreboard({ }) {
                         return (
                             <div key={player.id}>
                                 <div>{player.nickname}: {player.score || 0}</div>
-                                <div>
-                                    {player.rotation || "?"}
+                                <div className="small">
+                                    {player.rotation?.[0]?.toFixed(2)}, {player.rotation?.[1]?.toFixed(2)}, {player.rotation?.[2]?.toFixed(2)}
                                 </div>
                             </div>
                         );

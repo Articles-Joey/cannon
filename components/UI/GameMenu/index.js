@@ -251,7 +251,7 @@ function LeftPanelContent({ }) {
 
                     <div>
                         <i className="fas fa-clock"></i>
-                        {60 - gameState.timer}
+                        {gameState.maxTime - gameState.timer}
                     </div>
 
                 </div>
@@ -259,6 +259,7 @@ function LeftPanelContent({ }) {
                 <ArticlesButton
                     variant="success"
                     className="w-100"
+                    disabled={gameState.status !== 'In Lobby'}
                     onClick={() => {
                         startGame()
                     }}

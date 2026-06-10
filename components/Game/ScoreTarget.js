@@ -46,12 +46,12 @@ export default function ScoreTarget() {
         { id: 'left', position: [-radiusOffset, -wallHeight / 2, 0], rotation: [0, -Math.PI / 2, 0] },
     ]
 
-    const cylinderColor = darkMode ? "#000" : "#fff";
+    const cylinderColor = darkMode ? "#fff" : "#a7a7a7";
     const cylinderMaterials = [
         // Index 0: Side (Your textured material)
         new THREE.MeshStandardMaterial({
             map: waterTowerSideTexture,
-            color: new THREE.Color("#ffffff"),
+            color: new THREE.Color(cylinderColor),
             side: THREE.DoubleSide
         }),
         // Index 1: Top Cap
@@ -90,7 +90,7 @@ export default function ScoreTarget() {
 
                 <Cylinder
                     position={[0, 3.4, 0]}
-                    args={[5, 4, 5, 8]}
+                    args={[5, 4, 5.5, 8]}
                     material={cylinderMaterials}
                     renderOrder={10}
                 />

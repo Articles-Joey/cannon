@@ -87,11 +87,11 @@ const Projectile = memo(function Projectile({ position, velocity, item, isOwner,
         }
     }));
 
-    // Enable collision after 1 second grace period
+    // Enable collision after 0.5 second grace period
     useEffect(() => {
         const timer = setTimeout(() => {
             api.collisionResponse.set(true);
-        }, 1000);
+        }, 500);
         return () => clearTimeout(timer);
     }, [api]);
 

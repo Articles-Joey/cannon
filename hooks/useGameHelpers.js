@@ -12,7 +12,7 @@ export default function useGameHelpers() {
 
     const setRandomGoalLocation = useCannonStore(state => state.setRandomGoalLocation);
 
-    function startGame() {
+    function startGame(status) {
         console.log("Game started");
 
         if (server_type == "single-player") {
@@ -21,8 +21,12 @@ export default function useGameHelpers() {
 
             setGameState({
                 ...gameState,
-                status: 'In Progress',
+                status: status || 'In Progress',
                 timer: 0, // Set the initial timer value (e.g., 60 seconds)
+                players: gameState.players.map(player => ({
+                    ...player,
+                    score: 0 // Initialize player scores to 0
+                }))
             })
 
             setRandomGoalLocation();
