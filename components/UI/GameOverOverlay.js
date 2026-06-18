@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import useGameHelpers from "@/hooks/useGameHelpers";
 import Link from "next/link";
 import { useScoreStore } from "@/hooks/useScoreStore";
+import { useMemo } from "react";
 
 export default function GameOverOverlay() {
 

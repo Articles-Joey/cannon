@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useContext, useState } from 'react';
+import { useEffect, useContext, useState, Suspense } from 'react';
 
 import Image from 'next/image'
 import Link from 'next/link'
@@ -42,8 +42,8 @@ export default function CannonGameLobbyPage() {
     }));
 
     const darkMode = useStore(state => state.darkMode)
-
     const toontownMode = useStore(state => state.toontownMode)
+    const nicknameKeyboard = useStore(state => state.nicknameKeyboard)
 
     const resetPeerStore = useGameServer(state => state.reset);
 
@@ -59,6 +59,68 @@ export default function CannonGameLobbyPage() {
 
     return (
         <>
+            <Suspense>
+                <GamepadKeyboard
+                    disableToggle={true}
+                    active={nicknameKeyboard}
+                    onFinish={(text) => {
+                        console.log("FINISH KEYBOARD", text)
+                        useStore.getState().setNickname(text);
+                        useStore.getState().setNicknameKeyboard(false);
+                    }}
+                    onCancel={(text) => {
+                        console.log("CANCEL KEYBOARD", text)
+                        // useStore.getState().setNickname(text);
+                        useStore.getState().setNicknameKeyboard(false);
+                    }}
+                />
+                <PieMenu
+                    options={[
+                        {
+                            label: 'Settings',
+                            icon: 'fad fa-cog',
+                            callback: () => {
+                                setShowSettingsModal(prev => !prev)
+                            }
+                        },
+                        {
+                            label: 'Go Back',
+                            icon: 'fad fa-arrow-left',
+                            callback: () => {
+                                window.history.back()
+                            }
+                        },
+                        {
+                            label: 'Credits',
+                            icon: 'fad fa-info-circle',
+                            callback: () => {
+                                setShowCreditsModal(true)
+                            }
+                        },
+                        {
+                            label: 'Game Launcher',
+                            icon: 'fad fa-gamepad',
+                            callback: () => {
+                                window.location.href = 'https://games.articles.media';
+                            }
+                        },
+                        {
+                            label: `${darkMode ? "Light" : "Dark"} Mode`,
+                            icon: 'fad fa-palette',
+                            callback: () => {
+                                toggleDarkMode()
+                            }
+                        }
+                    ]}
+                    onFinish={(event) => {
+                        console.log("Event", event)
+                        if (event.callback) {
+                            event.callback()
+                        }
+                    }}
+                />
+            </Suspense>
+
             <PageTemplateLandingPage
                 useSocketStore={useSocketStore}
                 useStore={useStore}
@@ -104,7 +166,7 @@ export default function CannonGameLobbyPage() {
                             `img/preview.webp`
                 }
                 singlePlayerConfig={{
-
+                    attachServerType: "single-player",
                 }}
                 CardBodyOverride={
                     <div className="card-body p-3">

@@ -35,7 +35,7 @@ const GrassPlane = () => {
         t.magFilter = NearestFilter;
         t.wrapS = RepeatWrapping
         t.wrapT = RepeatWrapping
-        t.repeat.set(width / 10, height / 10)
+        t.repeat.set(width / 2, height / 2)
     })
 
     return (

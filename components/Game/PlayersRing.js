@@ -1,21 +1,28 @@
 import React, { useMemo } from "react";
 import { useLoader } from "@react-three/fiber";
 import * as THREE from "three";
+import { useStore } from "@/hooks/useStore";
 
 /**
  * PlayersRing
  * - Renders a flat ring (disc with an inner cutout) using `ringGeometry`.
  * - Supports an albedo texture (`textureUrl`) and a normal map (`normalUrl`).
+ * - Uses planar UV mapping (directional along world X and Z) instead of radial.
+ * - Supports different textures for top/bottom surfaces vs side walls.
  *
  * Props:
  * - innerRadius: inner cutout radius
  * - outerRadius: outer radius
  * - segments: radial segments
- * - textureUrl: URL or import for color map
- * - normalUrl: URL or import for normal map
+ * - textureUrl: URL or import for color map (top/bottom surface)
+ * - normalUrl: URL or import for normal map (top/bottom surface)
  * - textureRepeat: [u, v] repeat for the maps
  * - normalScale: normal map scale
  * - position, rotation: mesh transform (rotation default lays ring flat on XZ)
+ * - wallTextureUrl: brick texture for side walls (uses toontown-specific if toontownMode)
+ * - wallTileSize: world units per tile [width (around), height (vertical)]
+ * - wallHeight: height of outer/inner walls
+ * - wallThickness: thickness of walls
  */
 export default function PlayersRing({
   innerRadius = 40,
@@ -23,10 +30,11 @@ export default function PlayersRing({
   segments = 128,
   textureUrl = "textures/Sand/GroundSand005_COL_1K.jpg",
   normalUrl = "textures/Sand/GroundSand005_NRM_1K.jpg",
-  textureRepeat = [1, 1],
+  textureRepeat = [6, 6],
   normalScale = [1, 1],
   // wall texture (brick) placed vertical on inner/outer edges
   wallTextureUrl = "textures/Brick/Poliigon_BrickReclaimedRunning_7787_Base.jpg",
+  wallTextureUrlToontown = "img/toontown/curb_purple_even.png", // toontown brick texture
   wallNormalUrl = null,
   wallTextureRepeat = null, // explicit repeat (u,v); if null compute from `wallTileSize`
   wallTileSize = [500, 1], // world units per tile [width (around), height (vertical)]
@@ -40,9 +48,12 @@ export default function PlayersRing({
   side = THREE.DoubleSide,
   ...props
 }) {
+  const toontownMode = useStore((s) => s.toontownMode);
+  // Use toontown brick texture if in toontown mode
+  const selectedWallTextureUrl = toontownMode ? wallTextureUrlToontown : wallTextureUrl;
   const colorMap = textureUrl ? useLoader(THREE.TextureLoader, textureUrl) : null;
   const normalMap = normalUrl ? useLoader(THREE.TextureLoader, normalUrl) : null;
-  const wallMap = wallTextureUrl ? useLoader(THREE.TextureLoader, wallTextureUrl) : null;
+  const wallMap = selectedWallTextureUrl ? useLoader(THREE.TextureLoader, selectedWallTextureUrl) : null;
   const wallNormal = wallNormalUrl ? useLoader(THREE.TextureLoader, wallNormalUrl) : null;
 
   useMemo(() => {
@@ -82,6 +93,27 @@ export default function PlayersRing({
 
   // normalScale expects a Vector2 in three; convert on the fly in material props
   const normalScaleVec = useMemo(() => new THREE.Vector2(normalScale[0], normalScale[1]), [normalScale]);
+
+  // Create ring geometry with planar UVs (directional along world X and Z)
+  const ringGeometry = useMemo(() => {
+    const geom = new THREE.RingGeometry(innerRadius, outerRadius, segments);
+    // Convert radial UVs to planar UVs following world X and Z axes
+    const positionAttribute = geom.getAttribute('position');
+    const uvAttribute = geom.getAttribute('uv');
+    
+    for (let i = 0; i < positionAttribute.count; i++) {
+      const x = positionAttribute.getX(i);
+      const z = positionAttribute.getY(i); // ring is in XY, but we want to map to XZ in world space
+      
+      // Normalize to 0-1 range based on radius extents
+      const u = (x - (-outerRadius)) / (outerRadius - (-outerRadius));
+      const v = (z - (-outerRadius)) / (outerRadius - (-outerRadius));
+      
+      uvAttribute.setXY(i, u, v);
+    }
+    uvAttribute.needsUpdate = true;
+    return geom;
+  }, [innerRadius, outerRadius, segments]);
 
   // Render ring flat (apply rotation to ring mesh only) and vertical walls as cylinders
   // Create extruded ring sections for real thickness
@@ -127,9 +159,8 @@ export default function PlayersRing({
 
   return (
     <group position={position} {...props}>
-      {/* flat ring surface */}
-      <mesh rotation={rotation}>
-        <ringGeometry args={[innerRadius, outerRadius, segments]} />
+      {/* flat ring surface with planar UV mapping */}
+      <mesh rotation={rotation} geometry={ringGeometry}>
         <meshStandardMaterial
           color={color}
           metalness={metalness}

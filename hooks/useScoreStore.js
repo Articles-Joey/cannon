@@ -11,6 +11,12 @@ export const useScoreStore = create()(
       maxScore: 0,
       setMaxScore: (value) => set({ maxScore: value }),
 
+      recentScores: [],
+      addRecentScore: (score) =>
+        set((state) => ({
+          recentScores: [...state.recentScores, score].slice(-5), // Keep only the last 5 scores
+        })),
+
     }),
     {
       name: 'cannon-game-score', // name of the item in the storage (must be unique)

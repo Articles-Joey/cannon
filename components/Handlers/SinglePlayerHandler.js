@@ -183,7 +183,14 @@ export default function SinglePlayerHandler() {
                     // 5
                 ) {
 
-                    useScoreStore.getState().setMaxScore(currentGameState.players?.[0]?.score || 0)
+                    if (
+                        currentGameState.players?.[0]?.score                        &&
+                        currentGameState.players?.[0]?.score > useScoreStore.getState().maxScore
+                    ) {
+                        useScoreStore.getState().setMaxScore(currentGameState.players?.[0]?.score || 0)
+                    }
+
+                    useScoreStore.getState().addRecentScore(currentGameState.players?.[0]?.score || 0)
 
                     setGameState({
                         ...currentGameState,

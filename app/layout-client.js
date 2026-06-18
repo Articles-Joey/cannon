@@ -11,20 +11,11 @@ import { useAudioStore } from "@/hooks/useAudioStore";
 import useTouchControlsStore from "@/hooks/useTouchControlsStore";
 import { useSocketStore } from "@/hooks/useSocketStore";
 import { useHotkeys } from 'react-hotkeys-hook';
+import HotkeyHandler from '@/components/Handlers/HotkeyHandler';
 
 export default function LayoutClient({ children }) {
 
     const darkMode = useStore((state) => state?.darkMode);
-
-    useHotkeys('r', () => {
-        console.log("Reloading Scene")
-        useStore.getState().reloadScene();
-    }, [])
-
-    useHotkeys('alt+t', () => {
-        console.log("Toggling Screenshot Mode")
-        useStore.getState().toggleScreenshotMode();
-    }, [])
 
     return (
         <>
@@ -36,6 +27,7 @@ export default function LayoutClient({ children }) {
                 useStore={useStore}
             />
             <Suspense>
+
                 <GlobalClientModals
                     useStore={useStore}
                     useAudioStore={useAudioStore}
@@ -90,6 +82,9 @@ export default function LayoutClient({ children }) {
                         previewImage: darkMode ? "img/preview-dark.webp" : "img/preview.webp",
                     }}
                 />
+
+                <HotkeyHandler />
+
             </Suspense>
         </>
     );

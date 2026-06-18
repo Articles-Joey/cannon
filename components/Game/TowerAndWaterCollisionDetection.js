@@ -142,10 +142,11 @@ export default function TowerAndWaterCollisionDetection({ position, args }) {
             </mesh>
 
             <mesh ref={towerRef} castShadow>
-                <cylinderGeometry args={args} />
+                {/* Keep commented */}
+                {/* <cylinderGeometry args={towerArgs} /> */}
                 <meshStandardMaterial
                     transparent={true}
-                    opacity={0}
+                    opacity={0.5}
                     color="red"
                 />
             </mesh>

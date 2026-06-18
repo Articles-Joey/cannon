@@ -4,6 +4,7 @@ import { degToRad } from "three/src/math/MathUtils";
 import { ModelMan } from "../Models/Man";
 import { useStore } from "@/hooks/useStore";
 import { ModelToon } from "../Models/Toon";
+import { ModelToonFix } from "../Models/ToonFix";
 
 const PLAYER_SPACING = 4; // units apart along X axis
 
@@ -43,7 +44,8 @@ export default function RemotePlayer({ player, index = 0, totalPlayers = 1 }) {
                     >
 
                         {toontownMode ?
-                            <ModelToon
+                            // <ModelToon
+                            <ModelToonFix
                                 position={[2, 1, 0]}
                                 rotation={[0, degToRad(90), 0]}
                                 scale={1}

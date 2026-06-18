@@ -10,6 +10,7 @@ import { useStore } from "@/hooks/useStore";
 import { ModelToon } from "../Models/Toon";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { useSearchParams } from "next/navigation";
+import { ModelToonFix } from "../Models/ToonFix";
 
 const DEFAULT_VELOCITY = [-1.5, 26, -10];
 const DEFAULT_POSITION = [5, 2, 43];
@@ -210,7 +211,8 @@ const Projectile = memo(function Projectile({ position, velocity, item, isOwner,
             >
 
                 {toontownMode ?
-                    <ModelToon
+                    // <ModelToon
+                    <ModelToonFix
                         position={[0, -2, 0]}
                         // rotation={[0, degToRad(180), 0]}
                         scale={1}

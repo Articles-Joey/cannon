@@ -36,6 +36,6 @@ export default function WaterPlane(props) {
         }),
         [waterNormals, darkMode]
     )
-    useFrame((state, delta) => (ref.current.material.uniforms.time.value += delta))
+    useFrame((state, delta) => (ref.current.material.uniforms.time.value += delta * 0.25))
     return <water ref={ref} args={[geom, config]} {...props} rotation-x={-Math.PI / 2} />
 }

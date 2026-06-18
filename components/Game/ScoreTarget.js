@@ -108,7 +108,10 @@ export default function ScoreTarget() {
                 </mesh>
 
                 <Cylinder
-                    position={[0, -7, 0]} args={[1, 1, 14, 8]} material-color={color} renderOrder={10}
+                    position={[0, -7, 0]} 
+                    args={[1, 1, 14, 8]} 
+                    material-color={color} 
+                    renderOrder={10}
                 />
 
                 <WaterPlane position={[0, 6, 0]} renderOrder={10} />

@@ -39,6 +39,10 @@ export const useStore = create()(
       setTouchControlsEnabled: (state) => set({ touchControlsEnabled: state }),
       toggleTouchControlsEnabled: () => set({ touchControlsEnabled: !get().touchControlsEnabled }),
 
+      nicknameKeyboard: false,
+      setNicknameKeyboard: (state) => set({ nicknameKeyboard: state }),
+      toggleNicknameKeyboard: () => set({ nicknameKeyboard: !get().nicknameKeyboard }),
+
       // audioSettings: {
       //   enabled: true,
       //   backgroundMusicVolume: 50,

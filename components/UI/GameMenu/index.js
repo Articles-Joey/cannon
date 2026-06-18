@@ -243,15 +243,15 @@ function LeftPanelContent({ }) {
 
             <PeerDetails />
 
-            <div className="p-3">
+            <div className="card card-articles card-sm p-3">
 
                 <div className="mb-1 d-flex justify-content-between">
 
-                    <div>Status: {gameState.status}</div>
+                    <div>Status: {gameState?.status}</div>
 
                     <div>
                         <i className="fas fa-clock"></i>
-                        {gameState.maxTime - gameState.timer}
+                        {gameState ? gameState.maxTime - gameState.timer : 0}
                     </div>
 
                 </div>
@@ -259,13 +259,14 @@ function LeftPanelContent({ }) {
                 <ArticlesButton
                     variant="success"
                     className="w-100"
-                    disabled={gameState.status !== 'In Lobby'}
+                    disabled={gameState?.status !== 'In Lobby'}
                     onClick={() => {
                         startGame()
                     }}
                 >
                     Start Game
                 </ArticlesButton>
+
             </div>
 
             <Scoreboard />
