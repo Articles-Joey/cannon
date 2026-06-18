@@ -14,7 +14,7 @@ export default function FenceRing({ segments = 80, imageHeight = 5, radius = 100
             ];
         } else {
             return [
-                "/img/toontown/fence_with_flower.png",
+                "/img/toontown/fence_with_flower.webp",
             ]
         }
     }, [toontownMode]);
