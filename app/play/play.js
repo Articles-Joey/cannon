@@ -119,7 +119,8 @@ export default function CannonGamePage() {
                     settingsWithMenuButton: true,
                 }}
                 sidebarConfig={{
-                    style: "Static Panel",
+                    // style: "Static Panel",
+                    style: "Floating Panel",
                 }}
             />
 

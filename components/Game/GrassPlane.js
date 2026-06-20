@@ -5,6 +5,7 @@ import { NearestFilter, RepeatWrapping } from "three";
 
 const GrassPlane = () => {
 
+    const darkMode = useStore(state => state.darkMode);
     const toontownMode = useStore(state => state.toontownMode);
     const graphicsQuality = useStore(state => state.graphicsQuality)
 
@@ -35,14 +36,19 @@ const GrassPlane = () => {
         t.magFilter = NearestFilter;
         t.wrapS = RepeatWrapping
         t.wrapT = RepeatWrapping
-        t.repeat.set(width / 2, height / 2)
+        t.repeat.set(width / 0.75, height / 0.75)
     })
 
     return (
         <>
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
                 <planeGeometry attach="geometry" args={[width, height]} />
-                <meshStandardMaterial attach="material" map={colorMap} normalMap={toontownMode ? null : normalMap} />
+                <meshStandardMaterial
+                    attach="material"
+                    color={darkMode ? '#8c8c8c' : '#ffffff'}
+                    map={colorMap}
+                    normalMap={toontownMode ? null : normalMap}
+                />
             </mesh>
         </>
     );

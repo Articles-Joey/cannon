@@ -11,7 +11,9 @@ import { useAudioStore } from "@/hooks/useAudioStore";
 import useTouchControlsStore from "@/hooks/useTouchControlsStore";
 import { useSocketStore } from "@/hooks/useSocketStore";
 import { useHotkeys } from 'react-hotkeys-hook';
-import HotkeyHandler from '@/components/Handlers/HotkeyHandler';
+
+// import HotkeyHandler from '@/components/Handlers/HotkeyHandler';
+import HotkeyHandler from '@articles-media/articles-dev-box/HotkeyHandler';
 
 export default function LayoutClient({ children }) {
 
@@ -83,7 +85,10 @@ export default function LayoutClient({ children }) {
                     }}
                 />
 
-                <HotkeyHandler />
+                <HotkeyHandler 
+                    useStore={useStore}
+                    useHotkeys={useHotkeys}
+                />
 
             </Suspense>
         </>

@@ -46,6 +46,13 @@ export default function PlayersRing({
   roughness = 0.8,
   color = 0xffffff,
   side = THREE.DoubleSide,
+  // Keep the sand surface above coplanar ground without changing Y.
+  surfaceRenderOrder = 10,
+  surfacePolygonOffsetFactor = -2,
+  surfacePolygonOffsetUnits = -2,
+  wallRenderOrder = null,
+  wallPolygonOffsetFactor = -4,
+  wallPolygonOffsetUnits = -4,
   ...props
 }) {
   const toontownMode = useStore((s) => s.toontownMode);
@@ -55,6 +62,7 @@ export default function PlayersRing({
   const normalMap = normalUrl ? useLoader(THREE.TextureLoader, normalUrl) : null;
   const wallMap = selectedWallTextureUrl ? useLoader(THREE.TextureLoader, selectedWallTextureUrl) : null;
   const wallNormal = wallNormalUrl ? useLoader(THREE.TextureLoader, wallNormalUrl) : null;
+  const resolvedWallRenderOrder = wallRenderOrder ?? (surfaceRenderOrder + 2);
 
   useMemo(() => {
     if (colorMap) {
@@ -158,9 +166,10 @@ export default function PlayersRing({
   }, [wallMap, innerRadius, innerWallOuter, wallHeight, segments]);
 
   return (
-    <group position={position} {...props}>
+    <group position={position} {...props} renderOrder={surfaceRenderOrder} dispose={null}>
+      
       {/* flat ring surface with planar UV mapping */}
-      <mesh rotation={rotation} geometry={ringGeometry}>
+      <mesh rotation={rotation} geometry={ringGeometry} renderOrder={surfaceRenderOrder}>
         <meshStandardMaterial
           color={color}
           metalness={metalness}
@@ -169,20 +178,37 @@ export default function PlayersRing({
           normalMap={normalMap || undefined}
           normalScale={normalScaleVec}
           side={side}
+          polygonOffset
+          polygonOffsetFactor={surfacePolygonOffsetFactor}
+          polygonOffsetUnits={surfacePolygonOffsetUnits}
         />
       </mesh>
 
       {/* outer wall (extruded) */}
       {outerWallGeom && (
-        <mesh geometry={outerWallGeom} position={[0, wallHeight, 0]}>
-          <meshStandardMaterial map={wallMap} normalMap={wallNormal || undefined} side={THREE.DoubleSide} />
+        <mesh geometry={outerWallGeom} position={[0, wallHeight, 0]} renderOrder={resolvedWallRenderOrder}>
+          <meshStandardMaterial
+            map={wallMap}
+            normalMap={wallNormal || undefined}
+            side={THREE.DoubleSide}
+            polygonOffset
+            polygonOffsetFactor={wallPolygonOffsetFactor}
+            polygonOffsetUnits={wallPolygonOffsetUnits}
+          />
         </mesh>
       )}
 
       {/* inner wall (extruded) */}
       {innerWallGeom && (
-        <mesh geometry={innerWallGeom} position={[0, wallHeight, 0]}>
-          <meshStandardMaterial map={wallMap} normalMap={wallNormal || undefined} side={THREE.DoubleSide} />
+        <mesh geometry={innerWallGeom} position={[0, wallHeight, 0]} renderOrder={resolvedWallRenderOrder}>
+          <meshStandardMaterial
+            map={wallMap}
+            normalMap={wallNormal || undefined}
+            side={THREE.DoubleSide}
+            polygonOffset
+            polygonOffsetFactor={wallPolygonOffsetFactor}
+            polygonOffsetUnits={wallPolygonOffsetUnits}
+          />
         </mesh>
       )}
     </group>

@@ -39,7 +39,7 @@ export default function ImageRing({ segments = 8, imageHeight = 50, radius = 200
                             transparent={true} 
                             side={FrontSide} 
                             depthWrite={false}
-                            color={darkMode ? "#5f5f5f" : "white"}
+                            color={darkMode ? "#5f5f5f" : "#c9c9c9"}
                         />
                     </mesh>
                 );

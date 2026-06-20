@@ -23,11 +23,11 @@ export default function DebugControls({
         <>
             {/* Debug Controls */}
             <div
-                className="card card-articles card-sm"
+                className="card card-articles card-sm debug-card"
             >
                 <div className="card-body">
 
-                    <div className="small text-muted">Debug Controls</div>
+                    <div className="small">Debug Controls</div>
 
                     <div className="small">
                         {playerRotation?.[0]?.toFixed(2)}, {playerRotation?.[1]?.toFixed(2)}, {playerRotation?.[2]?.toFixed(2)}
@@ -73,6 +73,21 @@ export default function DebugControls({
                             >
                                 <i className="fad fa-redo"></i>
                                 Reset Camera
+                            </ArticlesButton>
+
+                            <ArticlesButton
+                                size="sm"
+                                className="w-50"
+                                onClick={() => {
+                                    // setChangeCameraLocation([
+                                    //     0,
+                                    //     10,
+                                    //     80
+                                    // ])
+                                }}
+                            >
+                                <i className="fad fa-redo"></i>
+                                Reset Location
                             </ArticlesButton>
 
                             <ArticlesButton

@@ -2,7 +2,7 @@
 
 .show-sidebar .controls-overlay {
     @include media-breakpoint-up(lg) {
-        bottom: calc(0rem);
+        bottom: 50px;
     }
 }
 
@@ -18,7 +18,7 @@
 
     @include media-breakpoint-up(lg) {
         transform: initial;
-        right: 0;
+        right: 50px;
         // bottom: 0;
         bottom: calc(50px + 0rem);
         margin: 1rem;
@@ -31,10 +31,70 @@
             display: flex;
         }
 
+        .fire-button,
+        .up-button,
+        .down-button,
+        .left-button,
+        .right-button {
+            background-color: transparent !important;
+
+            i {
+                display: none;
+            }
+        }
+
         .directional-button,
         .fire-button {
-            opacity: 0;
+            
         }
+
+        // .directional-button,
+        .fire-button {
+            border: none;
+            width: 60px;
+            height: 60px;
+            // background-size: 256px 256px;
+            background-size: 326px 326px;
+            // background-position: 8px -125px;
+            background-position: 1px -166px;
+            transform: scale(1) translateX(-50%) translateY(-50%);
+
+            overflow: hidden;
+
+            &:hover {
+                border: none!important;
+                background-position: -57px -166px !important;
+            }
+
+            &:active {
+                background-position: -118px -166px !important;
+                border: none!important;
+            }
+        }
+
+        .directional-button {
+            border: none;
+            width: 60px;
+            height: 60px;
+            // background-size: 256px 256px;
+            background-size: 326px 326px;
+            // background-position: 8px -125px;
+            background-position: 82px -4px;
+            // transform: scale(1) translateX(-50%) translateY(-50%);
+
+            overflow: hidden;
+
+            &:hover {
+                border: none!important;
+                background-position: 82px -65px;
+            }
+
+            &:active {
+                background-position: 82px -126px;
+                border: none!important;
+            }
+        }
+
     }
 
     .controls-background-container {
@@ -80,7 +140,7 @@
 
     .sensitivity-buttons {
         position: absolute;
-        top: -1.5rem;
+        bottom: -2.5rem;
         // right: 50%;
         width: 100%;
         // transform: translateX(50%);

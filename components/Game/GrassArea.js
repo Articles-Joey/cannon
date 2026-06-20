@@ -33,6 +33,8 @@ const fragmentShader = /* glsl */`
     }
 `;
 
+const DEFAULT_EXCLUSION_RINGS = [{ inner: 40, outer: 47 }];
+
 function createBladeGeometry() {
     const geometry = new BufferGeometry();
     const w = 0.05;
@@ -64,7 +66,23 @@ function createBladeGeometry() {
     return geometry;
 }
 
-export default function GrassArea({ inner = 1, outer = 100, count = 16000 }) {
+function isInsideAnyRing(x, z, rings = []) {
+    const distanceSq = x * x + z * z;
+    return rings.some(({ inner = 0, outer = 0 }) => {
+        const safeInner = Math.max(0, inner);
+        const safeOuter = Math.max(safeInner, outer);
+        return distanceSq >= safeInner * safeInner && distanceSq <= safeOuter * safeOuter;
+    });
+}
+
+export default function GrassArea({
+    inner = 1,
+    outer = 100,
+    count = (16000 * 4),
+    exclusionRings = DEFAULT_EXCLUSION_RINGS,
+    // isCircle = false,
+    isCircle = true,
+}) {
 
     const graphicsQuality = useStore(state => state.graphicsQuality);    
 
@@ -89,13 +107,36 @@ export default function GrassArea({ inner = 1, outer = 100, count = 16000 }) {
         const mesh = meshRef.current;
         if (!mesh) return;
         const dummy = new Object3D();
+        const minRadius = Math.max(0, inner);
+        const maxRadius = Math.max(minRadius, outer);
+
         for (let i = 0; i < bladeCount; i++) {
-            // Random position in the square annulus (outside inner, inside outer)
+            // Random position in either a square field or circular annulus,
+            // while excluding circular ring cutouts.
             let x, z;
+            let attempts = 0;
+
             do {
-                x = (Math.random() * 2 - 1) * outer;
-                z = (Math.random() * 2 - 1) * outer;
-            } while (Math.abs(x) < inner && Math.abs(z) < inner);
+                if (isCircle) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const radius = Math.sqrt(
+                        Math.random() * (maxRadius * maxRadius - minRadius * minRadius) +
+                        minRadius * minRadius
+                    );
+                    x = Math.cos(angle) * radius;
+                    z = Math.sin(angle) * radius;
+                } else {
+                    x = (Math.random() * 2 - 1) * outer;
+                    z = (Math.random() * 2 - 1) * outer;
+                }
+                attempts += 1;
+            } while (
+                attempts < 40 &&
+                (
+                    (!isCircle && (Math.abs(x) < inner && Math.abs(z) < inner)) ||
+                    isInsideAnyRing(x, z, exclusionRings)
+                )
+            );
 
             dummy.position.set(x, 0, z);
             dummy.rotation.y = Math.random() * Math.PI * 2;
@@ -104,7 +145,7 @@ export default function GrassArea({ inner = 1, outer = 100, count = 16000 }) {
             mesh.setMatrixAt(i, dummy.matrix);
         }
         mesh.instanceMatrix.needsUpdate = true;
-    }, [bladeCount, inner, outer]);
+    }, [bladeCount, inner, outer, exclusionRings, isCircle]);
 
     useFrame(({ clock }) => {
 
@@ -117,6 +158,6 @@ export default function GrassArea({ inner = 1, outer = 100, count = 16000 }) {
     if (graphicsQuality === 'Low') return
 
     return (
-        <instancedMesh ref={meshRef} args={[geometry, material, bladeCount]} frustumCulled />
+        <instancedMesh ref={meshRef} args={[geometry, material, bladeCount]} frustumCulled={false} />
     );
 }

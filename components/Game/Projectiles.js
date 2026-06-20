@@ -7,10 +7,11 @@ import { ModelMan } from '../Models/Man'
 import { useAudioStore } from "@/hooks/useAudioStore";
 import { Vector3 } from "three";
 import { useStore } from "@/hooks/useStore";
-import { ModelToon } from "../Models/Toon";
+// import { ModelToon } from "../Models/Toon";
 import { degToRad } from "three/src/math/MathUtils.js";
 import { useSearchParams } from "next/navigation";
-import { ModelToonFix } from "../Models/ToonFix";
+// import { ModelToonFix } from "../Models/ToonFix";
+import { ModelRecentModel } from "../Models/MostRecent";
 
 const DEFAULT_VELOCITY = [-1.5, 26, -10];
 const DEFAULT_POSITION = [5, 2, 43];
@@ -74,6 +75,9 @@ const Projectile = memo(function Projectile({ position, velocity, item, isOwner,
     const spawnTimeRef = useRef(Date.now());
     const cameraTargetRef = useRef(new Vector3());
     const cameraPositionRef = useRef(new Vector3());
+    const smoothedPositionRef = useRef(new Vector3(...position));
+    const smoothedVelocityRef = useRef(new Vector3());
+    const lookTargetRef = useRef(new Vector3());
 
     const [ref, api] = useSphere(() => ({
         mass: 1, // Give the projectile some mass
@@ -121,9 +125,27 @@ const Projectile = memo(function Projectile({ position, velocity, item, isOwner,
 
     useFrame((_, delta) => {
         const smoothing = 1 - Math.exp(-delta * 8);
+        const rotationSmoothing = 1 - Math.exp(-delta * 12);
+
+        const [rawX, rawY, rawZ] = positionRef.current;
+        smoothedPositionRef.current.lerp(
+            cameraTargetRef.current.set(rawX, rawY, rawZ),
+            smoothing
+        );
+
+        smoothedVelocityRef.current.lerp(
+            cameraPositionRef.current.set(
+                velocityRef.current[0],
+                velocityRef.current[1],
+                velocityRef.current[2]
+            ),
+            rotationSmoothing
+        );
 
         if (cameraFollowsProjectile && isOwner && isMyLatest) {
-            const [x, y, z] = positionRef.current;
+            const x = smoothedPositionRef.current.x;
+            const y = smoothedPositionRef.current.y;
+            const z = smoothedPositionRef.current.z;
 
             // Old Way
             // Update controls target to look at the projectile
@@ -134,8 +156,8 @@ const Projectile = memo(function Projectile({ position, velocity, item, isOwner,
             // Simple 3rd person follow (offset)
             // camera.position.set(x, y + 6, z + 12);
 
-            const desiredTarget = cameraTargetRef.current.set(x, y, z);
-            const desiredCameraPosition = cameraPositionRef.current.set(x, y + 6, z + 12);
+            const desiredTarget = lookTargetRef.current.set(x, y, z);
+            const desiredCameraPosition = cameraTargetRef.current.set(x, y + 6, z + 12);
 
             if (controls) {
                 controls.target.lerp(desiredTarget, smoothing);
@@ -146,11 +168,10 @@ const Projectile = memo(function Projectile({ position, velocity, item, isOwner,
         }
 
         if (manRef.current) {
-            manRef.current.lookAt(
-                velocityRef.current[0],
-                velocityRef.current[1],
-                velocityRef.current[2]
-            )
+            if (smoothedVelocityRef.current.lengthSq() > 0.0001) {
+                const lookAtPoint = cameraPositionRef.current.copy(smoothedPositionRef.current).add(smoothedVelocityRef.current);
+                manRef.current.lookAt(lookAtPoint);
+            }
         }
     });
 
@@ -212,7 +233,8 @@ const Projectile = memo(function Projectile({ position, velocity, item, isOwner,
 
                 {toontownMode ?
                     // <ModelToon
-                    <ModelToonFix
+                    // <ModelToonFix
+                    <ModelRecentModel
                         position={[0, -2, 0]}
                         // rotation={[0, degToRad(180), 0]}
                         scale={1}

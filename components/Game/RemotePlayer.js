@@ -3,8 +3,9 @@ import { ModelCannon } from "@/components/Models/Cannon";
 import { degToRad } from "three/src/math/MathUtils";
 import { ModelMan } from "../Models/Man";
 import { useStore } from "@/hooks/useStore";
-import { ModelToon } from "../Models/Toon";
-import { ModelToonFix } from "../Models/ToonFix";
+// import { ModelToon } from "../Models/Toon";
+// import { ModelToonFix } from "../Models/ToonFix";
+import { ModelRecentModel } from "../Models/MostRecent";
 
 const PLAYER_SPACING = 4; // units apart along X axis
 
@@ -45,11 +46,13 @@ export default function RemotePlayer({ player, index = 0, totalPlayers = 1 }) {
 
                         {toontownMode ?
                             // <ModelToon
-                            <ModelToonFix
+                            // <ModelToonFix
+                            <ModelRecentModel
                                 position={[2, 1, 0]}
                                 rotation={[0, degToRad(90), 0]}
                                 scale={1}
-                                action={"HumanArmature|Man_Clapping"}
+                                // action={"medium_shorts_toon_rig|wave"}
+                                // action={null}wd
                             />
                             :
                             <ModelMan

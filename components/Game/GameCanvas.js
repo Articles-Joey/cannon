@@ -26,12 +26,19 @@ import ImageRing from "./ImageRing";
 import FenceRing from "./FenceRing";
 import ScoreTarget from "./ScoreTarget";
 import TowerAndWaterCollisionDetection from "./TowerAndWaterCollisionDetection";
+import { ModelToontownSkybox } from "./ToontownSkybox";
+import { ModelToontownBetterSkybox } from "./ToontownBetterSkybox";
+import { ModelGazebo } from "../Models/Gazebo";
+import { ModelToonHQ } from "../Models/ToonHQ";
+import { ModelBathTubBed } from "../Models/Bathtub_bed";
+import { ModelSchoolHouse } from "../Models/SchoolHouse";
 
 function GameCanvas({
     landingAnimationMode = false,
 }) {
 
     const debug = useStore(state => state.debug);
+    const toontownMode = useStore(state => state.toontownMode);
 
     const goalLocation = useCannonStore(state => state.goalLocation);
 
@@ -41,7 +48,22 @@ function GameCanvas({
     const showStats = useStore((state) => state?.debugConfig?.showStats);
 
     return (
-        <Canvas camera={{ position: [0, 40, 90], fov: 50 }}>
+        <Canvas
+            camera={{ position: [0, 40, 90], fov: 50 }}
+            gl={{ antialias: true, alpha: true }}
+            onCreated={({ gl }) => {
+                try {
+                    const ctx = gl.getContext()
+                    // Enable alpha-to-coverage on WebGL2 to get stochastic/dithered
+                    // transparency (works when MSAA is available).
+                    if (ctx && typeof ctx.enable === 'function' && ctx.SAMPLE_ALPHA_TO_COVERAGE) {
+                        ctx.enable(ctx.SAMPLE_ALPHA_TO_COVERAGE)
+                    }
+                } catch (e) {
+                    // ignore
+                }
+            }}
+        >
 
             {showStats && <>
                 <Stats className="stats-overlay" />
@@ -63,22 +85,45 @@ function GameCanvas({
 
             <ImageRing />
             <FenceRing />
+            <ModelToontownBetterSkybox
+                withClouds={true}
+                position={[0, 10, 0]}
+            />
+
+            {toontownMode &&
+                <group>
+                    <ModelGazebo
+                        position={[0, 0, -85]}
+                    />
+                    <ModelToonHQ
+                        position={[-90, 0, 0]}
+                        // rotation={[0, degToRad(-90), 0]}
+                    />
+                    <ModelBathTubBed
+                        position={[80, 0, 0]}
+                    />
+                    <ModelSchoolHouse
+                        position={[0, 0, 95]}
+                        rotation={[0, degToRad(180), 0]}
+                    />
+                </group>
+            }
 
             {darkMode ?
                 <>
                     <ambientLight intensity={0.25} />
                     <spotLight intensity={15000} position={[0, 100, 0]} angle={15} penumbra={1} />
-                    <Sky
+                    {/* <Sky
                         sunPosition={[0, -1, 0]}
-                    />
+                    /> */}
                 </>
                 :
                 <>
                     <ambientLight intensity={2} />
                     <spotLight intensity={30000} position={[-50, 100, 50]} angle={5} penumbra={1} />
-                    <Sky
+                    {/* <Sky
                         sunPosition={[0, 1, 0]}
-                    />
+                    /> */}
                 </>
             }
 
@@ -109,7 +154,7 @@ function GameCanvas({
                                 goalLocation[2]
                             ]}
                         />
-    
+
                         <group
                             // position={[0, 14, 0]}
                             position={[
@@ -119,9 +164,9 @@ function GameCanvas({
                                 goalLocation[2]
                             ]}
                         >
-    
+
                             <ScoreTarget />
-    
+
                         </group>
                     </group>
 

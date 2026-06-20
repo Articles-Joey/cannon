@@ -18,7 +18,7 @@ export default function ScoreTarget() {
 
     waterTowerSideTexture.wrapS = THREE.RepeatWrapping
     waterTowerSideTexture.wrapT = THREE.ClampToEdgeWrapping
-    waterTowerSideTexture.repeat.set(1, 1)
+    waterTowerSideTexture.repeat.set(4, 1)
 
     const color = darkMode ? "#8B0000" : "red";
     const leanAngle = degToRad(6.75); // Lean the walls back by 10 degrees to test it out!
@@ -46,7 +46,7 @@ export default function ScoreTarget() {
         { id: 'left', position: [-radiusOffset, -wallHeight / 2, 0], rotation: [0, -Math.PI / 2, 0] },
     ]
 
-    const cylinderColor = darkMode ? "#fff" : "#a7a7a7";
+    const cylinderColor = darkMode ? "#fff" : "#caac98";
     const cylinderMaterials = [
         // Index 0: Side (Your textured material)
         new THREE.MeshStandardMaterial({
@@ -63,8 +63,8 @@ export default function ScoreTarget() {
 
     if (toontownMode) {
         return (
-            <group renderOrder={10}>
-                <group position={[0, -6.5, 0]} renderOrder={10}>
+            <group renderOrder={1}>
+                <group position={[0, -6.5, 0]} renderOrder={1}>
                     {wallConfigs.map((wall) => (
                         /* 1. Base Wall Anchor Group (Positioned & Faced outward) */
                         <group key={wall.id} position={wall.position} rotation={wall.rotation}>
@@ -86,13 +86,13 @@ export default function ScoreTarget() {
                     ))}
                 </group>
 
-                <WaterPlane position={[0, 6, 0]} renderOrder={10} />
+                <WaterPlane position={[0, 6, 0]} renderOrder={1} />
 
                 <Cylinder
                     position={[0, 3.4, 0]}
                     args={[5, 4, 5.5, 8]}
                     material={cylinderMaterials}
-                    renderOrder={10}
+                    renderOrder={1}
                 />
                 {/* <PaintBucket scale={50} renderOrder={10} /> */}
 

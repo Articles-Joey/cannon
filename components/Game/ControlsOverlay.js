@@ -33,7 +33,7 @@ export default function ControlsOverlay(props) {
 
     const aimSensitivity = useStore(state => state.aimSensitivity);
     const increaseAimSensitivity = useStore(state => state.increaseAimSensitivity);
-    const decreaseAimSensitivity = useStore(state => state.decreaseAimSensitivity );
+    const decreaseAimSensitivity = useStore(state => state.decreaseAimSensitivity);
 
     // Gamepad support
     const { fireRef: gamepadFireRef } = useGamepad();
@@ -41,11 +41,11 @@ export default function ControlsOverlay(props) {
 
     const handleFire = useCallback(() => {
         console.log("FIRE!")
-        
+
         const { playerRotation: rot, position: cannonPos } = useCannonStore.getState();
         const [pitch, yaw, roll] = rot;
         const velocityMagnitude = 40;
-        const direction = new Vector3(0, 0, 1); 
+        const direction = new Vector3(0, 0, 1);
         const rotation = new Euler(pitch, yaw, roll, 'YXZ');
         direction.applyEuler(rotation);
         const velocity = direction.multiplyScalar(velocityMagnitude);
@@ -68,9 +68,9 @@ export default function ControlsOverlay(props) {
             velocity: [velocity.x, velocity.y, velocity.z],
             position: spawnPos,
             ownerId: server_type === 'single-player' ?
-            'local'
-            :
-            peer?.id || 'host'
+                'local'
+                :
+                peer?.id || 'host'
         };
 
         if ((isHost && server_type == 'online-peer') || (server_type === 'single-player')) {
@@ -174,7 +174,7 @@ export default function ControlsOverlay(props) {
                 if (isCurrentlyMoving) {
                     audio.loop = true;
                     if (audio.paused) {
-                        audio.play().catch(() => {});
+                        audio.play().catch(() => { });
                     }
                 } else {
                     audio.loop = false;
@@ -208,16 +208,16 @@ export default function ControlsOverlay(props) {
         <div className={`controls-overlay hide-in-screenshot-mode ${toontownMode ? 'toontown-mode' : ''}`}>
 
             <div className="controls-background-container">
-                <div 
-                className="controls-background"
-                style={{
-                    backgroundImage: "url('/img/toontown/palette_2.png')",
-                }}
+                <div
+                    className="controls-background"
+                    style={{
+                        backgroundImage: "url('/img/toontown/palette_2.png')",
+                    }}
                 ></div>
             </div>
 
             <div className="sensitivity-buttons">
-                <div 
+                <div
                     className="badge bg-black badge-hover"
                     onClick={() => {
                         decreaseAimSensitivity()
@@ -228,7 +228,7 @@ export default function ControlsOverlay(props) {
                 <div className="badge bg-black">
                     {aimSensitivity}
                 </div>
-                <div 
+                <div
                     className="badge bg-black badge-hover"
                     onClick={() => {
                         increaseAimSensitivity()
@@ -242,6 +242,9 @@ export default function ControlsOverlay(props) {
                 // small
                 className="fire-button"
                 onClick={handleFire}
+                style={{
+                    backgroundImage: "url('/img/toontown/palette_2.png')",
+                }}
             >
                 <i className="fad fa-fire-alt me-0"></i>
             </ArticlesButton>
@@ -256,6 +259,9 @@ export default function ControlsOverlay(props) {
                     onMouseLeave={() => setActiveButton(null)}
                     onTouchStart={(e) => { e.preventDefault(); setActiveButton(dir); }}
                     onTouchEnd={(e) => { e.preventDefault(); setActiveButton(null); }}
+                    style={{
+                        backgroundImage: "url('/img/toontown/palette_2.png')",
+                    }}
                 >
                     <i className={`fad fa-chevron-circle-${dir} me-0`}></i>
                 </ArticlesButton>

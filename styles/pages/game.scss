@@ -4,6 +4,11 @@
 @use "@/styles/components/game-timer-overlay.scss" as *;
 @use "@/styles/components/game-over-overlay.scss" as *;
 
+:root {
+    --toontown-bg-color: #faffc7;
+    --toontown-green-color: #019f02;
+}
+
 .cannon-game-page {
     position: relative;
     display: flex;
@@ -98,6 +103,79 @@
 
     .game-panel {
         width: 100%;
+    }
+
+}
+
+.mobile-menu {
+    background-color: rgba(255, 0, 0, 0.8);
+}
+
+[data-bs-theme=dark] {
+
+    --toontown-bg-color: #a0a56c!important;
+    --toontown-green-color: #005300!important;
+
+    .panel-left,
+    .menu-bar {
+
+        .btn-articles {
+            color: black !important;
+        }
+    }
+
+}
+
+.panel-left,
+.menu-bar {
+    // background-image: url("/img/toontown/panel_bg.png");
+    // background-size: cover;
+    // background-position: -50px -50px;
+    background-color: var(--toontown-bg-color) !important;
+    border: 2px solid var(--toontown-green-color);
+    border-radius: 10px !important;
+
+    --bs-body-color: black;
+
+    .card {
+        --bs-card-cap-bg: rgb(1 159 2 / 50%);
+        --bs-card-cap-color: rgba(0, 0, 0, 1);
+        --bs-body-bg: rgba(0, 0, 0, 0);
+        --bs-card-color: rgba(0, 0, 0, 1);
+        --bs-card-border-radius: 0px;
+        --bs-card-inner-border-radius: 0px;
+    }
+
+    .btn-articles {
+        background-color: #ffd351;
+    }
+}
+
+.menu-bar {
+    width: calc(100% - 20px) !important;
+    left: 10px !important;
+    bottom: 10px !important;
+}
+
+.panel-left {
+    border: 10px solid var(--toontown-green-color);
+}
+
+// .panel-frame {
+//     position: absolute;
+//     inset: 0;
+//     width: 100%;
+//     height: 100%;
+//     z-index: 5;
+// }
+
+.debug-card {
+
+    .btn-group-sm>.btn,
+    .btn-sm {
+        // --bs-btn-font-size: 0.5rem!important;
+        font-size: 0.6rem !important;
+        padding: 0.35rem 0.5rem !important;
     }
 
 }
