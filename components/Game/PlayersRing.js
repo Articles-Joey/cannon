@@ -68,7 +68,7 @@ export default function PlayersRing({
     if (colorMap) {
       colorMap.wrapS = colorMap.wrapT = THREE.RepeatWrapping;
       colorMap.repeat.set(textureRepeat[0], textureRepeat[1]);
-      colorMap.encoding = THREE.sRGBEncoding;
+      colorMap.colorSpace = THREE.SRGBColorSpace;
     }
     if (normalMap) {
       normalMap.wrapS = normalMap.wrapT = THREE.RepeatWrapping;
@@ -92,7 +92,7 @@ export default function PlayersRing({
       repeatV = Math.max(1, Math.round(wallHeight / Math.max(0.0001, wallTileSize[1])));
     }
     wallMap.repeat.set(repeatU, repeatV);
-    wallMap.encoding = THREE.sRGBEncoding;
+    wallMap.colorSpace = THREE.SRGBColorSpace;
     if (wallNormal) {
       wallNormal.wrapS = wallNormal.wrapT = THREE.RepeatWrapping;
       wallNormal.repeat.set(repeatU, repeatV);

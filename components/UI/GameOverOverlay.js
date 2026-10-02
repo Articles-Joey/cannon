@@ -1,83 +1,77 @@
-"use client"
+"use client";
+import Box from "@mui/material/Box";
+import CloseIcon from "@mui/icons-material/Close";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
 import { useGameStore } from "@/hooks/useGameStore";
 import ArticlesButton from "./Button";
 import { useSearchParams } from "next/navigation";
 import useGameHelpers from "@/hooks/useGameHelpers";
 import Link from "next/link";
 import { useScoreStore } from "@/hooks/useScoreStore";
-import { useMemo } from "react";
 
 export default function GameOverOverlay() {
+    const serverType = useSearchParams().get("server_type");
+    const gameState = useGameStore((state) => state.gameState);
+    const maxScore = useScoreStore((state) => state.maxScore);
+    const { startGame } = useGameHelpers();
+    const playerScore = gameState?.players?.[0]?.score || 0;
 
-    const searchParams = useSearchParams()
-    const params = Object.fromEntries(searchParams.entries());
-    const { server, server_type } = params
-
-    const gameState = useGameStore(state => state.gameState)
-    const status = gameState?.status
-
-    const maxScore = useScoreStore(state => state.maxScore)
-
-    const {
-        startGame
-    } = useGameHelpers()
-
-    const playerScore = useMemo(() => {
-
-        if (server_type === "single-player") {
-            return gameState?.players?.[0]?.score || 0
-        }
-
-    }, [gameState])
-
-    if (status !== "Game Over") return null;
+    if (gameState?.status !== "Game Over") return null;
 
     return (
-        <div className='game-over-overlay'>
-
-            <div className="card">
-
-                <div className="card-header">
-                    Game Over
-                </div>
-
-                <div className="card-body">
-
-                    {server_type === "single-player" &&
-                        <div>
-                            <div>You had a final score of {playerScore}!</div>
-                            <div>Your highest score is {maxScore}!</div>
-                        </div>
-                    }
-
-                </div>
-
-                <div className="card-footer">
-
-                    <Link href={"/"}>
-                        <ArticlesButton
-                            className="w-50"
-                        >
-                            <i className="fas fa-times me-2"></i>
-                            Close
-                        </ArticlesButton>
-                    </Link>
-
-                    <ArticlesButton
-                        className="w-50"
-                        onClick={() => {
-                            startGame("In Lobby")
-                        }}
-                    >
-                        <i className="fas fa-play me-2"></i>
-                        Play Again
-                    </ArticlesButton>
-
-                </div>
-
-            </div>
-
-        </div>
-    )
-
+        <Box
+            sx={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                zIndex: 1,
+                width: 300,
+                maxWidth: "calc(100vw - 2rem)",
+                bgcolor: "background.paper",
+                color: "text.primary",
+                border: 1,
+                borderColor: "divider",
+                borderRadius: "6px",
+                overflow: "hidden",
+            }}
+        >
+            <Box sx={{ py: 1, px: 2, borderBottom: 1, borderColor: "divider" }}>
+                Game Over
+            </Box>
+            <Box sx={{ p: 2 }}>
+                {serverType === "single-player" && (
+                    <Box>
+                        <Box>You had a final score of {playerScore}!</Box>
+                        <Box>Your highest score is {maxScore}!</Box>
+                    </Box>
+                )}
+            </Box>
+            <Box
+                sx={{
+                    display: "flex",
+                    py: 1,
+                    px: 2,
+                    borderTop: 1,
+                    borderColor: "divider",
+                }}
+            >
+                <ArticlesButton
+                    component={Link}
+                    href="/"
+                    sx={{ width: "50%" }}
+                    startIcon={<CloseIcon />}
+                >
+                    Close
+                </ArticlesButton>
+                <ArticlesButton
+                    sx={{ width: "50%" }}
+                    onClick={() => startGame("In Lobby")}
+                    startIcon={<PlayArrowIcon />}
+                >
+                    Play Again
+                </ArticlesButton>
+            </Box>
+        </Box>
+    );
 }

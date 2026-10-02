@@ -1,293 +1,146 @@
-import Link from "next/link";
+"use client";
+import MenuCard from "./MenuCard";
 
-import { memo } from "react";
-
-import { useRouter, useSearchParams } from "next/navigation";
-
-import { Dropdown, DropdownButton } from "react-bootstrap";
-
-// import ROUTES from '@/components/constants/routes';
-// import { useGameStore } from "../hooks/useGameStore";
+import { memo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Box, Menu, MenuItem, ListItemIcon, ListItemText } from "@mui/material";
+import CameraAltIcon from "@mui/icons-material/CameraAlt";
+import BugReportIcon from "@mui/icons-material/BugReport";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import ArticlesButton from "@/components/UI/Button";
-
-import { useSocketStore } from "@/hooks/useSocketStore";
 import { useCannonStore } from "@/hooks/useCannonStore";
-import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
-import GameMenuPrimaryButtonGroup from '@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup';
+import GameMenuPrimaryButtonGroup from "@articles-media/articles-dev-box/GameMenuPrimaryButtonGroup";
 import { useStore } from "@/hooks/useStore";
-
 import DebugControls from "./DebugControls";
-import TouchControlsCard from "./TouchControlsCard";
 import ControllerUICard from "./ControllerUICard";
 import Scoreboard from "./Scoreboard";
 import PeerDetails from "../PeerDetails";
 import useGameHelpers from "@/hooks/useGameHelpers";
 import { useGameStore } from "@/hooks/useGameStore";
 
-function LeftPanelContent({ }) {
-
-    const searchParams = useSearchParams()
-    const searchParamsObject = Object.fromEntries(searchParams.entries());
-    const { server_type } = searchParamsObject
-
-    const {
-        socket
-    } = useSocketStore(state => ({
-        socket: state.socket
-    }));
-
-    const { isFullscreen, requestFullscreen, exitFullscreen } = useFullscreen();
-
-    const gameState = useGameStore(state => state.gameState)
-
-    const {
-        startGame
-    } = useGameHelpers()
-
-    const setDebug = useCannonStore(state => state.setDebug);
-    const debug = useCannonStore(state => state.debug);
-    const cameraMode = useCannonStore(state => state.cameraMode);
-    const setCameraMode = useCannonStore(state => state.setCameraMode);
-
-    const reloadScene = useStore(state => state.reloadScene);
-
-    // const darkMode = useStore(state => state.darkMode);
-    // const toggleDarkMode = useStore(state => state.toggleDarkMode);
-
-    // const setShowSettingsModal = useStore(state => state.setShowSettingsModal);
-
-    // const sidebar = useStore(state => state.sidebar);
-    // const toggleSidebar = useStore(state => state.toggleSidebar);
-
-    // const setShowMenu = useStore(state => state.setShowMenu);
-
-    // const toggleAudioEnabled = useStore((state) => state.toggleAudioEnabled)
-    // const audioEnabled = useStore((state) => state.audioSettings.enabled)
+function LeftPanelContent() {
+    const gameState = useGameStore((state) => state.gameState);
+    const { startGame } = useGameHelpers();
+    const setDebug = useCannonStore((state) => state.setDebug);
+    const debug = useCannonStore((state) => state.debug);
+    const cameraMode = useCannonStore((state) => state.cameraMode);
+    const setCameraMode = useCannonStore((state) => state.setCameraMode);
+    const reloadScene = useStore((state) => state.reloadScene);
+    const [cameraAnchor, setCameraAnchor] = useState(null);
+    const [debugAnchor, setDebugAnchor] = useState(null);
 
     return (
-        <>
-            <div className='mobile-menu-container'>
-
-                <div className="card card-articles card-sm">
-
-                    <div className="card-body">
-
-                        {/* {
-                            (
-                                server_type.includes("socket")
-                                &&
-                                !socket?.connected
-                            )
-                            &&
-                            <div
-                                className=""
-                            >
-    
-                                <div className='flex-header'>
-                                    <div>Server: {server}</div>
-                                    <div>Players: {0}/4</div>
-                                </div>
-    
-                                <div className="">
-    
-                                    <div className="h6 mb-1">Not connected</div>
-    
-                                    <ArticlesButton
-                                        onClick={() => {
-                                            console.log("Reconnect")
-                                            socket.connect()
-                                        }}
-                                        small
-                                        className='w-100 mb-3'
-                                    >
-                                        Reconnect!
-                                    </ArticlesButton>
-    
-                                </div>
-    
-                            </div>
-                        } */}
-
-                        <div className="">
-
-                            <div className='d-flex flex-wrap mb-3'>
-                                <GameMenuPrimaryButtonGroup
-                                    useStore={useStore}
-                                    type="GameMenu"
-                                    useRouter={useRouter}
-                                />
-                            </div>
-
-                            <div className="d-flex flex-wrap">
-
-                                <div className='w-50'>
-                                    <DropdownButton
-                                        variant="articles w-100"
-                                        size='sm'
-                                        id="dropdown-basic-button"
-                                        className="dropdown-articles"
-                                        title={
-                                            <span>
-                                                <i className="fad fa-camera"></i>
-                                                <span>Camera</span>
-                                            </span>
-                                        }
-                                    >
-
-                                        <div style={{ maxHeight: '600px', overflowY: 'auto', width: '200px' }}>
-
-                                            {[
-                                                {
-                                                    name: 'Free',
-                                                },
-                                                {
-                                                    name: 'Player',
-                                                }
-                                            ]
-                                                .map(location =>
-                                                    <Dropdown.Item
-                                                        key={location.name}
-                                                        active={cameraMode == location.name}
-                                                        onClick={() => {
-                                                            setCameraMode(location.name)
-                                                            // setShowMenu(false)
-                                                        }}
-                                                        className="d-flex justify-content-between"
-                                                    >
-                                                        <i className="fad fa-camera"></i>
-                                                        {location.name}
-                                                    </Dropdown.Item>
-                                                )}
-
-                                        </div>
-
-                                    </DropdownButton>
-                                </div>
-
-                                <div className='w-50'>
-                                    <DropdownButton
-                                        variant="articles w-100"
-                                        size='sm'
-                                        id="dropdown-basic-button"
-                                        className="dropdown-articles"
-                                        title={
-                                            <span>
-                                                <i className="fad fa-bug"></i>
-                                                <span>Debug </span>
-                                                <span>{debug ? 'On' : 'Off'}</span>
-                                            </span>
-                                        }
-                                    >
-
-                                        <div style={{ maxHeight: '600px', overflowY: 'auto', width: '200px' }}>
-
-                                            {[
-                                                false,
-                                                true
-                                            ]
-                                                .map(location =>
-                                                    <Dropdown.Item
-                                                        key={location}
-                                                        onClick={() => {
-                                                            setDebug(location)
-                                                            reloadScene()
-                                                        }}
-                                                        className="d-flex justify-content-between"
-                                                    >
-                                                        {location ? 'True' : 'False'}
-                                                    </Dropdown.Item>
-                                                )}
-
-                                        </div>
-
-                                    </DropdownButton>
-                                </div>
-
-                            </div>
-
-                        </div>
-
-                    </div>
-                </div>
-
-                {/* <div
-                    className="card card-articles card-sm"
-                >
-                    <div className="card-body d-flex justify-content-between">
-    
-                        <div>
-                            <div className="small text-muted">playerData</div>
-                            <div className="small">
-                                <div>X: {playerLocation?.x}</div>
-                                <div>Y: {playerLocation?.y}</div>
-                                <div>Z: {playerLocation?.z}</div>
-                                <div>Shift: {shift ? 'True' : 'False'}</div>
-                                <div>Score: 0</div>
-                            </div>
-                        </div>
-    
-                        <div>
-                            <div className="small text-muted">maxHeight</div>
-                            <div>Y: {maxHeight}</div>
-                            <ArticlesButton
-                                small
-                                onClick={() => {
-                                    setMaxHeight(playerLocation?.y)
-                                }}
-                            >
-                                Reset
-                            </ArticlesButton>
-                        </div>
-    
-                    </div>
-                </div> */}
-
-                <PeerDetails />
-
-                <div className="card card-articles card-sm p-3">
-
-                    <div className="mb-1 d-flex justify-content-between">
-
-                        <div>Status: {gameState?.status}</div>
-
-                        <div>
-                            <i className="fas fa-clock"></i>
-                            {gameState ? gameState.maxTime - gameState.timer : 0}
-                        </div>
-
-                    </div>
-
+        <Box sx={{ fontSize: "0.875rem" }}>
+            <MenuCard sx={{ p: 1 }}>
+                <Box sx={{ display: "flex", flexWrap: "wrap", mb: 2 }}>
+                    <GameMenuPrimaryButtonGroup
+                        useStore={useStore}
+                        type="GameMenu"
+                        useRouter={useRouter}
+                    />
+                </Box>
+                <Box sx={{ display: "flex" }}>
                     <ArticlesButton
-                        variant="success"
-                        className="w-100"
-                        disabled={gameState?.status !== 'In Lobby'}
-                        onClick={() => {
-                            startGame()
+                        small
+                        sx={{ width: "50%" }}
+                        startIcon={<CameraAltIcon />}
+                        aria-haspopup="menu"
+                        aria-expanded={Boolean(cameraAnchor)}
+                        onClick={(event) =>
+                            setCameraAnchor(event.currentTarget)
+                        }
+                    >
+                        Camera
+                    </ArticlesButton>
+                    <Menu
+                        anchorEl={cameraAnchor}
+                        open={Boolean(cameraAnchor)}
+                        onClose={() => setCameraAnchor(null)}
+                        slotProps={{
+                            paper: { sx: { maxHeight: 600, width: 200 } },
                         }}
                     >
-                        Start Game
+                        {["Free", "Player"].map((name) => (
+                            <MenuItem
+                                key={name}
+                                selected={cameraMode === name}
+                                onClick={() => {
+                                    setCameraMode(name);
+                                    setCameraAnchor(null);
+                                }}
+                            >
+                                <ListItemIcon>
+                                    <CameraAltIcon fontSize="small" />
+                                </ListItemIcon>
+                                <ListItemText>{name}</ListItemText>
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                    <ArticlesButton
+                        small
+                        sx={{ width: "50%" }}
+                        startIcon={<BugReportIcon />}
+                        aria-haspopup="menu"
+                        aria-expanded={Boolean(debugAnchor)}
+                        onClick={(event) => setDebugAnchor(event.currentTarget)}
+                    >
+                        Debug {debug ? "On" : "Off"}
                     </ArticlesButton>
-
-                </div>
-
-                <Scoreboard />
-
-                {/* Touch Controls */}
-                {/* <TouchControlsCard /> */}
-
-                <ControllerUICard />
-
-                <DebugControls />
-
-            </div>
-        </>
-    )
-
+                    <Menu
+                        anchorEl={debugAnchor}
+                        open={Boolean(debugAnchor)}
+                        onClose={() => setDebugAnchor(null)}
+                        slotProps={{
+                            paper: { sx: { maxHeight: 600, width: 200 } },
+                        }}
+                    >
+                        {[false, true].map((value) => (
+                            <MenuItem
+                                key={String(value)}
+                                selected={debug === value}
+                                onClick={() => {
+                                    setDebug(value);
+                                    reloadScene();
+                                    setDebugAnchor(null);
+                                }}
+                            >
+                                {value ? "True" : "False"}
+                            </MenuItem>
+                        ))}
+                    </Menu>
+                </Box>
+            </MenuCard>
+            <PeerDetails />
+            <MenuCard sx={{ p: 2 }}>
+                <Box
+                    sx={{
+                        mb: 0.5,
+                        display: "flex",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <Box>Status: {gameState?.status}</Box>
+                    <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 0.5 }}
+                    >
+                        <AccessTimeIcon fontSize="inherit" />
+                        {gameState ? gameState.maxTime - gameState.timer : 0}
+                    </Box>
+                </Box>
+                <ArticlesButton
+                    variant="success"
+                    fullWidth
+                    disabled={gameState?.status !== "In Lobby"}
+                    onClick={() => startGame()}
+                >
+                    Start Game
+                </ArticlesButton>
+            </MenuCard>
+            <Scoreboard />
+            <ControllerUICard />
+            <DebugControls />
+        </Box>
+    );
 }
 
-export default memo(LeftPanelContent)
-
-
-
-
-
+export default memo(LeftPanelContent);

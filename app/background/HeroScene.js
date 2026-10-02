@@ -1,3 +1,4 @@
+import Box from "@mui/material/Box";
 import { ModelCannon } from "@/components/Models/Cannon";
 import { ModelMan } from "@/components/Models/Man";
 import { Text, OrbitControls, Sky } from "@react-three/drei";
@@ -31,7 +32,7 @@ export default function HeroScene() {
     };
 
     return (
-        <div className="background-page" style={{ position: 'relative', width: '100%', height: '100vh' }}>
+        <Box sx={{ position: "relative", width: "100vw", height: "100vh", display: "flex", "& canvas": { position: "absolute", height: "100%", width: "100%" } }}>
 
             <div style={{
                 position: 'absolute',
@@ -88,7 +89,7 @@ export default function HeroScene() {
                         step="0.1" 
                         value={target[1]} 
                         onChange={(e) => setTarget([0, parseFloat(e.target.value), 0])}
-                        style={{ width: '100%' }}
+                        style={{ width: '100%', accentColor: '#f9edcd' }}
                     />
                 </div>
             </div>
@@ -170,7 +171,7 @@ export default function HeroScene() {
                 </group>
 
             </Canvas>
-        </div>
+        </Box>
     )
 
 }

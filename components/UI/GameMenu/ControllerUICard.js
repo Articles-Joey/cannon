@@ -1,51 +1,38 @@
 import { useState } from "react";
+import Box from "@mui/material/Box";
 import { useControllerStore } from "@/hooks/useControllerStore";
 import ArticlesButton from "@/components/UI/Button";
-// import ControllerPreview from "@/components/ControllerPreview";
 
-export default function ControllerUICard({ }) {
-
-    const controllerState = useControllerStore(state => state.controllerState);
+export default function ControllerUICard() {
+    const controllerState = useControllerStore(
+        (state) => state.controllerState,
+    );
     const [showControllerState, setShowControllerState] = useState(false);
 
+    if (!controllerState?.connected) return null;
+
     return (
-        <>
-            {controllerState?.connected &&
-                <div className="panel-content-group p-0 text-dark">
-
-                    <div className="p-1 border-bottom border-dark">
-                        <div className="fw-bold" style={{ fontSize: '0.7rem' }}>
-                            {controllerState?.id}
-                        </div>
-                    </div>
-
-                    <div className='p-1'>
-                        <ArticlesButton
-                            small
-                            className="w-100"
-                            active={showControllerState}
-                            onClick={() => {
-                                setShowControllerState(prev => !prev)
-                            }}
-                        >
-                            {showControllerState ? 'Hide' : 'Show'} Controller Preview
-                        </ArticlesButton>
-                    </div>
-
-                    {/* {showControllerState && <div className='p-3'>
-
-                        <ControllerPreview
-                            controllerState={controllerState}
-                            showJSON={true}
-                            showVibrationControls={true}
-                            maxHeight={300}
-                            showPreview={true}
-                        />
-                    </div>} */}
-
-                </div>
-            }
-        </>
-    )
-
+        <Box sx={{ color: "#212529", border: 1, borderColor: "divider" }}>
+            <Box
+                sx={{
+                    p: 0.5,
+                    borderBottom: "1px solid #212529",
+                    fontWeight: 700,
+                    fontSize: "0.7rem",
+                }}
+            >
+                {controllerState.id}
+            </Box>
+            <Box sx={{ p: 0.5 }}>
+                <ArticlesButton
+                    small
+                    fullWidth
+                    active={showControllerState}
+                    onClick={() => setShowControllerState((prev) => !prev)}
+                >
+                    {showControllerState ? "Hide" : "Show"} Controller Preview
+                </ArticlesButton>
+            </Box>
+        </Box>
+    );
 }

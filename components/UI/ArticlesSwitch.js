@@ -1,28 +1,20 @@
+"use client";
+import Switch from "@mui/material/Switch";
+
 export default function ArticlesSwitch({
     setChecked,
     checked,
-    readOnly
+    readOnly,
+    ...props
 }) {
     return (
-        <label className={`articles-switch mb-0 ${checked && 'checked'}`}>
-            <input
-                type="checkbox"
-                readOnly={readOnly ? true : false}
-                checked={checked}
-                onChange={() => { return }}
-            />
-            <span
-                onClick={(e) => {
-                    if (setChecked) {
-                        setChecked(!checked)
-                        return
-                    } else {
-                        e.preventDefault()
-                        return
-                    }
-                }}
-                className="slider"
-            ></span>
-        </label>
-    )
+        <Switch
+            {...props}
+            checked={Boolean(checked)}
+            readOnly={readOnly}
+            onChange={(_, value) => {
+                if (!readOnly) setChecked?.(value);
+            }}
+        />
+    );
 }

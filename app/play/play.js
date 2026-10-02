@@ -1,115 +1,81 @@
-"use client"
-import { useEffect, useContext, useState, useRef, useMemo } from 'react';
+"use client";
+import { useEffect } from "react";
+import Box from "@mui/material/Box";
+import dynamic from "next/dynamic";
+import useFullscreen from "@articles-media/articles-dev-box/useFullscreen";
+import GameMenu from "@articles-media/articles-dev-box/GameMenu";
+import LeftPanelContent from "@/components/UI/GameMenu";
+import { useCannonStore } from "@/hooks/useCannonStore";
+import generateRandomInteger from "@/util/generateRandomInteger";
+import ControlsOverlay from "@/components/Game/ControlsOverlay";
+import TouchControls from "@/components/UI/TouchControls";
+import classNames from "classnames";
+import { useStore } from "@/hooks/useStore";
+import TimerOverlay from "@/components/UI/TimerOverlay";
+import GameOverOverlay from "@/components/UI/GameOverOverlay";
 
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
-import dynamic from 'next/dynamic'
-
-import ArticlesButton from '@/components/UI/Button';
-
-import useFullscreen from '@articles-media/articles-dev-box/useFullscreen';
-
-// import { useControllerStore } from '@/hooks/useControllerStore';
-// import { useLocalStorageNew } from '@/hooks/useLocalStorageNew';
-
-// import LeftPanelContent from '@/components/UI/LeftPanel';
-import LeftPanelContent from '@/components/UI/GameMenu';
-
-import { useSocketStore } from '@/hooks/useSocketStore';
-import { useCannonStore } from '@/hooks/useCannonStore';
-import generateRandomInteger from '@/util/generateRandomInteger';
-import ControlsOverlay from '@/components/Game/ControlsOverlay';
-import TouchControls from '@/components/UI/TouchControls';
-import classNames from 'classnames';
-import { useStore } from '@/hooks/useStore';
-// import PeerManager from '@/components/Game/PeerManager';
-// import { Suspense } from 'react';
-// import { useGameServer } from '@/hooks/useGameServer';
-import GameMenu from '@articles-media/articles-dev-box/GameMenu';
-import TimerOverlay from '@/components/UI/TimerOverlay';
-import GameOverOverlay from '@/components/UI/GameOverOverlay';
-
-const GameCanvas = dynamic(() => import('@/components/Game/GameCanvas'), {
+const GameCanvas = dynamic(() => import("@/components/Game/GameCanvas"), {
     ssr: false,
 });
 
 export default function CannonGamePage() {
-
-    const {
-        socket
-    } = useSocketStore(state => ({
-        socket: state.socket
-    }));
-
-    const sidebar = useStore(state => state.sidebar);
-
-    // const setShowSettingsModal = useStore((state) => state.setShowSettingsModal)
-
-    const resetPlayerRotation = useCannonStore(state => state.resetPlayerRotation);
-    const setGoalLocation = useCannonStore(state => state.setGoalLocation);
-
-    const router = useRouter()
-    const pathname = usePathname()
-    const searchParams = useSearchParams()
-    const params = Object.fromEntries(searchParams.entries());
-    const { server } = params
-
-    // const { controllerState, setControllerState } = useControllerStore()
-    // const [showControllerState, setShowControllerState] = useState(false)
-
-    // const [ cameraMode, setCameraMode ] = useState('Player')
-
-    // const [players, setPlayers] = useState([])
-
-    // useEffect(() => {
-
-    //     if (server && socket.connected) {
-    //         socket.emit('join-room', `game:cannon-room-${server}`, {
-    //             game_id: server,
-    //             nickname: JSON.parse(localStorage.getItem('game:nickname')),
-    //             client_version: '1',
-
-    //         });
-    //     }
-
-    //     // return function cleanup() {
-    //     //     socket.emit('leave-room', 'game:glass-ceiling-landing')
-    //     // };
-
-    // }, [server, socket.connected]);
+    const sidebar = useStore((state) => state.sidebar);
+    const showMenu = useStore((state) => state.showMenu);
+    const sceneKey = useStore((state) => state.sceneKey);
+    const resetPlayerRotation = useCannonStore(
+        (state) => state.resetPlayerRotation,
+    );
+    const setGoalLocation = useCannonStore((state) => state.setGoalLocation);
+    const { isFullscreen } = useFullscreen();
 
     useEffect(() => {
-
-        // resetPeerStore();
-        resetPlayerRotation()
+        resetPlayerRotation();
         setGoalLocation([
             generateRandomInteger(-10, 10),
             0,
-            generateRandomInteger(-10, 10)
-        ])
-
-    }, []);
-
-    const showMenu = useStore(state => state.showMenu);
-    const setShowMenu = useStore(state => state.setShowMenu);
-    const reloadScene = useStore(state => state.reloadScene)
-    const sceneKey = useStore(state => state.sceneKey)
-
-    // const [gameState, setGameState] = useState(false)
+            generateRandomInteger(-10, 10),
+        ]);
+    }, [resetPlayerRotation, setGoalLocation]);
 
     return (
-
-        <div
+        <Box
             className={classNames(
                 `${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`,
                 {
-                    'menu-open': showMenu,
-                    'fullscreen': useFullscreen().isFullscreen,
-                    'show-sidebar': sidebar,
-                }
+                    "menu-open": showMenu,
+                    fullscreen: isFullscreen,
+                    "show-sidebar": sidebar,
+                },
             )}
             id={`${process.env.NEXT_PUBLIC_GAME_KEY}-game-page`}
+            sx={(theme) => ({
+                position: "relative",
+                display: "flex",
+                overflow: "hidden",
+                "--toontown-bg-color":
+                    theme.palette.mode === "dark" ? "#a0a56c" : "#faffc7",
+                "--toontown-green-color":
+                    theme.palette.mode === "dark" ? "#005300" : "#019f02",
+                // These elements belong to dev-box; keep Cannon's custom skin scoped to this page.
+                "& .panel-left, & .menu-bar": {
+                    bgcolor: "var(--toontown-bg-color)",
+                    color: "#000",
+                    border: "2px solid var(--toontown-green-color)",
+                    borderRadius: "10px",
+                    "--articles-button-background-color": "#ffd351",
+                    "--articles-button-color": "#000",
+                    "--articles-card-font-color": "#000",
+                    "--articles-card-background-color": "transparent",
+                },
+                "& .panel-left": { borderWidth: "10px" },
+                "& .menu-bar": {
+                    width: "calc(100% - 20px)",
+                    left: "10px",
+                    bottom: "10px",
+                },
+                "& .mobile-menu": { bgcolor: "rgba(255, 0, 0, 0.8)" },
+            })}
         >
-
             <GameMenu
                 useStore={useStore}
                 LeftPanelContent={LeftPanelContent}
@@ -118,32 +84,28 @@ export default function CannonGamePage() {
                     menuBarButtonPosition: "Left",
                     settingsWithMenuButton: true,
                 }}
-                sidebarConfig={{
-                    // style: "Static Panel",
-                    style: "Floating Panel",
-                }}
+                sidebarConfig={{ style: "Floating Panel" }}
             />
-
-            <div className='canvas-wrap'>
-
+            <Box
+                sx={{
+                    position: "relative",
+                    width: "100vw",
+                    height: "100vh",
+                    "& canvas": {
+                        position: "absolute",
+                        width: "100%",
+                        height: "100%",
+                        left: 0,
+                        top: 0,
+                    },
+                }}
+            >
                 <TouchControls />
-
                 <ControlsOverlay />
-
                 <TimerOverlay />
-
                 <GameOverOverlay />
-
-                <GameCanvas
-                    key={sceneKey}
-                    // gameState={gameState}
-                    // playerData={playerData}
-                    // setPlayerData={setPlayerData}
-                    // players={players}
-                />
-
-            </div>
-
-        </div>
+                <GameCanvas key={sceneKey} />
+            </Box>
+        </Box>
     );
 }

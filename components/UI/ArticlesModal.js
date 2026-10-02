@@ -1,10 +1,19 @@
-import { useState } from "react";
+"use client";
 
-import { Button, Modal } from "react-bootstrap"
+import { useId, useState } from "react";
+import CloseIcon from "@mui/icons-material/Close";
+import {
+    Box,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    IconButton,
+} from "@mui/material";
 import ArticlesButton from "./Button";
 
 export default function ArticlesModal({
-    show,
+    show = true,
     setShow,
     action,
     actionText,
@@ -20,92 +29,78 @@ export default function ArticlesModal({
     centered,
     scrollable,
     size,
-    actionVariant
+    actionVariant,
 }) {
-
-    const [showModal, setShowModal] = useState(true)
-
-    // Notes
-    // Assumes always centered
-    // Assumes always scrollable
-    // Just pass false to disable
-
-    // return (
-    //     null
-    // )
+    const [showModal, setShowModal] = useState(true);
+    const titleId = useId();
 
     return (
-        <>
-            <Modal
-                className={`articles-modal ${modalClassName}`}
-                size={size || 'md'}
-                show={showModal}
-                centered={centered === false ? false : true}
-                backdrop={backdrop}
-                scrollable={scrollable === false ? false : true}
-                onExited={() => {
-                    setShow(false)
-                }}
-                onHide={() => {
-
-                    if (!disableClose) {
-                        setShowModal(false)
-                    }
-
-                }}
-            >
-
-                <Modal.Header closeButton={disableClose ? false : true}>
-                    <Modal.Title>{title ? title : 'Info'}</Modal.Title>
-                </Modal.Header>
-
-                <Modal.Body className={className}>
-
-                    {children ? children : '...'}
-
-                </Modal.Body>
-
-                <Modal.Footer className="justify-content-between">
-
-                    {!action && <div></div>}
-
-                    <div>
-                        {(!disableClose || closeAction) &&
-                            <ArticlesButton
-                                variant="outline-dark"
-                                onClick={() => {
-
-                                    if (closeAction) {
-                                        closeAction()
-                                    } else {
-                                        setShowModal(false)
-                                    }
-                                    
-                                }}
-                            >
-                                {/* Close */}
-                                {closeText || 'Close'}
-                            </ArticlesButton>
-                        }
-                    </div>
-
-                    {action &&
+        <Dialog
+            className={modalClassName}
+            aria-labelledby={titleId}
+            maxWidth={size || "md"}
+            fullWidth
+            open={Boolean(show && showModal)}
+            scroll={scrollable === false ? "body" : "paper"}
+            hideBackdrop={backdrop === false}
+            disableEscapeKeyDown={disableClose}
+            onClose={(_, reason) => {
+                if (
+                    disableClose ||
+                    (backdrop === "static" && reason === "backdropClick")
+                )
+                    return;
+                setShowModal(false);
+            }}
+            slotProps={{
+                transition: { onExited: () => setShow(false) },
+                paper:
+                    centered === false
+                        ? { sx: { alignSelf: "flex-start", mt: 4 } }
+                        : undefined,
+            }}
+        >
+            <DialogTitle id={titleId} sx={{ pr: disableClose ? 3 : 7 }}>
+                {title || "Info"}
+                {!disableClose && (
+                    <IconButton
+                        aria-label="Close dialog"
+                        onClick={() => setShowModal(false)}
+                        sx={{ position: "absolute", right: 8, top: 8 }}
+                    >
+                        <CloseIcon />
+                    </IconButton>
+                )}
+            </DialogTitle>
+            <DialogContent className={className}>
+                {children || "..."}
+            </DialogContent>
+            <DialogActions sx={{ justifyContent: "space-between" }}>
+                {!action && <Box />}
+                <Box>
+                    {(!disableClose || closeAction) && (
                         <ArticlesButton
-                            variant={actionVariant ? actionVariant : "articles"}
-                            disabled={disableAction}
-                            onClick={() => {
-                                console.log('action')
-                                action(setShowModal)
-                            }}
+                            variant="outline-dark"
+                            onClick={() =>
+                                closeAction
+                                    ? closeAction()
+                                    : setShowModal(false)
+                            }
                         >
-                            {actionText || 'Continue'}
+                            {closeText || "Close"}
                         </ArticlesButton>
-                    }
-
-                </Modal.Footer>
-
-            </Modal>
-        </>
-    )
-
+                    )}
+                </Box>
+                {action && (
+                    <ArticlesButton
+                        variant={actionVariant || "articles"}
+                        disabled={disableAction}
+                        onClick={() => action(setShowModal)}
+                    >
+                        {actionText || "Continue"}
+                    </ArticlesButton>
+                )}
+            </DialogActions>
+        </Dialog>
+    );
 }

@@ -1,359 +1,356 @@
-"use client"
-import { useEffect, useContext, useState, Suspense } from 'react';
+"use client";
+import { useEffect, useState, Suspense } from "react";
+import { Box, TextField } from "@mui/material";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import GroupsIcon from "@mui/icons-material/Groups";
+import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import SettingsIcon from "@mui/icons-material/Settings";
+import InfoIcon from "@mui/icons-material/Info";
+import SportsEsportsIcon from "@mui/icons-material/SportsEsports";
+import PaletteIcon from "@mui/icons-material/Palette";
+import Link from "next/link";
+import dynamic from "next/dynamic";
+import ArticlesButton from "@/components/UI/Button";
+import { useSocketStore } from "@/hooks/useSocketStore";
+import { useStore } from "@/hooks/useStore";
+import PageTemplateLandingPage from "@articles-media/articles-dev-box/PageTemplateLandingPage";
+import {
+    GamepadKeyboard,
+    PieMenu,
+} from "@articles-media/articles-gamepad-helper";
+import { useGameServer } from "@/hooks/useGameServer";
 
-import Image from 'next/image'
-import Link from 'next/link'
-import dynamic from 'next/dynamic'
-
-import ArticlesButton from '@/components/UI/Button';
-import { useSocketStore } from '@/hooks/useSocketStore';
-import { useStore } from '@/hooks/useStore';
-
-import PageTemplateLandingPage from '@articles-media/articles-dev-box/PageTemplateLandingPage';
-
-import { GamepadKeyboard, PieMenu } from '@articles-media/articles-gamepad-helper';
-
-import { useGameServer } from '@/hooks/useGameServer';
-
-// const game_key = process.env.NEXT_PUBLIC_GAME_KEY
-// const game_name = process.env.NEXT_PUBLIC_GAME_NAME
-// const game_port = process.env.NEXT_PUBLIC_GAME_PORT
-
-// const backgroundImage = `img/preview.webp`;
-const LandingBackgroundAnimation = dynamic(() =>
-    import('@/components/Game/LandingBackgroundAnimation'),
-    {
-        ssr: false,
-        // loading: () => <img
-        //     src={backgroundImage.src}
-        //     alt=""
-        //     // fill
-        //     style={{ objectFit: 'cover', objectPosition: 'center', filter: 'blur(10px)' }}
-        // />
-    }
+const LandingBackgroundAnimation = dynamic(
+    () => import("@/components/Game/LandingBackgroundAnimation"),
+    { ssr: false },
 );
 
 export default function CannonGameLobbyPage() {
-
-    const {
-        socket,
-    } = useSocketStore(state => ({
-        socket: state.socket,
-    }));
-
-    const darkMode = useStore(state => state.darkMode)
-    const toontownMode = useStore(state => state.toontownMode)
-    const nicknameKeyboard = useStore(state => state.nicknameKeyboard)
-
-    const resetPeerStore = useGameServer(state => state.reset);
-
-    const lobbyDetails = useStore(state => state.lobbyDetails)
-
-    const [joinGame, setJoinGame] = useState(false)
-    const [isMounted, setIsMounted] = useState(false)
+    const darkMode = useStore((state) => state.darkMode);
+    const toontownMode = useStore((state) => state.toontownMode);
+    const nicknameKeyboard = useStore((state) => state.nicknameKeyboard);
+    const resetPeerStore = useGameServer((state) => state.reset);
+    const lobbyDetails = useStore((state) => state.lobbyDetails);
+    const [joinGame, setJoinGame] = useState(false);
 
     useEffect(() => {
         resetPeerStore();
-        setIsMounted(true)
-    }, [])
+    }, [resetPeerStore]);
+
+    const pieOptions = [
+        {
+            label: "Settings",
+            Icon: SettingsIcon,
+            callback: () => useStore.getState().setShowSettingsModal(true),
+        },
+        {
+            label: "Go Back",
+            Icon: ArrowBackIcon,
+            callback: () => window.history.back(),
+        },
+        {
+            label: "Credits",
+            Icon: InfoIcon,
+            callback: () => useStore.getState().setShowCreditsModal(true),
+        },
+        {
+            label: "Game Launcher",
+            Icon: SportsEsportsIcon,
+            callback: () => {
+                window.location.href = "https://games.articles.media";
+            },
+        },
+        {
+            label: `${darkMode ? "Light" : "Dark"} Mode`,
+            Icon: PaletteIcon,
+            callback: () => useStore.getState().toggleDarkMode(),
+        },
+    ];
 
     return (
-        <>
+        <Box
+            sx={{
+                "& .landing-page .background-wrap": {
+                    position: "fixed",
+                    "& img": { filter: "blur(2px)" },
+                    "&::after": {
+                        content: '""',
+                        position: "absolute",
+                        inset: 0,
+                        bgcolor: darkMode
+                            ? "rgba(0, 0, 0, 0.25)"
+                            : "transparent",
+                        pointerEvents: "none",
+                    },
+                },
+                "& .landing-page .ad-wrap": {
+                    mt: 2,
+                    "@media (min-width: 992px)": {
+                        mt: 0,
+                        display: "block",
+                        position: "absolute",
+                        right: "1rem",
+                        top: "50%",
+                        transform: "translateY(-50%)",
+                    },
+                },
+            }}
+        >
             <Suspense>
                 <GamepadKeyboard
-                    disableToggle={true}
+                    disableToggle
                     active={nicknameKeyboard}
                     onFinish={(text) => {
-                        console.log("FINISH KEYBOARD", text)
                         useStore.getState().setNickname(text);
                         useStore.getState().setNicknameKeyboard(false);
                     }}
-                    onCancel={(text) => {
-                        console.log("CANCEL KEYBOARD", text)
-                        // useStore.getState().setNickname(text);
-                        useStore.getState().setNicknameKeyboard(false);
-                    }}
+                    onCancel={() =>
+                        useStore.getState().setNicknameKeyboard(false)
+                    }
                 />
                 <PieMenu
-                    options={[
-                        {
-                            label: 'Settings',
-                            icon: 'fad fa-cog',
-                            callback: () => {
-                                setShowSettingsModal(prev => !prev)
-                            }
-                        },
-                        {
-                            label: 'Go Back',
-                            icon: 'fad fa-arrow-left',
-                            callback: () => {
-                                window.history.back()
-                            }
-                        },
-                        {
-                            label: 'Credits',
-                            icon: 'fad fa-info-circle',
-                            callback: () => {
-                                setShowCreditsModal(true)
-                            }
-                        },
-                        {
-                            label: 'Game Launcher',
-                            icon: 'fad fa-gamepad',
-                            callback: () => {
-                                window.location.href = 'https://games.articles.media';
-                            }
-                        },
-                        {
-                            label: `${darkMode ? "Light" : "Dark"} Mode`,
-                            icon: 'fad fa-palette',
-                            callback: () => {
-                                toggleDarkMode()
-                            }
-                        }
-                    ]}
-                    onFinish={(event) => {
-                        console.log("Event", event)
-                        if (event.callback) {
-                            event.callback()
-                        }
-                    }}
+                    options={pieOptions.map(({ label, Icon, callback }) => ({
+                        label: (
+                            <Box
+                                component="span"
+                                sx={{
+                                    display: "inline-flex",
+                                    alignItems: "center",
+                                    gap: 0.5,
+                                }}
+                            >
+                                <Icon fontSize="small" />
+                                {label}
+                            </Box>
+                        ),
+                        callback,
+                    }))}
+                    onFinish={(event) => event.callback?.()}
                 />
             </Suspense>
-
             <PageTemplateLandingPage
                 useSocketStore={useSocketStore}
                 useStore={useStore}
-                // RotatingMascot={RotatingMascot}
                 Link={Link}
-                logoImage={`img/icon.png`}
-                LandingBackgroundAnimation={
-                    <LandingBackgroundAnimation />
-                }
-                heroOverride={<>
-                    <img
+                logoImage="img/icon.png"
+                LandingBackgroundAnimation={<LandingBackgroundAnimation />}
+                heroOverride={
+                    <Box
+                        component="img"
                         src={
-                            toontownMode ?
-                                "img/toontown-hero.webp"
-                                :
-                                "img/hero.webp"
+                            toontownMode
+                                ? "img/toontown-hero.webp"
+                                : "img/hero.webp"
                         }
-                        alt="Hero Image"
-                        className='w-100'
+                        alt="Cannon Game"
+                        sx={{ width: "100%" }}
                     />
-                </>}
+                }
                 NicknameInputConfig={{
-                    PreComponent:
-                        <>
-                            <img
-                                className='panel-bg me-2'
-                                src="img/toontown_icon.webp"
-                                width={70}
-                                height={70}
-                            />
-                        </>
+                    PreComponent: (
+                        <Box
+                            component="img"
+                            src="img/toontown_icon.webp"
+                            alt="Toontown"
+                            width={70}
+                            height={70}
+                            sx={{ mr: 1 }}
+                        />
+                    ),
                 }}
                 backgroundImage={
-                    toontownMode ?
-                        darkMode ?
-                            `img/toontown-preview.webp`
-                            :
-                            `img/toontown-preview.webp`
-                        :
-                        darkMode ?
-                            `img/preview-dark.webp`
-                            :
-                            `img/preview.webp`
+                    toontownMode
+                        ? "img/toontown-preview.webp"
+                        : darkMode
+                          ? "img/preview-dark.webp"
+                          : "img/preview.webp"
                 }
-                singlePlayerConfig={{
-                    attachServerType: "single-player",
-                }}
+                singlePlayerConfig={{ attachServerType: "single-player" }}
                 CardBodyOverride={
-                    <div className="card-body p-3">
-                        {joinGame === false &&
+                    <Box sx={{ p: 2 }}>
+                        {joinGame === false ? (
                             <>
-                                <Link
-                                    href={"/play?server_type=single-player"}
-                                >
-                                    <ArticlesButton
-                                        className="w-100 mb-2"
-                                    >
-                                        <i className='fas fa-play me-2'></i>
-                                        Single Player
-                                    </ArticlesButton>
-                                </Link>
-
-                                <Link
-                                    href={"/play?server_type=online-peer"}
-                                >
-                                    <ArticlesButton
-                                        className="w-100 mb-2"
-                                    >
-                                        <i className='fas fa-play me-2'></i>
-                                        Multiplayer Game
-                                    </ArticlesButton>
-                                </Link>
-
                                 <ArticlesButton
-                                    className="w-100"
-                                    onClick={() => {
-                                        setJoinGame("")
-                                    }}
+                                    component={Link}
+                                    href="/play?server_type=single-player"
+                                    fullWidth
+                                    sx={{ mb: 1 }}
+                                    startIcon={<PlayArrowIcon />}
                                 >
-                                    <i className='fas fa-users me-2'></i>
+                                    Single Player
+                                </ArticlesButton>
+                                <ArticlesButton
+                                    component={Link}
+                                    href="/play?server_type=online-peer"
+                                    fullWidth
+                                    sx={{ mb: 1 }}
+                                    startIcon={<PlayArrowIcon />}
+                                >
+                                    Multiplayer Game
+                                </ArticlesButton>
+                                <ArticlesButton
+                                    fullWidth
+                                    onClick={() => setJoinGame("")}
+                                    startIcon={<GroupsIcon />}
+                                >
                                     Join Game
                                 </ArticlesButton>
-
-                                <div
-                                    className='d-none'
-                                >
-                                    <div className="fw-bold mb-1 small text-center">
-                                        {lobbyDetails?.players?.length || 0} player{lobbyDetails?.players?.length > 1 && 's'} in the lobby.
-                                    </div>
-
-                                    {/* <div className='small fw-bold'>Public Servers</div> */}
-
-                                    <div className="servers">
-
-                                        {[1, 2, 3, 4].map(id => {
-
-                                            let lobbyLookup = lobbyDetails?.fourFrogsGlobalState?.games?.find(lobby =>
-                                                parseInt(lobby.server_id) == id
-                                            )
-
-                                            return (
-                                                <div key={id} className="server">
-
-                                                    <div className='d-flex justify-content-between align-items-center w-100 mb-2'>
-                                                        <div className="mb-0" style={{ fontSize: '0.9rem' }}><b>Server {id}</b></div>
-                                                        <div className='mb-0'>{lobbyLookup?.players?.length || 0}/4</div>
-                                                    </div>
-
-                                                    <div className='d-flex justify-content-around w-100 mb-1'>
-                                                        {[1, 2, 3, 4].map(player_count => {
-
-                                                            let playerLookup = false
-
-                                                            if (lobbyLookup?.players?.length >= player_count) playerLookup = true
-
-                                                            return (
-                                                                <div key={player_count} className="icon" style={{
-                                                                    width: '20px',
-                                                                    height: '20px',
-                                                                    ...(playerLookup ? {
-                                                                        backgroundColor: 'black',
-                                                                    } : {
-                                                                        backgroundColor: 'gray',
-                                                                    }),
-                                                                    border: '1px solid black'
-                                                                }}>
-
-                                                                </div>
-                                                            )
-                                                        })}
-                                                    </div>
-
-                                                    <Link
-                                                        className={``}
-                                                        href={{
-                                                            pathname: `/play`,
-                                                            query: {
-                                                                server: id
-                                                            }
-                                                        }}
-                                                    >
-                                                        <ArticlesButton
-                                                            className="px-5"
-                                                            small
-                                                        >
-                                                            Join
-                                                        </ArticlesButton>
-                                                    </Link>
-
-                                                </div>
-                                            )
-                                        })}
-
-                                    </div>
-                                </div>
-
-                                {/* <div className='small fw-bold  mt-3 mb-1'>Or</div> */}
-
-                                {/* <div className='d-flex'>
-            
-                                        <ArticlesButton
-                                            className={`w-50`}
-                                            onClick={() => {
-                                                // TODO
-                                                alert("Coming Soon!")
-                                            }}
-                                        >
-                                            <i className="fad fa-robot"></i>
-                                            Practice
-                                        </ArticlesButton>
-            
-                                        <ArticlesButton
-                                            className={`w-50`}
-                                            onClick={() => {
-                                                setShowPrivateGameModal(prev => !prev)
-                                            }}
-                                        >
-                                            <i className="fad fa-lock"></i>
-                                            Private Game
-                                        </ArticlesButton>
-            
-                                    </div> */}
-                            </>
-                        }
-
-                        {joinGame !== false &&
-                            <>
-                                <div className="form-group articles mb-0">
-                                    <label htmlFor="nickname">Server ID</label>
-                                    {/* <SingleInput
-                                        value={nickname}
-                                        setValue={setNickname}
-                                    /> */}
-                                    <input
-                                        type="text"
-                                        className="form-control"
-                                        id="server-id"
-                                        value={joinGame}
-                                        onChange={(e) => setJoinGame(e.target.value)}
-                                    ></input>
-                                </div>
-                                <div style={{ fontSize: '0.8rem' }}>Enter the 4 digit Server ID</div>
-
-                                <div className='d-flex justify-content-center mt-3'>
-                                    <ArticlesButton
-                                        className=""
-                                        onClick={() => {
-                                            setJoinGame(false)
+                                <Box sx={{ display: "none" }}>
+                                    <Box
+                                        sx={{
+                                            fontWeight: 700,
+                                            mb: 0.5,
+                                            fontSize: "0.875em",
+                                            textAlign: "center",
                                         }}
                                     >
-                                        <i className="fad fa-arrow-left"></i>
+                                        {lobbyDetails?.players?.length || 0}{" "}
+                                        player
+                                        {lobbyDetails?.players?.length > 1 &&
+                                            "s"}{" "}
+                                        in the lobby.
+                                    </Box>
+                                    <Box
+                                        sx={{
+                                            display: "grid",
+                                            gap: "5px",
+                                            gridTemplateColumns:
+                                                "repeat(2, 1fr)",
+                                        }}
+                                    >
+                                        {[1, 2, 3, 4].map((id) => {
+                                            const lobby =
+                                                lobbyDetails?.fourFrogsGlobalState?.games?.find(
+                                                    (item) =>
+                                                        parseInt(
+                                                            item.server_id,
+                                                        ) === id,
+                                                );
+                                            return (
+                                                <Box
+                                                    key={id}
+                                                    sx={{
+                                                        p: 1,
+                                                        border: "1px solid rgba(0, 0, 0, 0.25)",
+                                                        display: "flex",
+                                                        flexDirection: "column",
+                                                        alignItems: "center",
+                                                    }}
+                                                >
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            justifyContent:
+                                                                "space-between",
+                                                            alignItems:
+                                                                "center",
+                                                            width: "100%",
+                                                            mb: 1,
+                                                        }}
+                                                    >
+                                                        <Box
+                                                            sx={{
+                                                                fontSize:
+                                                                    "0.9rem",
+                                                                fontWeight: 700,
+                                                            }}
+                                                        >
+                                                            Server {id}
+                                                        </Box>
+                                                        <Box>
+                                                            {lobby?.players
+                                                                ?.length || 0}
+                                                            /4
+                                                        </Box>
+                                                    </Box>
+                                                    <Box
+                                                        sx={{
+                                                            display: "flex",
+                                                            justifyContent:
+                                                                "space-around",
+                                                            width: "100%",
+                                                            mb: 0.5,
+                                                        }}
+                                                    >
+                                                        {[1, 2, 3, 4].map(
+                                                            (count) => (
+                                                                <Box
+                                                                    key={count}
+                                                                    sx={{
+                                                                        width: 20,
+                                                                        height: 20,
+                                                                        bgcolor:
+                                                                            lobby
+                                                                                ?.players
+                                                                                ?.length >=
+                                                                            count
+                                                                                ? "black"
+                                                                                : "gray",
+                                                                        border: "1px solid black",
+                                                                    }}
+                                                                />
+                                                            ),
+                                                        )}
+                                                    </Box>
+                                                    <ArticlesButton
+                                                        component={Link}
+                                                        href={{
+                                                            pathname: "/play",
+                                                            query: {
+                                                                server: id,
+                                                            },
+                                                        }}
+                                                        sx={{ px: "3rem" }}
+                                                        small
+                                                    >
+                                                        Join
+                                                    </ArticlesButton>
+                                                </Box>
+                                            );
+                                        })}
+                                    </Box>
+                                </Box>
+                            </>
+                        ) : (
+                            <>
+                                <TextField
+                                    fullWidth
+                                    label="Server ID"
+                                    id="server-id"
+                                    value={joinGame}
+                                    onChange={(event) =>
+                                        setJoinGame(event.target.value)
+                                    }
+                                    helperText="Enter the 4 digit Server ID"
+                                    size="small"
+                                />
+                                <Box
+                                    sx={{
+                                        display: "flex",
+                                        justifyContent: "center",
+                                        mt: 2,
+                                    }}
+                                >
+                                    <ArticlesButton
+                                        onClick={() => setJoinGame(false)}
+                                        startIcon={<ArrowBackIcon />}
+                                    >
                                         Go Back
                                     </ArticlesButton>
-                                    <Link href={{
-                                        pathname: "/play",
-                                        query: {
-                                            server: joinGame
-                                        }
-                                    }}>
-                                        <ArticlesButton
-                                            className=""
-                                            onClick={() => {
-                                                // setJoinGame("")
-                                            }}
-                                        >
-                                            <i className="fad fa-play"></i>
-                                            Join Game
-                                        </ArticlesButton>
-                                    </Link>
-                                </div>
+                                    <ArticlesButton
+                                        component={Link}
+                                        href={{
+                                            pathname: "/play",
+                                            query: { server: joinGame },
+                                        }}
+                                        startIcon={<PlayArrowIcon />}
+                                    >
+                                        Join Game
+                                    </ArticlesButton>
+                                </Box>
                             </>
-                        }
-                    </div>
+                        )}
+                    </Box>
                 }
                 multiplayerConfig={{
                     type: "WebSocket",
@@ -363,8 +360,7 @@ export default function CannonGameLobbyPage() {
                     onlinePlayersTemplate: "2.0",
                 }}
                 brandingTextClass="jaro-primary"
-            // disableGameScoreboard={true}
             />
-        </>
+        </Box>
     );
 }

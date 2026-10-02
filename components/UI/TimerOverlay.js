@@ -1,54 +1,52 @@
-import { useGameStore } from "@/hooks/useGameStore"
-import { useStore } from "@/hooks/useStore"
+import Box from "@mui/material/Box";
+import { useGameStore } from "@/hooks/useGameStore";
+import { useStore } from "@/hooks/useStore";
 
 export default function TimerOverlay() {
-
-    const toontownMode = useStore(state => state.toontownMode)
-
-    const gameState = useGameStore(state => state.gameState)
-    const maxTime = useGameStore(state => state.gameState?.maxTime)
-    const timer = useGameStore(state => state.gameState?.timer)
-
+    const toontownMode = useStore((state) => state.toontownMode);
+    const maxTime = useGameStore((state) => state.gameState?.maxTime);
+    const timer = useGameStore((state) => state.gameState?.timer);
     const timeLeft = maxTime - timer;
 
     return (
-        <div className="game-timer-overlay">
-
-            <div
-                className="timer"
-                style={{
-
-                    color: 'black',
+        <Box sx={{ position: "absolute", top: 10, right: 10, zIndex: 1 }}>
+            <Box
+                sx={{
+                    position: "absolute",
+                    top: "54%",
+                    left: "49%",
+                    transform: "translate(-50%, -50%)",
+                    fontFamily: '"Minnie", cursive',
+                    fontSize: "2rem",
+                    color:
+                        timeLeft <= 5
+                            ? "red"
+                            : timeLeft <= 10
+                              ? "orange"
+                              : "black",
+                    fontWeight: timeLeft <= 10 ? "bold" : "normal",
                     zIndex: 2,
-
-                    ...(timeLeft <= 10 ? { color: 'orange', fontWeight: 'bold' } : {}),
-
-                    ...(timeLeft <= 5 ? { color: 'red', fontWeight: 'bold' } : {}),
-
                 }}
             >
                 {timeLeft || 0}
-            </div>
-
-            <img
+            </Box>
+            <Box
+                component="img"
                 src={
-                    toontownMode ?
-                        "/img/toontown/toon-alarm-clock.webp"
-                        :
-                        "/img/toontown/alarm-clock-filled.webp"
+                    toontownMode
+                        ? "/img/toontown/toon-alarm-clock.webp"
+                        : "/img/toontown/alarm-clock-filled.webp"
                 }
-                style={{
-                    ...!toontownMode && {
-                        overflow: 'hidden',
-                        transform: 'scale(1.25)',
-                        // zIndex: 0,
-                    }
-                }}
                 alt="Timer Icon"
-                className=""
+                sx={{
+                    width: 100,
+                    height: 100,
+                    ...(!toontownMode && {
+                        overflow: "hidden",
+                        transform: "scale(1.25)",
+                    }),
+                }}
             />
-
-        </div>
-    )
-
+        </Box>
+    );
 }

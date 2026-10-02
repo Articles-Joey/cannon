@@ -1,3 +1,24 @@
+import { Box, IconButton } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import RemoveIcon from "@mui/icons-material/Remove";
+import LocalFireDepartmentIcon from "@mui/icons-material/LocalFireDepartment";
+import ArrowCircleUpIcon from "@mui/icons-material/ArrowCircleUp";
+import ArrowCircleDownIcon from "@mui/icons-material/ArrowCircleDown";
+import ArrowCircleLeftIcon from "@mui/icons-material/ArrowCircleLeft";
+import ArrowCircleRightIcon from "@mui/icons-material/ArrowCircleRight";
+
+const sensitivityButtonSx = {
+    bgcolor: "black", color: "white", opacity: 0.7, borderRadius: "6px",
+    transition: "opacity 200ms", "&:hover": { bgcolor: "black", opacity: 1 },
+};
+const directionIcons = { up: ArrowCircleUpIcon, down: ArrowCircleDownIcon, left: ArrowCircleLeftIcon, right: ArrowCircleRightIcon };
+const directionTransforms = {
+    up: "translate(-50%, calc(-50% - 50px))",
+    down: "translate(-50%, calc(-50% + 50px))",
+    left: "translate(calc(-50% - 50px), -50%)",
+    right: "translate(calc(-50% + 50px), -50%)",
+};
+
 import { useEffect, useState, useRef, useCallback } from "react"
 import { useKeyboard } from "@/hooks/useKeyboard"
 import { Vector3, Euler } from 'three';
@@ -205,69 +226,81 @@ export default function ControlsOverlay(props) {
     }, [moveUp, moveDown, moveLeft, moveRight, activeButton, setPlayerRotation]);
 
     return (
-        <div className={`controls-overlay hide-in-screenshot-mode ${toontownMode ? 'toontown-mode' : ''}`}>
-
-            <div className="controls-background-container">
-                <div
-                    className="controls-background"
-                    style={{
-                        backgroundImage: "url('/img/toontown/palette_2.png')",
-                    }}
-                ></div>
-            </div>
-
-            <div className="sensitivity-buttons">
-                <div
-                    className="badge bg-black badge-hover"
-                    onClick={() => {
-                        decreaseAimSensitivity()
-                    }}
-                >
-                    <i className="fas fa-minus"></i>
-                </div>
-                <div className="badge bg-black">
-                    {aimSensitivity}
-                </div>
-                <div
-                    className="badge bg-black badge-hover"
-                    onClick={() => {
-                        increaseAimSensitivity()
-                    }}
-                >
-                    <i className="fas fa-plus"></i>
-                </div>
-            </div>
-
-            <ArticlesButton
-                // small
-                className="fire-button"
-                onClick={handleFire}
-                style={{
+        <Box data-hide-in-screenshot-mode="true" sx={{
+            position: "fixed", bottom: "calc(50px + 1rem)", right: "50%",
+            bgcolor: toontownMode ? "transparent" : "rgba(0, 0, 0, 0.75)",
+            width: 160, height: 160, zIndex: 1, transform: "translateX(50%)",
+            "@media (min-width: 992px)": {
+                transform: "none", right: 50, bottom: 50, m: "1rem",
+                ".show-sidebar &": { bottom: 50 },
+            },
+        }}>
+            <Box sx={{
+                position: "absolute", inset: 0, display: toontownMode ? "flex" : "none",
+                justifyContent: "center", alignItems: "center", pointerEvents: "none",
+            }}>
+                <Box sx={{
                     backgroundImage: "url('/img/toontown/palette_2.png')",
-                }}
-            >
-                <i className="fad fa-fire-alt me-0"></i>
-            </ArticlesButton>
-
-            {['up', 'down', 'left', 'right'].map(dir =>
-                <ArticlesButton
-                    key={dir}
-                    className={`${dir}-button directional-button`}
-                    active={(dir == 'up' ? moveUp : dir == 'down' ? moveDown : dir == 'left' ? moveLeft : moveRight) || activeButton === dir}
-                    onMouseDown={() => setActiveButton(dir)}
-                    onMouseUp={() => setActiveButton(null)}
-                    onMouseLeave={() => setActiveButton(null)}
-                    onTouchStart={(e) => { e.preventDefault(); setActiveButton(dir); }}
-                    onTouchEnd={(e) => { e.preventDefault(); setActiveButton(null); }}
-                    style={{
+                    transform: "scale(1.5)", backgroundPosition: "0px 0",
+                    overflow: "hidden", width: 128, height: 128,
+                }} />
+            </Box>
+            <Box sx={{
+                position: "absolute", bottom: "-2.5rem", width: "100%",
+                display: "flex", justifyContent: "center", alignItems: "center",
+            }}>
+                <IconButton aria-label="Decrease aim sensitivity" onClick={decreaseAimSensitivity} size="small" sx={sensitivityButtonSx}>
+                    <RemoveIcon fontSize="inherit" />
+                </IconButton>
+                <Box sx={{ bgcolor: "black", color: "white", px: 1, py: 0.5, borderRadius: "6px", fontSize: "0.75rem", fontWeight: 700 }}>
+                    {aimSensitivity}
+                </Box>
+                <IconButton aria-label="Increase aim sensitivity" onClick={increaseAimSensitivity} size="small" sx={sensitivityButtonSx}>
+                    <AddIcon fontSize="inherit" />
+                </IconButton>
+            </Box>
+            <ArticlesButton aria-label="Fire cannon" onClick={handleFire} disableRipple
+                sx={{
+                    position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)",
+                    bgcolor: "red",
+                    ...(toontownMode && {
+                        "&, &:hover, &:active, &.active": { bgcolor: "transparent", border: 0, boxShadow: "none" },
+                        width: 60, height: 60, p: 0, overflow: "hidden",
                         backgroundImage: "url('/img/toontown/palette_2.png')",
-                    }}
-                >
-                    <i className={`fad fa-chevron-circle-${dir} me-0`}></i>
-                </ArticlesButton>
-            )}
-
-        </div>
-    )
-
+                        backgroundSize: "326px 326px", backgroundPosition: "1px -166px",
+                        "&:hover": { backgroundPosition: "-57px -166px" },
+                        "&:active": { backgroundPosition: "-118px -166px" },
+                    }),
+                }}>
+                <LocalFireDepartmentIcon sx={{ display: toontownMode ? "none" : "block" }} />
+            </ArticlesButton>
+            {["up", "down", "left", "right"].map(dir => {
+                const DirectionIcon = directionIcons[dir];
+                return (
+                    <ArticlesButton key={dir} aria-label={`Aim ${dir}`} disableRipple
+                        active={(dir === "up" ? moveUp : dir === "down" ? moveDown : dir === "left" ? moveLeft : moveRight) || activeButton === dir}
+                        onMouseDown={() => setActiveButton(dir)}
+                        onMouseUp={() => setActiveButton(null)}
+                        onMouseLeave={() => setActiveButton(null)}
+                        onTouchStart={e => { e.preventDefault(); setActiveButton(dir); }}
+                        onTouchEnd={e => { e.preventDefault(); setActiveButton(null); }}
+                        onTouchCancel={() => setActiveButton(null)}
+                        sx={{
+                            position: "absolute", top: "50%", left: "50%",
+                            transform: directionTransforms[dir],
+                            ...(toontownMode && {
+                                "&, &:hover, &:active, &.active": { bgcolor: "transparent", border: 0, boxShadow: "none" },
+                                width: 60, height: 60, p: 0, overflow: "hidden",
+                                backgroundImage: "url('/img/toontown/palette_2.png')",
+                                backgroundSize: "326px 326px", backgroundPosition: "82px -4px",
+                                "&:hover": { backgroundPosition: "82px -65px" },
+                                "&:active, &.active": { backgroundPosition: "82px -126px" },
+                            }),
+                        }}>
+                        <DirectionIcon sx={{ display: toontownMode ? "none" : "block" }} />
+                    </ArticlesButton>
+                );
+            })}
+        </Box>
+    );
 }
