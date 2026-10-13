@@ -8,7 +8,7 @@ extend({ Water })
 
 const link = `${process.env.NEXT_PUBLIC_CDN}games/Race Game/waternormals.jpeg`
 
-export default function WaterPlane(props) {
+export default function WaterPlane({ radius = 5, ...props }) {
     const ref = useRef()
     const gl = useThree((state) => state.gl)
 
@@ -19,9 +19,9 @@ export default function WaterPlane(props) {
 
     waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping
     const geom = useMemo(() => new THREE.CircleGeometry(
-        5, 
+        radius,
         toontownMode ? 8 : 32
-    ), [])
+    ), [radius, toontownMode])
     const config = useMemo(
         () => ({
             textureWidth: 512,

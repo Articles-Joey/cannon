@@ -1,6 +1,6 @@
 # Cannon Game
 
-![Game Screenshot](public/img/preview.webp)
+![Game Screenshot](public/img/previews/preview.webp)
 
 The objective is to change the angle on a cannon in order to get an accurate landing position into the water tower. 
 
@@ -44,7 +44,7 @@ Inspired by the minigame inside Toontown
 
 https://toontownrewritten.fandom.com/wiki/Cannon_Game
 
-![Game Artwork](public/img/inspo-artwork.webp)
+![Game Artwork](public/img/toontown-hero.webp)
 
 ## Attributions
 

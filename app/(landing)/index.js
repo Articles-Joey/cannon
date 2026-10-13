@@ -162,8 +162,8 @@ export default function CannonGameLobbyPage() {
                     toontownMode
                         ? "img/toontown-preview.webp"
                         : darkMode
-                          ? "img/preview-dark.webp"
-                          : "img/preview.webp"
+                          ? "img/previews/dark.webp"
+                          : "img/previews/preview.webp"
                 }
                 singlePlayerConfig={{ attachServerType: "single-player" }}
                 CardBodyOverride={

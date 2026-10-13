@@ -1,5 +1,6 @@
 import { useStore } from "@/hooks/useStore"
-import { PaintBucket } from "../Models/PaintBucket"
+import { WaterTower } from "../Models/WaterTower"
+import { WATER_TOWER_DIMENSIONS } from "@/util/waterTowerDimensions"
 import { Cylinder, Plane, useTexture } from "@react-three/drei"
 import WaterPlane from "./WaterPlane"
 import * as THREE from 'three'
@@ -20,7 +21,6 @@ export default function ScoreTarget() {
     waterTowerSideTexture.wrapT = THREE.ClampToEdgeWrapping
     waterTowerSideTexture.repeat.set(4, 1)
 
-    const color = darkMode ? "#8B0000" : "red";
     const leanAngle = degToRad(6.75); // Lean the walls back by 10 degrees to test it out!
 
     const wallMaterial = (
@@ -94,31 +94,14 @@ export default function ScoreTarget() {
                     material={cylinderMaterials}
                     renderOrder={1}
                 />
-                {/* <PaintBucket scale={50} renderOrder={10} /> */}
 
             </group>
         )
     } else {
         return (
-            <group renderOrder={10}>
-
-                <mesh castShadow position={[0, -14, 0]} renderOrder={10}>
-                    <boxGeometry args={[10, 0.5, 10]} />
-                    <meshStandardMaterial color={color} />
-                </mesh>
-
-                <Cylinder
-                    position={[0, -7, 0]} 
-                    args={[1, 1, 14, 8]} 
-                    material-color={color} 
-                    renderOrder={10}
-                />
-
-                <WaterPlane position={[0, 6, 0]} renderOrder={10} />
-
-                <PaintBucket position={[0, -4, 0]} scale={80} renderOrder={10} />
-
-            </group>
+            <WaterTower
+                position={[0, -(WATER_TOWER_DIMENSIONS.height - WATER_TOWER_DIMENSIONS.bucketHeight), 0]}
+            />
         )
     }
 }

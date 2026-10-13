@@ -5,6 +5,8 @@ import { useCannonStore } from "@/hooks/useCannonStore";
 import { Debug, Physics, useBox, useCylinder, useSphere } from "@react-three/cannon";
 import { useAudioStore } from "@/hooks/useAudioStore";
 import useGameHelpers from "@/hooks/useGameHelpers";
+import { WATER_TOWER_DIMENSIONS, getWaterTowerWaterRadius } from "@/util/waterTowerDimensions";
+import { useStore } from "@/hooks/useStore";
 
 export default function TowerAndWaterCollisionDetection({ position, args }) {
 
@@ -15,7 +17,9 @@ export default function TowerAndWaterCollisionDetection({ position, args }) {
         increasePlayerScore
     } = useGameHelpers()
 
-    const waterArgs = [4, 4, 0.25, 8];
+    const toontownMode = useStore(state => state.toontownMode);
+    const waterRadius = toontownMode ? 4 : getWaterTowerWaterRadius(WATER_TOWER_DIMENSIONS);
+    const waterArgs = [waterRadius, waterRadius, 0.25, toontownMode ? 8 : 32];
     const [waterRef, api] = useCylinder(() => ({
         mass: 0,
         // type: 'Static',
@@ -65,9 +69,10 @@ export default function TowerAndWaterCollisionDetection({ position, args }) {
             }
 
         }
-    }))
+    }), undefined, [waterRadius, toontownMode])
 
-    const towerArgs = [4, 4, 20, 8];
+    const towerHeight = WATER_TOWER_DIMENSIONS.height;
+    const towerArgs = [4, 4, towerHeight, 8];
     const [towerRef, towerApi] = useCylinder(() => ({
         mass: 0,
         // type: 'Static',
@@ -75,7 +80,7 @@ export default function TowerAndWaterCollisionDetection({ position, args }) {
         args: towerArgs,
         position: [
             position[0],
-            position[1] - 10,
+            position[1] - towerHeight / 2,
             position[2]
         ],
         onCollide: (e) => {
@@ -126,14 +131,14 @@ export default function TowerAndWaterCollisionDetection({ position, args }) {
     useEffect(() => {
         console.log("position updated")
         api.position.set(position[0], position[1], position[2])
-        towerApi.position.set(position[0], position[1] - 10, position[2])
-    }, [position])
+        towerApi.position.set(position[0], position[1] - towerHeight / 2, position[2])
+    }, [position, api, towerApi, towerHeight])
 
     return (
         <group>
 
             <mesh ref={waterRef} castShadow>
-                <cylinderGeometry args={args} />
+                <cylinderGeometry args={args ?? waterArgs} />
                 <meshStandardMaterial
                     transparent={true}
                     opacity={0}

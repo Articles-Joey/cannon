@@ -5,7 +5,7 @@ import { Sky, useDetectGPU, useTexture, OrbitControls, Cylinder, QuadraticBezier
 
 import { Vector3 } from "three";
 
-// import { PaintBucket } from "@/components/Models/PaintBucket";
+import { WATER_TOWER_DIMENSIONS } from "@/util/waterTowerDimensions";
 
 import { useCannonStore } from "@/hooks/useCannonStore";
 import { useStore } from '@/hooks/useStore';
@@ -150,7 +150,7 @@ function GameCanvas({
                         <TowerAndWaterCollisionDetection
                             position={[
                                 goalLocation[0],
-                                20,
+                                WATER_TOWER_DIMENSIONS.height,
                                 goalLocation[2]
                             ]}
                         />
@@ -160,7 +160,7 @@ function GameCanvas({
                             position={[
                                 goalLocation[0],
                                 // goalLocation[1], 
-                                14,
+                                WATER_TOWER_DIMENSIONS.height - WATER_TOWER_DIMENSIONS.bucketHeight,
                                 goalLocation[2]
                             ]}
                         >

@@ -13,11 +13,11 @@ export default function TimerOverlay() {
             <Box
                 sx={{
                     position: "absolute",
-                    top: "54%",
-                    left: "49%",
+                    top: "50%",
+                    left: "48%",
                     transform: "translate(-50%, -50%)",
                     fontFamily: '"Minnie", cursive',
-                    fontSize: "2rem",
+                    fontSize: "1.75rem",
                     color:
                         timeLeft <= 5
                             ? "red"
