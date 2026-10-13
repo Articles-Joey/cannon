@@ -24,12 +24,13 @@ const vertexShader = /* glsl */`
 
 const fragmentShader = /* glsl */`
     varying vec2 vUv;
+    uniform float brightness;
 
     void main() {
         vec3 baseColor = vec3(0.08, 0.35, 0.08);
         vec3 tipColor  = vec3(0.38, 0.68, 0.18);
         vec3 color = mix(baseColor, tipColor, vUv.y);
-        gl_FragColor = vec4(color, 1.0);
+        gl_FragColor = vec4(color * brightness, 1.0);
     }
 `;
 
@@ -85,6 +86,7 @@ export default function GrassArea({
 }) {
 
     const graphicsQuality = useStore(state => state.graphicsQuality);    
+    const darkMode = useStore(state => state.darkMode);
 
     const bladeCount = useMemo(() => {
         if (graphicsQuality === 'Low')    return Math.floor(count * 0.15);
@@ -97,9 +99,16 @@ export default function GrassArea({
     const material = useMemo(() => new ShaderMaterial({
         vertexShader,
         fragmentShader,
-        uniforms: { time: { value: 0 } },
+        uniforms: {
+            time: { value: 0 },
+            brightness: { value: 1 },
+        },
         side: DoubleSide,
     }), []);
+
+    useEffect(() => {
+        material.uniforms.brightness.value = darkMode ? 0.3 : 1;
+    }, [darkMode, material]);
 
     const meshRef = useRef();
 
